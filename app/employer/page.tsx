@@ -5,12 +5,31 @@ import { redirect } from "next/navigation"
 export default async function EmployerDashboard() {
   const session = await auth()
   
-  if (!session?.user?.employerId) {
-    redirect('/login')
+  // Try to get employerId from session; if missing, attempt to resolve via user email
+  let employerId = session?.user?.employerId
+
+  if (!employerId) {
+    if (!session?.user?.email) {
+      redirect('/login')
+    }
+
+    const employerByUser = await prisma.employer.findFirst({
+      where: {
+        user: {
+          email: session.user.email
+        }
+      }
+    })
+
+    if (!employerByUser) {
+      redirect('/login')
+    }
+
+    employerId = employerByUser.id
   }
 
   const employer = await prisma.employer.findUnique({
-    where: { id: session.user.employerId },
+    where: { id: employerId },
     include: {
       jobs: true
     }
