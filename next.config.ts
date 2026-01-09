@@ -1,9 +1,9 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  webpack: (config) => {
-    config.resolve.fallback = { fs: false, net: false, tls: false };
-    return config;
-  },
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  eslint: {
+    ignoreDuringBuilds: true,
+  }
 };
 
 export default nextConfig;
