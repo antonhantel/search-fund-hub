@@ -35,7 +35,7 @@ export default async function EmployerDashboard() {
         {employer.status === 'pending' && (
           <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-md p-4">
             <p className="text-yellow-800">
-              ⏳ Your employer account is pending approval. You can create job drafts, but they won't be published until your account is approved.
+              ⏳ Your employer account is pending approval. You can create job drafts, but they won&apos;t be published until your account is approved.
             </p>
           </div>
         )}

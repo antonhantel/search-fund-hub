@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { Filters } from './filters'
+import { Prisma } from '@prisma/client'
 
 export default async function JobsPage({
   searchParams
@@ -8,7 +9,7 @@ export default async function JobsPage({
   searchParams: { search?: string; industry?: string; location?: string; functionArea?: string }
 }) {
   // Build filter conditions
-  const where: any = {
+  const where: Prisma.JobWhereInput = {
     status: 'active'
   }
 
