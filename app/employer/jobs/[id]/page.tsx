@@ -6,16 +6,17 @@ import { EditForm } from "./edit-form"
 export default async function EmployerEditJobPage({
   params,
 }: {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }) {
+  const { id } = await params
   const session = await auth()
-  
+
   if (!session?.user?.employerId) {
     redirect("/login")
   }
 
   const job = await prisma.job.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       employer: {
         select: {
