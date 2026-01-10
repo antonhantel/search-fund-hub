@@ -42,15 +42,40 @@ export default async function JobsPage({
     where.functionArea = params.functionArea
   }
 
-  // Fetch all active jobs for filter options
-  const allActiveJobs = await prisma.job.findMany({
-    where: { status: 'active' },
-    select: {
-      industry: true,
-      location: true,
-      functionArea: true
-    }
-  })
+  let allActiveJobs, jobs
+
+  try {
+    // Fetch all active jobs for filter options
+    allActiveJobs = await prisma.job.findMany({
+      where: { status: 'active' },
+      select: {
+        industry: true,
+        location: true,
+        functionArea: true
+      }
+    })
+
+    // Fetch filtered jobs
+    jobs = await prisma.job.findMany({
+      where,
+      include: {
+        employer: {
+          select: {
+            companyName: true,
+            industry: true
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    })
+  } catch (error) {
+    console.error('Error fetching jobs:', error)
+    // Return empty arrays if there's an error
+    allActiveJobs = []
+    jobs = []
+  }
 
   // Extract unique values for filters
   const industries = Array.from(
@@ -64,22 +89,6 @@ export default async function JobsPage({
   const functionAreas = Array.from(
     new Set(allActiveJobs.map(j => j.functionArea).filter(Boolean))
   ).sort() as string[]
-
-  // Fetch filtered jobs
-  const jobs = await prisma.job.findMany({
-    where,
-    include: {
-      employer: {
-        select: {
-          companyName: true,
-          industry: true
-        }
-      }
-    },
-    orderBy: {
-      createdAt: 'desc'
-    }
-  })
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-gray-50">
