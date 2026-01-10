@@ -3,6 +3,8 @@ import Link from 'next/link'
 import Filters from './filters'
 // Using emoji icons to avoid additional runtime dependency
 
+export const dynamic = 'force-dynamic'
+
 export default async function JobsPage({
   searchParams
 }: {
@@ -124,7 +126,12 @@ export default async function JobsPage({
 
                         {job.languageRequirements && (
                           <div className="flex items-center gap-2">
-                            <span className="text-sm text-gray-500">{job.languageRequirements}</span>
+                            <span className="text-xl">🌐</span>
+                            <span className="text-sm">
+                              {Array.isArray(job.languageRequirements)
+                                ? job.languageRequirements.join(', ')
+                                : String(job.languageRequirements)}
+                            </span>
                           </div>
                         )}
                       </div>

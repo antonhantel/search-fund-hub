@@ -3,6 +3,8 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import { JobDetailActions } from "./job-detail-actions"
 
+export const dynamic = 'force-dynamic'
+
 export default async function JobDetailPage({
   params,
 }: {
@@ -112,9 +114,15 @@ export default async function JobDetailPage({
                   Language Requirements
                 </h2>
                 <div className="prose prose-sm max-w-none">
-                  <p className="text-gray-700 whitespace-pre-wrap">
-                    {job.languageRequirements}
-                  </p>
+                  <ul className="list-disc pl-5 text-gray-700">
+                    {Array.isArray(job.languageRequirements) ? (
+                      job.languageRequirements.map((lang: string, i: number) => (
+                        <li key={i}>{lang}</li>
+                      ))
+                    ) : (
+                      <li>{String(job.languageRequirements)}</li>
+                    )}
+                  </ul>
                 </div>
               </section>
             )}
