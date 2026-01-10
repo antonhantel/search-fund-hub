@@ -1,17 +1,39 @@
-import { auth } from "@/lib/auth"  // NICHT von @/auth!
-import { redirect } from "next/navigation"
-import Link from "next/link"
+'use client'
 
-export default async function EmployerLayout({
+import { usePathname } from "next/navigation"
+import Link from "next/link"
+import { ReactNode } from "react"
+
+interface EmployerLayoutProps {
+  children: ReactNode
+}
+
+function NavLink({
+  href,
+  pathname,
   children,
 }: {
-  children: React.ReactNode
+  href: string
+  pathname: string
+  children: ReactNode
 }) {
-  const session = await auth()
+  const isActive =
+    pathname === href || (href !== '/employer' && pathname.startsWith(href))
+  const baseClass =
+    "px-3 py-2 rounded-md text-sm font-medium transition-colors"
+  const activeClass = isActive
+    ? "bg-blue-100 text-blue-900"
+    : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
 
-  if (!session || session.user.role !== 'employer') {
-    redirect('/login')
-  }
+  return (
+    <Link href={href} className={`${baseClass} ${activeClass}`}>
+      {children}
+    </Link>
+  )
+}
+
+export default function EmployerLayout({ children }: EmployerLayoutProps) {
+  const pathname = usePathname()
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -23,34 +45,26 @@ export default async function EmployerLayout({
                 <h1 className="text-xl font-bold text-gray-900">Employer Portal</h1>
               </div>
               <div className="ml-10 flex items-center space-x-4">
-                <Link
-                  href="/employer"
-                  className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-                >
+                <NavLink href="/employer" pathname={pathname}>
                   Dashboard
-                </Link>
-                <Link
-                  href="/employer/jobs"
-                  className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-                >
+                </NavLink>
+                <NavLink href="/employer/jobs" pathname={pathname}>
                   My Jobs
-                </Link>
-                <Link
-                  href="/employer/jobs/new"
-                  className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-                >
+                </NavLink>
+                <NavLink href="/employer/jobs/new" pathname={pathname}>
                   Post Job
-                </Link>
+                </NavLink>
               </div>
             </div>
             <div className="flex items-center">
-              <span className="text-sm text-gray-600 mr-4">{session.user?.email}</span>
-              <Link
-                href="/api/auth/signout"
-                className="text-sm text-red-600 hover:text-red-800"
-              >
-                Sign out
-              </Link>
+              <form action="/api/auth/signout" method="POST">
+                <button
+                  type="submit"
+                  className="text-sm text-red-600 hover:text-red-800 font-medium"
+                >
+                  Sign out
+                </button>
+              </form>
             </div>
           </div>
         </div>

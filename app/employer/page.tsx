@@ -1,42 +1,24 @@
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
-import { redirect } from "next/navigation"
+import { notFound } from "next/navigation"
 
 export default async function EmployerDashboard() {
   const session = await auth()
   
-  // Try to get employerId from session; if missing, attempt to resolve via user email
-  let employerId = session?.user?.employerId
-
-  if (!employerId) {
-    if (!session?.user?.email) {
-      redirect('/login')
-    }
-
-    const employerByUser = await prisma.employer.findFirst({
-      where: {
-        user: {
-          email: session.user.email
-        }
-      }
-    })
-
-    if (!employerByUser) {
-      redirect('/login')
-    }
-
-    employerId = employerByUser.id
+  // Session check is done by middleware, so we should have a valid session here
+  if (!session?.user?.employerId) {
+    notFound()
   }
 
   const employer = await prisma.employer.findUnique({
-    where: { id: employerId },
+    where: { id: session.user.employerId },
     include: {
       jobs: true
     }
   })
 
   if (!employer) {
-    redirect('/login')
+    notFound()
   }
 
   const jobStats = {
