@@ -1,229 +1,225 @@
-"use client"
+'use client'
 
-import { useRouter } from "next/navigation"
-import { FormEvent, useState } from "react"
-import { INDUSTRY_OPTIONS, FUNCTION_AREA_OPTIONS, COMPANY_SIZE_OPTIONS } from "@/lib/constants"
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function JobForm({ employerId }: { employerId: string }) {
   const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [isDraft, setIsDraft] = useState(false)
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    location: '',
+    industry: '',
+    employmentType: 'full-time',
+    salary: '',
+    externalUrl: '',
+    function: ''
+  })
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target
+    setFormData(prev => ({ ...prev, [name]: value }))
+  }
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>, asDraft: boolean = false) => {
     e.preventDefault()
-    setIsLoading(true)
+    setIsSubmitting(true)
     setError(null)
 
-    const formData = new FormData(e.currentTarget)
-    const data = {
-      title: formData.get("title"),
-      description: formData.get("description"),
-      requirements: formData.get("requirements"),
-      languageRequirements: formData.get("languageRequirements"),
-      location: formData.get("location"),
-      industry: formData.get("industry"),
-      functionArea: formData.get("functionArea"),
-      companySize: formData.get("companySize"),
-      salaryRange: formData.get("salaryRange"),
-      status: formData.get("status"),
-      employerId,
-    }
-
     try {
-      const response = await fetch("/api/employer/jobs", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+      const response = await fetch('/api/employer/jobs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...formData,
+          employerId,
+          isDraft: asDraft
+        })
       })
 
       if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || "Failed to create job")
+        const data = await response.json()
+        throw new Error(data.message || 'Failed to save job')
       }
 
-      router.push("/employer/jobs")
+      router.push('/employer/jobs')
       router.refresh()
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong")
-      setIsLoading(false)
+      setError(err instanceof Error ? err.message : 'An error occurred')
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
   return (
-    <div className="bg-white shadow sm:rounded-lg p-6">
+    <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-8 max-w-2xl mx-auto">
+      <h2 className="text-2xl font-bold text-gray-900 mb-6">Post a New Job</h2>
+
       {error && (
-        <div className="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-md">
-          {error}
+        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-red-800">{error}</p>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="space-y-6">
+        {/* Title */}
         <div>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-900">
-            Job Title
+          <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
+            Job Title *
           </label>
           <input
             type="text"
-            name="title"
             id="title"
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
             required
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border px-3 py-2"
-            placeholder="e.g., Software Engineer, Business Analyst"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="e.g., Senior React Developer"
           />
         </div>
 
+        {/* Description */}
         <div>
-          <label htmlFor="description" className="block text-sm font-medium text-gray-900">
-            Description
+          <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
+            Description *
           </label>
           <textarea
-            name="description"
             id="description"
-            rows={5}
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
             required
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border px-3 py-2"
-            placeholder="Describe the role, responsibilities, and what you're looking for in a candidate"
+            rows={6}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Job description, requirements, and responsibilities..."
           />
         </div>
 
+        {/* Location */}
         <div>
-          <label htmlFor="requirements" className="block text-sm font-medium text-gray-900">
-            Requirements
-          </label>
-          <textarea
-            name="requirements"
-            id="requirements"
-            rows={3}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border px-3 py-2"
-            placeholder="List key requirements and qualifications"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="languageRequirements" className="block text-sm font-medium text-gray-900">
-            Language Requirements
+          <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
+            Location *
           </label>
           <input
             type="text"
-            name="languageRequirements"
-            id="languageRequirements"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border px-3 py-2"
-            placeholder="e.g., English (native), German (business level)"
+            id="location"
+            name="location"
+            value={formData.location}
+            onChange={handleChange}
+            required
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="e.g., San Francisco, CA"
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="location" className="block text-sm font-medium text-gray-900">
-              Location
-            </label>
-            <input
-              type="text"
-              name="location"
-              id="location"
-              required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border px-3 py-2"
-              placeholder="e.g., New York, NY"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="industry" className="block text-sm font-medium text-gray-900">
-              Industry
-            </label>
-            <select
-              name="industry"
-              id="industry"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border px-3 py-2"
-            >
-              <option value="">Select Industry</option>
-              {INDUSTRY_OPTIONS.map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label htmlFor="functionArea" className="block text-sm font-medium text-gray-900">
-              Function Area
-            </label>
-            <select
-              name="functionArea"
-              id="functionArea"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border px-3 py-2"
-            >
-              <option value="">Select Function Area</option>
-              {FUNCTION_AREA_OPTIONS.map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt}
-                </option>
-              ))}
-            </select>
-          </div>
-          </div>
-
-          <div>
-            <label htmlFor="companySize" className="block text-sm font-medium text-gray-900">
-              Company Size
-            </label>
-            <select
-              name="companySize"
-              id="companySize"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border px-3 py-2"
-            >
-              <option value="">Select Company Size</option>
-              {COMPANY_SIZE_OPTIONS.map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt}
-                </option>
-              ))}
-            </select>
-          </div>
+        {/* Industry */}
+        <div>
+          <label htmlFor="industry" className="block text-sm font-medium text-gray-700 mb-2">
+            Industry *
+          </label>
+          <input
+            type="text"
+            id="industry"
+            name="industry"
+            value={formData.industry}
+            onChange={handleChange}
+            required
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="e.g., Technology, Finance"
+          />
         </div>
 
+        {/* Function */}
         <div>
-          <label htmlFor="salaryRange" className="block text-sm font-medium text-gray-900">
+          <label htmlFor="function" className="block text-sm font-medium text-gray-700 mb-2">
+            Function *
+          </label>
+          <input
+            type="text"
+            id="function"
+            name="function"
+            value={formData.function}
+            onChange={handleChange}
+            required
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="e.g., Engineering, Sales"
+          />
+        </div>
+
+        {/* Employment Type */}
+        <div>
+          <label htmlFor="employmentType" className="block text-sm font-medium text-gray-700 mb-2">
+            Employment Type *
+          </label>
+          <select
+            id="employmentType"
+            name="employmentType"
+            value={formData.employmentType}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="full-time">Full-time</option>
+            <option value="part-time">Part-time</option>
+            <option value="contract">Contract</option>
+            <option value="intern">Internship</option>
+          </select>
+        </div>
+
+        {/* Salary */}
+        <div>
+          <label htmlFor="salary" className="block text-sm font-medium text-gray-700 mb-2">
             Salary Range
           </label>
           <input
             type="text"
-            name="salaryRange"
-            id="salaryRange"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border px-3 py-2"
+            id="salary"
+            name="salary"
+            value={formData.salary}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="e.g., $80,000 - $120,000"
           />
         </div>
 
+        {/* External URL */}
         <div>
-          <label htmlFor="status" className="block text-sm font-medium text-gray-900">
-            Status
+          <label htmlFor="externalUrl" className="block text-sm font-medium text-gray-700 mb-2">
+            Application URL
           </label>
-          <select
-            name="status"
-            id="status"
-            defaultValue="draft"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border px-3 py-2"
-          >
-            <option value="draft">Save as Draft</option>
-            <option value="pending">Submit for Review</option>
-          </select>
-          <p className="mt-2 text-sm text-gray-600">
-            Draft jobs are only visible to you. Submit for review to be considered for activation.
-          </p>
+          <input
+            type="url"
+            id="externalUrl"
+            name="externalUrl"
+            value={formData.externalUrl}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="https://careers.company.com/apply"
+          />
         </div>
+      </div>
 
-        <div className="flex gap-4 pt-4">
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50"
-          >
-            {isLoading ? "Creating..." : "Create Job"}
-          </button>
-        </div>
-      </form>
-    </div>
+      {/* Buttons */}
+      <div className="flex items-center gap-4 mt-8">
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="flex-1 px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold rounded-lg transition-colors"
+        >
+          {isSubmitting ? 'Posting...' : 'Post Job'}
+        </button>
+        <button
+          type="button"
+          onClick={(e) => handleSubmit(e as any, true)}
+          disabled={isSubmitting}
+          className="flex-1 px-6 py-3 bg-gray-200 hover:bg-gray-300 disabled:bg-gray-100 text-gray-800 font-semibold rounded-lg transition-colors"
+        >
+          {isSubmitting ? 'Saving...' : 'Save as Draft'}
+        </button>
+      </div>
+    </form>
   )
 }

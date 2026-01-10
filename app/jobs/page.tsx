@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
-import { Filters } from './filters'
+import Filters from './filters'
 // Using emoji icons to avoid additional runtime dependency
 
 export default async function JobsPage({
@@ -85,11 +85,7 @@ export default async function JobsPage({
           <p className="mt-2 text-gray-600">Find your next opportunity in search funds</p>
         </div>
 
-        <Filters 
-          industries={industries}
-          locations={locations}
-          functionAreas={functionAreas}
-        />
+        <Filters />
 
         {jobs.length === 0 ? (
           <div className="text-center py-12 bg-white rounded-lg shadow">
