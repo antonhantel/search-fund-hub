@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma"
+import { AdminActions } from "./admin-actions"
 
 export default async function AdminDashboard() {
   const stats = await Promise.all([
@@ -13,7 +14,12 @@ export default async function AdminDashboard() {
   return (
     <div className="px-4 py-6">
       <h2 className="text-2xl font-bold text-gray-900 mb-6">Dashboard Overview</h2>
-      
+
+      {/* Admin Tools */}
+      <div className="mb-6">
+        <AdminActions />
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="bg-white overflow-hidden shadow rounded-lg">
           <div className="p-5">
