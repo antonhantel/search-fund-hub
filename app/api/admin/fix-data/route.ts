@@ -15,35 +15,48 @@ export async function POST() {
 
     // Get all jobs with raw SQL to bypass JSON parsing
     const jobs = await prisma.$queryRawUnsafe(`
-      SELECT id, title, "languageRequirements"
+      SELECT id, title, "languageRequirements"::text as "languageRequirements"
       FROM "Job"
-    `) as Array<{ id: string; title: string; languageRequirements: any }>
+    `) as Array<{ id: string; title: string; languageRequirements: string | null }>
 
     let fixedCount = 0
     const errors = []
+    const fixed = []
 
     for (const job of jobs) {
       if (!job.languageRequirements) continue
 
       try {
-        // Check if it's a string that needs to be converted to JSON array
-        if (typeof job.languageRequirements === 'string') {
-          try {
-            // Try to parse as JSON
-            JSON.parse(job.languageRequirements)
-            console.log(`✓ Job ${job.id}: Already valid JSON`)
-          } catch {
-            // It's an invalid string, convert to JSON array
-            console.log(`⚠ Job ${job.id} (${job.title}): Converting "${job.languageRequirements}" to JSON array`)
-
-            await prisma.$executeRawUnsafe(
-              `UPDATE "Job" SET "languageRequirements" = $1 WHERE id = $2`,
-              JSON.stringify([job.languageRequirements]),
-              job.id
-            )
-
-            fixedCount++
+        // Check if it's already valid JSON
+        try {
+          const parsed = JSON.parse(job.languageRequirements)
+          // If it parses and is an array, it's good
+          if (Array.isArray(parsed)) {
+            console.log(`✓ Job ${job.id}: Already valid JSON array`)
+            continue
           }
+          // If it parses but is not an array, wrap it
+          console.log(`⚠ Job ${job.id}: Valid JSON but not array, wrapping...`)
+          await prisma.$executeRawUnsafe(
+            `UPDATE "Job" SET "languageRequirements" = $1::jsonb WHERE id = $2`,
+            JSON.stringify([parsed]),
+            job.id
+          )
+          fixedCount++
+          fixed.push({ id: job.id, title: job.title, from: job.languageRequirements, to: JSON.stringify([parsed]) })
+        } catch {
+          // It's an invalid string, convert to JSON array
+          console.log(`⚠ Job ${job.id} (${job.title}): Converting "${job.languageRequirements}" to JSON array`)
+
+          const fixedValue = JSON.stringify([job.languageRequirements])
+          await prisma.$executeRawUnsafe(
+            `UPDATE "Job" SET "languageRequirements" = $1::jsonb WHERE id = $2`,
+            fixedValue,
+            job.id
+          )
+
+          fixedCount++
+          fixed.push({ id: job.id, title: job.title, from: job.languageRequirements, to: fixedValue })
         }
       } catch (error: any) {
         const errorMsg = `Error fixing job ${job.id}: ${error.message}`
@@ -52,11 +65,17 @@ export async function POST() {
       }
     }
 
+    console.log(`\n✨ Fixed ${fixedCount} job(s) out of ${jobs.length} total`)
+    if (fixed.length > 0) {
+      console.log('Fixed jobs:', fixed)
+    }
+
     return NextResponse.json({
       success: true,
       message: `Fixed ${fixedCount} job(s)`,
       fixedCount,
       totalJobs: jobs.length,
+      fixed: fixed.length > 0 ? fixed : undefined,
       errors: errors.length > 0 ? errors : undefined
     })
   } catch (error: any) {
