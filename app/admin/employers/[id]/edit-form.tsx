@@ -6,8 +6,6 @@ import { INDUSTRY_OPTIONS } from "@/lib/constants"
 
 interface Employer {
   id: string
-  firstName?: string | null
-  lastName?: string | null
   companyName: string
   industry?: string | null
   website?: string | null
@@ -30,8 +28,6 @@ export function EditForm({ employer, jobCount }: { employer: Employer; jobCount:
 
     const formData = new FormData(e.currentTarget)
     const data = {
-      firstName: formData.get("firstName"),
-      lastName: formData.get("lastName"),
       companyName: formData.get("companyName"),
       industry: formData.get("industry"),
       website: formData.get("website"),
@@ -105,34 +101,6 @@ export function EditForm({ employer, jobCount }: { employer: Employer; jobCount:
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label htmlFor="firstName" className="block text-sm font-medium text-gray-900">
-              First Name
-            </label>
-            <input
-              type="text"
-              name="firstName"
-              id="firstName"
-              defaultValue={employer.firstName || ""}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border px-3 py-2"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="lastName" className="block text-sm font-medium text-gray-900">
-              Last Name
-            </label>
-            <input
-              type="text"
-              name="lastName"
-              id="lastName"
-              defaultValue={employer.lastName || ""}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border px-3 py-2"
-            />
-          </div>
-        </div>
-
-        <div>
-          <label htmlFor="companyName" className="block text-sm font-medium text-gray-900">
             Company Name
           </label>
           <input

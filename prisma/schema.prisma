@@ -27,8 +27,6 @@ model Employer {
   id            String    @id @default(cuid())
   userId        String    @unique
   user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  firstName     String?
-  lastName      String?
   companyName   String
   industry      String?
   website       String?
@@ -48,7 +46,7 @@ model Job {
   title                 String
   description           String
   requirements          String?
-  languageRequirements  String?
+  languageRequirements  Json?
   location              String
   industry              String?
   functionArea          String?

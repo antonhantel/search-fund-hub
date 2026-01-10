@@ -22,8 +22,6 @@ export async function PATCH(
     const employer = await prisma.employer.update({
       where: { id: params.id },
       data: {
-        firstName: data.firstName,
-        lastName: data.lastName,
         companyName: data.companyName,
         industry: data.industry,
         website: data.website,

@@ -2,12 +2,13 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { LanguageRequirements } from '@/components/language-requirements'
 
 export default function JobForm({ employerId }: { employerId: string }) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [isDraft, setIsDraft] = useState(false)
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([])
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -16,7 +17,8 @@ export default function JobForm({ employerId }: { employerId: string }) {
     employmentType: 'full-time',
     salary: '',
     externalUrl: '',
-    function: ''
+    function: '',
+    requirements: ''
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -36,7 +38,8 @@ export default function JobForm({ employerId }: { employerId: string }) {
         body: JSON.stringify({
           ...formData,
           employerId,
-          isDraft: asDraft
+          isDraft: asDraft,
+          languageRequirements: selectedLanguages.length > 0 ? selectedLanguages : null
         })
       })
 
@@ -78,7 +81,7 @@ export default function JobForm({ employerId }: { employerId: string }) {
             onChange={handleChange}
             required
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="e.g., Senior React Developer"
+            placeholder="e.g., Private Equity Intern – Industrial Technology"
           />
         </div>
 
@@ -95,7 +98,23 @@ export default function JobForm({ employerId }: { employerId: string }) {
             required
             rows={6}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="Job description, requirements, and responsibilities..."
+            placeholder="Job description, about the company, the opportunity..."
+          />
+        </div>
+
+        {/* Requirements */}
+        <div>
+          <label htmlFor="requirements" className="block text-sm font-medium text-gray-700 mb-2">
+            Requirements
+          </label>
+          <textarea
+            id="requirements"
+            name="requirements"
+            value={formData.requirements}
+            onChange={handleChange}
+            rows={4}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Qualifications, skills, and experience required..."
           />
         </div>
 
@@ -112,7 +131,7 @@ export default function JobForm({ employerId }: { employerId: string }) {
             onChange={handleChange}
             required
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="e.g., San Francisco, CA"
+            placeholder="e.g., Berlin, Remote, London"
           />
         </div>
 
@@ -129,7 +148,7 @@ export default function JobForm({ employerId }: { employerId: string }) {
             onChange={handleChange}
             required
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="e.g., Technology, Finance"
+            placeholder="e.g., Technology, Finance, Consulting"
           />
         </div>
 
@@ -146,7 +165,7 @@ export default function JobForm({ employerId }: { employerId: string }) {
             onChange={handleChange}
             required
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="e.g., Engineering, Sales"
+            placeholder="e.g., Operations, Investment Banking, Strategy"
           />
         </div>
 
@@ -181,8 +200,20 @@ export default function JobForm({ employerId }: { employerId: string }) {
             value={formData.salary}
             onChange={handleChange}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="e.g., $80,000 - $120,000"
+            placeholder="e.g., €50,000 - €80,000"
           />
+        </div>
+
+        {/* Language Requirements */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Language Requirements
+          </label>
+          <LanguageRequirements 
+            selected={selectedLanguages}
+            onChange={setSelectedLanguages}
+          />
+          <p className="text-xs text-gray-500 mt-1">Select the languages required for this position</p>
         </div>
 
         {/* External URL */}

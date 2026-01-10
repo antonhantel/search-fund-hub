@@ -6,44 +6,49 @@ const prisma = new PrismaClient()
 async function main() {
   console.log('🌱 Starting database seed...')
 
+  // Clear existing data
+  await prisma.job.deleteMany({})
+  await prisma.employer.deleteMany({})
+  await prisma.user.deleteMany({})
+
   // Create Admin User
   const adminPassword = await bcrypt.hash('admin123', 10)
   const admin = await prisma.user.upsert({
-    where: { email: 'admin@searchfund.com' },
+    where: { email: 'admin@searchfundhub.de' },
     update: {},
     create: {
-      email: 'admin@searchfund.com',
+      email: 'admin@searchfundhub.de',
       password: adminPassword,
       role: 'admin'
     }
   })
-  console.log('✅ Admin user created')
+  console.log('✅ Admin user created: admin@searchfundhub.de')
 
-  // Create Sample Employers
+  // Create Real German Search Fund Employers
   const employers = [
     {
-      email: 'contact@acmemanufacturing.com',
-      companyName: 'Acme Manufacturing Co.',
-      industry: 'Manufacturing',
-      website: 'https://acmemanufacturing.com',
-      description: 'Leading manufacturer of precision components with 50+ years of history. Strong market position and consistent profitability.',
+      email: 'contact@indepsponssor-berlin.de',
+      companyName: 'Independent Sponsor Berlin',
+      industry: 'Private Equity',
+      website: 'https://independent-sponsor-berlin.de',
+      description: 'Experienced PE professionals focused on industrial technology investments. Founder background: ex Large-Cap PE, ex PE-backed CEO/CFO, previous roll-up platform exit, active search fund investor.',
       status: 'approved'
     },
     {
-      email: 'hr@techsolutions.io',
-      companyName: 'TechSolutions Inc.',
+      email: 'contact@mittelstand-ma.de',
+      companyName: 'Mittelstand M&A Advisory',
+      industry: 'Consulting',
+      website: 'https://mittelstand-ma-advisory.de',
+      description: 'M&A advisory specialists for German Mittelstand companies. Founder: 20+ years M&A manager in industrial goods, chemicals, and chemical distribution.',
+      status: 'approved'
+    },
+    {
+      email: 'contact@digital-transformation-sf.de',
+      companyName: 'Digital Transformation Search Fund',
       industry: 'Technology',
-      website: 'https://techsolutions.io',
-      description: 'B2B SaaS company serving mid-market enterprises. Recurring revenue model with 95% retention rate.',
+      website: 'https://digital-transformation-searchfund.de',
+      description: 'Search fund focused on Mittelstand succession and digital transformation. Founder: HSG MBA & Imperial Business School MBA, ex Big 4 Digital Transformation Manager, 2 years advisor at IT system provider.',
       status: 'approved'
-    },
-    {
-      email: 'jobs@healthcareservices.com',
-      companyName: 'Regional Healthcare Services',
-      industry: 'Healthcare',
-      website: 'https://regionalhealthcare.com',
-      description: 'Network of outpatient clinics across three states. Fragmented market with significant consolidation opportunity.',
-      status: 'pending'
     }
   ]
 
@@ -75,202 +80,152 @@ async function main() {
     console.log(`✅ Created employer: ${emp.companyName}`)
   }
 
-  // Create Sample Jobs
+  // Create Real German Search Fund Jobs
   const jobs = [
     {
       employerId: createdEmployers[0].id,
-      title: 'CEO - Precision Manufacturing Company',
-      description: `We are seeking an entrepreneurial CEO to lead our established precision manufacturing company through its next phase of growth.
+      title: 'Private Equity Intern – Independent Sponsor (Industrial Technology)',
+      description: `Work directly with experienced PE professionals in industrial technology investments.
 
-About the Company:
-- 50+ year history with strong reputation in automotive and aerospace sectors
-- $15M annual revenue with 20% EBITDA margins
-- 75 employees across two facilities
-- Stable customer base with opportunities for expansion
+About Us:
+We are an independent sponsor focused on acquiring and growing industrial technology companies. Our founder has a strong background in Large-Cap PE, PE-backed operations (CEO/CFO roles), successful roll-up platform exits, and is an active search fund investor.
 
 The Opportunity:
-This is an ideal platform for an experienced operator to implement operational improvements, pursue add-on acquisitions, and expand into adjacent markets. The current owner is retiring and seeking a capable successor to continue the company's legacy.
+This is a rare chance to work alongside experienced PE professionals in deal sourcing, commercial due diligence, and company building. You'll be part of a very lean team with direct partner contact and daily 1-on-1 mentoring.
 
 Key Responsibilities:
-- Lead day-to-day operations and strategic planning
-- Drive operational excellence and continuous improvement initiatives
-- Identify and execute on growth opportunities
-- Build and develop the leadership team
-- Maintain strong relationships with key customers and suppliers`,
-      requirements: `Qualifications:
-- MBA or relevant graduate degree preferred
-- 5+ years of operational experience in manufacturing or similar industries
-- Search fund, private equity, or consulting background a plus
-- Strong financial acumen and P&L management experience
-- Proven leadership and team-building skills
-- Entrepreneurial mindset with hands-on approach`,
-      location: 'Detroit, MI',
-      industry: 'Manufacturing',
-      functionArea: 'General Management',
-      companySize: '51-200 employees',
-      salaryRange: '$180,000 - $250,000 base + equity',
-      status: 'active',
-      approvedBy: admin.email,
+- Deal sourcing and market research
+- Commercial due diligence on target companies
+- Build LBO financial models
+- Contribute to firm building and strategy
+- Support the investment process end-to-end`,
+      requirements: `What You'll Bring:
+- Strong analytical and financial modeling skills
+- Enthusiasm for industrial technology and manufacturing
+- Ability to work independently and take ownership
+- Excellent communication skills in German and English
+- MBA or strong undergraduate background preferred
+- Interest in private equity and search funds
+
+Position Details:
+- Start: Mid-February / Early March 2026
+- Duration: 3-6 months
+- Schedule: Full-time, on-site in Berlin or London
+- Type: Internship`,
+      languageRequirements: ['German (Native)', 'English (Business)'],
+      location: 'Berlin or London',
+      industry: 'Private Equity',
+      functionArea: 'Investment Banking',
+      companySize: '1-10 employees',
+      salaryRange: '€1,500 - €2,000/month',
+      status: 'published',
+      approvedBy: 'admin@searchfundhub.de',
       approvedAt: new Date(),
       publishedAt: new Date()
     },
     {
       employerId: createdEmployers[1].id,
-      title: 'VP of Operations - B2B SaaS Platform',
-      description: `Join our growing B2B SaaS company as VP of Operations and help scale our business to $50M+ ARR.
+      title: 'Student Assistant / Intern – M&A / ETA Advisory',
+      description: `Support M&A advisory for German Mittelstand companies in transformation and growth phases.
 
-About the Company:
-- Established SaaS platform serving 500+ mid-market customers
-- $12M ARR with 40% YoY growth
-- 95% net revenue retention
-- Strong product-market fit in HR tech space
+About Us:
+We specialize in M&A advisory for German Mittelstand companies. Our founder brings 20+ years of experience as an M&A manager in industrial goods, chemicals, and chemical distribution sectors.
 
 The Role:
-We're looking for an operationally-minded leader to build and scale our operations function as we enter our next growth phase. This role will be critical in establishing operational discipline while maintaining our entrepreneurial culture.
+You'll be part of a lean advisory team working on meaningful transactions and strategic projects for established German companies. Focus areas include Mittelstand M&A, business succession planning, capital structuring, and fundraising.
 
 What You'll Do:
-- Design and implement scalable operational processes
-- Lead customer success and support functions
-- Drive operational metrics and KPIs
-- Partner with Sales and Product on go-to-market strategy
-- Build high-performing operations team`,
+- Conduct market analyses and competitive research
+- Identify and qualify acquisition targets
+- Prepare investment memos and due diligence materials
+- Support CRM and deal automation
+- Contribute to strategic planning sessions
+- Research and analysis for client presentations`,
       requirements: `What We're Looking For:
-- 7+ years of operational experience, preferably in SaaS
-- Track record of scaling operations in high-growth environment
-- Data-driven decision maker with strong analytical skills
-- Experience managing cross-functional teams
-- Excellent communication and stakeholder management
-- MBA or relevant advanced degree preferred`,
-      location: 'Austin, TX (Hybrid)',
-      industry: 'Technology',
-      functionArea: 'Operations',
-      companySize: '51-200 employees',
-      salaryRange: '$160,000 - $200,000 + equity',
-      status: 'active',
-      approvedBy: admin.email,
+- Enrolled student (business, finance, or related field)
+- Strong analytical skills and attention to detail
+- Interest in M&A, corporate finance, or strategy
+- Good German and English communication skills
+- Ability to manage 10-20 hours per week
+- Proactive approach and self-starter mentality
+
+Position Details:
+- Hours: 10-20 hours per week (flexible)
+- Start: ASAP
+- Location: Quickborn or Remote
+- Compensation: €15-20/hour`,
+      languageRequirements: ['German (Native)', 'English (Business)'],
+      location: 'Quickborn or Remote',
+      industry: 'Consulting',
+      functionArea: 'Strategy',
+      companySize: '1-10 employees',
+      salaryRange: '€15-20/hour',
+      status: 'published',
+      approvedBy: 'admin@searchfundhub.de',
       approvedAt: new Date(),
       publishedAt: new Date()
-    },
-    {
-      employerId: createdEmployers[0].id,
-      title: 'CFO - Manufacturing Growth Company',
-      description: `Seeking a strategic CFO to support our growth and acquisition strategy.
-
-Company Overview:
-We're a profitable manufacturing company at an inflection point. After years of steady organic growth, we're ready to accelerate through operational improvements and strategic acquisitions.
-
-The Opportunity:
-As CFO, you'll be a key member of the leadership team, responsible for all financial operations and playing a critical role in our M&A strategy. This is an opportunity to have significant impact in a growing company backed by a search fund model.
-
-Responsibilities:
-- Oversee all financial operations and reporting
-- Lead financial planning and analysis
-- Support due diligence and integration of acquisitions
-- Implement systems and processes to support growth
-- Partner with CEO on strategic initiatives
-- Manage banking relationships and capital structure`,
-      requirements: `Ideal Candidate:
-- CPA or CMA required, MBA preferred
-- 8+ years progressive finance experience
-- Manufacturing or industrial experience highly valued
-- M&A transaction experience
-- Strong systems implementation background
-- Hands-on approach suitable for growing company
-- Excellent communication skills`,
-      location: 'Detroit, MI',
-      industry: 'Manufacturing',
-      functionArea: 'Finance',
-      companySize: '51-200 employees',
-      salaryRange: '$150,000 - $180,000 + bonus',
-      status: 'pending',
-      approvedBy: null,
-      approvedAt: null,
-      publishedAt: null
     },
     {
       employerId: createdEmployers[2].id,
-      title: 'CEO - Multi-Site Healthcare Services',
-      description: `Lead a network of outpatient healthcare clinics through consolidation and growth.
+      title: 'Working Student / Intern – Search Fund / Micro Private Equity',
+      description: `Join a search fund focused on Mittelstand succession and digital transformation opportunities.
 
 About Us:
-We operate a network of specialized outpatient clinics across three states, serving over 50,000 patients annually. The healthcare services sector is highly fragmented, presenting significant opportunity for a skilled operator to build a regional platform through organic growth and strategic acquisitions.
+We are a search fund identifying and acquiring high-potential Mittelstand companies for digital transformation. Our founder holds an HSG MBA and Imperial Business School MBA, with experience as a Big 4 Digital Transformation Manager and 2 years advising an IT system provider.
 
-The Role:
-As CEO, you will have full operational responsibility for our existing clinic network while leading our expansion strategy. This is a true entrepreneurial opportunity within the healthcare sector.
+The Opportunity:
+Work on identifying, evaluating, and transforming established German SMEs. You'll be involved in the full acquisition lifecycle, from screening to due diligence to post-acquisition integration and value creation.
 
-Key Priorities:
-- Optimize operations across existing clinic network
-- Standardize processes and implement best practices
-- Drive clinical quality and patient satisfaction
-- Identify and execute on acquisition opportunities
-- Build scalable infrastructure for growth
-- Navigate healthcare regulatory environment`,
-      requirements: `Requirements:
-- Healthcare operations experience strongly preferred
-- MBA or MHA from top program
-- 5+ years of relevant experience
-- Strong analytical and financial skills
-- Proven leadership and change management abilities
-- Comfort with regulated industry environment
-- Multi-site operations experience a plus`,
-      location: 'Columbus, OH',
-      industry: 'Healthcare',
-      functionArea: 'General Management',
-      companySize: '201-500 employees',
-      salaryRange: '$200,000 - $275,000 + equity',
-      status: 'pending',
-      approvedBy: null,
-      approvedAt: null,
-      publishedAt: null
-    },
-    {
-      employerId: createdEmployers[1].id,
-      title: 'Head of Sales - Enterprise SaaS',
-      description: `Build and scale our enterprise sales function as we move upmarket.
+What You'll Do:
+- Screen and evaluate acquisition targets
+- Develop valuation models and business cases
+- Support due diligence processes
+- Identify automation and efficiency opportunities
+- Build and maintain deal pipeline
+- Research industry trends and market dynamics`,
+      requirements: `Ideal Candidate:
+- Enrolled student (business, finance, engineering, or related field)
+- Strong interest in Mittelstand, family businesses, or digital transformation
+- Analytical mindset with financial modeling capability
+- Fluent in German and English
+- 15-20 hours per week commitment
+- Entrepreneurial mentality and willingness to take initiative
 
-Company Background:
-We've established strong product-market fit in the mid-market and are now ready to move upmarket to enterprise customers. This is a ground-floor opportunity to build our enterprise sales motion from scratch.
-
-What You'll Build:
-- Enterprise sales strategy and go-to-market approach
-- Sales processes, playbooks, and enablement
-- High-performing enterprise sales team
-- Strategic partnerships and channel programs
-- Sales operations and analytics infrastructure
-
-The Impact:
-You'll have the autonomy to build the enterprise sales function your way, with full support from leadership and resources to succeed. This role reports directly to the CEO and is a critical hire for our next phase.`,
-      requirements: `What You Bring:
-- 10+ years of enterprise software sales experience
-- Track record of building sales teams from scratch
-- Experience selling to Fortune 1000 companies
-- Strong leadership and coaching abilities
-- Data-driven approach to sales management
-- Startup or high-growth company experience
-- Willingness to be hands-on initially`,
-      location: 'Remote (US)',
+Position Details:
+- Hours: 20 hours per week
+- Start: ASAP
+- Location: Remote or Hybrid
+- Compensation: €15-20/hour`,
+      languageRequirements: ['German (Fluent)', 'English (Business)'],
+      location: 'Remote or Hybrid',
       industry: 'Technology',
-      functionArea: 'Sales & Marketing',
-      companySize: '51-200 employees',
-      salaryRange: '$180,000 - $220,000 + commission + equity',
-      status: 'active',
-      approvedBy: admin.email,
+      functionArea: 'Operations',
+      companySize: '1-10 employees',
+      salaryRange: '€15-20/hour',
+      status: 'published',
+      approvedBy: 'admin@searchfundhub.de',
       approvedAt: new Date(),
       publishedAt: new Date()
     }
   ]
 
   for (const job of jobs) {
-    await prisma.job.create({ data: job })
+    await prisma.job.create({ 
+      data: {
+        ...job,
+        languageRequirements: job.languageRequirements as any
+      }
+    })
     console.log(`✅ Created job: ${job.title}`)
   }
 
   console.log('\n✨ Database seeded successfully!')
   console.log('\n📧 Login Credentials:')
-  console.log('Admin: admin@searchfund.com / admin123')
-  console.log('Employer: contact@acmemanufacturing.com / employer123')
-  console.log('Employer: hr@techsolutions.io / employer123')
-  console.log('Employer: jobs@healthcareservices.com / employer123')
+  console.log('Admin: admin@searchfundhub.de / admin123')
+  console.log('Employer 1: contact@indepsponssor-berlin.de / employer123')
+  console.log('Employer 2: contact@mittelstand-ma.de / employer123')
+  console.log('Employer 3: contact@digital-transformation-sf.de / employer123')
+  console.log('\n💌 Application Contact: jobboard@searchfundhub.de')
 }
 
 main()

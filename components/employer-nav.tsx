@@ -34,6 +34,9 @@ export function EmployerNav() {
           <Link href="/employer/jobs/new" className={getLinkClass('/employer/jobs/new')} aria-current={pathname.startsWith('/employer/jobs/new') ? 'page' : undefined}>
             Post Job
           </Link>
+          <Link href="/employer/profile" className={getLinkClass('/employer/profile')} aria-current={pathname.startsWith('/employer/profile') ? 'page' : undefined}>
+            Profile
+          </Link>
         </div>
       </div>
     </nav>

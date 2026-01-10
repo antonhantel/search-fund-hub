@@ -34,6 +34,12 @@ export function AdminNav() {
           <Link href="/admin/jobs" className={getLinkClass('/admin/jobs')} aria-current={pathname.startsWith('/admin/jobs') ? 'page' : undefined}>
             Jobs
           </Link>
+          <Link href="/admin/users/new" className={getLinkClass('/admin/users/new')} aria-current={pathname.startsWith('/admin/users/new') ? 'page' : undefined}>
+            Create User
+          </Link>
+          <Link href="/admin/profile" className={getLinkClass('/admin/profile')} aria-current={pathname.startsWith('/admin/profile') ? 'page' : undefined}>
+            Profile
+          </Link>
         </div>
       </div>
     </nav>

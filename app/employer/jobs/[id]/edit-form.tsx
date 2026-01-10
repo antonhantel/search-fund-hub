@@ -4,13 +4,14 @@ import { useRouter } from "next/navigation"
 import { FormEvent, useState } from "react"
 import { DeleteButton } from "../delete-button"
 import { INDUSTRY_OPTIONS, FUNCTION_AREA_OPTIONS, COMPANY_SIZE_OPTIONS } from "@/lib/constants"
+import { LanguageRequirements } from "@/components/language-requirements"
 
 interface Job {
   id: string
   title: string
   description: string
   requirements?: string | null
-  languageRequirements?: string | null
+  languageRequirements?: string[] | null
   location: string
   industry?: string | null
   functionArea?: string | null
@@ -23,6 +24,9 @@ export function EditForm({ job }: { job: Job }) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>(
+    job.languageRequirements || []
+  )
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -34,7 +38,7 @@ export function EditForm({ job }: { job: Job }) {
       title: formData.get("title"),
       description: formData.get("description"),
       requirements: formData.get("requirements"),
-      languageRequirements: formData.get("languageRequirements"),
+      languageRequirements: selectedLanguages.length > 0 ? selectedLanguages : null,
       location: formData.get("location"),
       industry: formData.get("industry"),
       functionArea: formData.get("functionArea"),
@@ -114,16 +118,12 @@ export function EditForm({ job }: { job: Job }) {
         </div>
 
         <div>
-          <label htmlFor="languageRequirements" className="block text-sm font-medium text-gray-900">
+          <label className="block text-sm font-medium text-gray-900 mb-2">
             Language Requirements
           </label>
-          <input
-            type="text"
-            name="languageRequirements"
-            id="languageRequirements"
-            defaultValue={job.languageRequirements || ""}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border px-3 py-2"
-            placeholder="e.g., English (native), German (business level)"
+          <LanguageRequirements 
+            selected={selectedLanguages}
+            onChange={setSelectedLanguages}
           />
         </div>
 
