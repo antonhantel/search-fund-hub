@@ -22,16 +22,16 @@ export function EmployerNav() {
   }
 
   return (
-    <nav className="bg-white border-b border-gray-200 shadow-sm">
+    <nav className="sticky top-14 z-10 bg-white border-b shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex space-x-1">
-          <Link href="/employer" className={getLinkClass('/employer')}>
+        <div className="flex gap-2 py-2">
+          <Link href="/employer" className={getLinkClass('/employer')} aria-current={pathname === '/employer' ? 'page' : undefined}>
             Dashboard
           </Link>
-          <Link href="/employer/jobs" className={getLinkClass('/employer/jobs')}>
+          <Link href="/employer/jobs" className={getLinkClass('/employer/jobs')} aria-current={pathname.startsWith('/employer/jobs') ? 'page' : undefined}>
             My Jobs
           </Link>
-          <Link href="/employer/jobs/new" className={getLinkClass('/employer/jobs/new')}>
+          <Link href="/employer/jobs/new" className={getLinkClass('/employer/jobs/new')} aria-current={pathname.startsWith('/employer/jobs/new') ? 'page' : undefined}>
             Post Job
           </Link>
         </div>

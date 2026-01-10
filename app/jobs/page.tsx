@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { Filters } from './filters'
+// Using emoji icons to avoid additional runtime dependency
 
 export default async function JobsPage({
   searchParams
@@ -30,7 +31,7 @@ export default async function JobsPage({
   }
 
   if (searchParams.location) {
-    where.location = searchParams.location
+    where.location = { contains: searchParams.location, mode: 'insensitive' }
   }
 
   if (searchParams.functionArea) {
@@ -97,51 +98,54 @@ export default async function JobsPage({
         ) : (
           <div className="grid gap-6">
             {jobs.map((job) => (
-              <div key={job.id} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <h2 className="text-2xl font-semibold text-gray-900 mb-2">
-                      {job.title}
-                    </h2>
-                    <p className="text-lg text-gray-700 mb-2">
-                      {job.employer.companyName}
-                    </p>
-                    <div className="flex flex-wrap gap-3 text-sm text-gray-600 mb-4">
-                      {job.location && (
-                        <span className="flex items-center">
-                          📍 {job.location}
-                        </span>
-                      )}
-                      {job.industry && (
-                        <span className="flex items-center">
-                          🏢 {job.industry}
-                        </span>
-                      )}
-                      {job.functionArea && (
-                        <span className="flex items-center">
-                          💼 {job.functionArea}
-                        </span>
-                      )}
-                      {job.languageRequirements && (
-                        <span className="flex items-center">
-                          🌐 {job.languageRequirements}
-                        </span>
-                      )}
+                <div key={job.id} className="bg-white rounded-xl shadow-md border border-gray-200 p-8 hover:shadow-lg hover:border-blue-200 transition-all duration-200">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1 pr-6">
+                      <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">{job.title}</h2>
+                      <p className="text-lg text-blue-600 font-medium mb-4">{job.employer.companyName}</p>
+
+                      <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600 mb-4">
+                        {job.location && (
+                          <div className="flex items-center gap-2">
+                            <span className="text-xl">📍</span>
+                            <span>{job.location}</span>
+                          </div>
+                        )}
+
+                        {job.industry && (
+                          <div className="flex items-center gap-2">
+                            <span className="text-xl">🏢</span>
+                            <span>{job.industry}</span>
+                          </div>
+                        )}
+
+                        {job.functionArea && (
+                          <div className="flex items-center gap-2">
+                            <span className="text-xl">💼</span>
+                            <span>{job.functionArea}</span>
+                          </div>
+                        )}
+
+                        {job.languageRequirements && (
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm text-gray-500">{job.languageRequirements}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      <p className="text-gray-700 mb-6 line-clamp-3">{job.description}</p>
                     </div>
-                    <p className="text-gray-600 line-clamp-3">
-                      {job.description}
-                    </p>
+
+                    <div className="flex-shrink-0 w-full md:w-auto md:pl-4">
+                      <Link
+                        href={`/jobs/${job.id}`}
+                        className="w-full md:w-auto inline-block bg-blue-600 text-white font-semibold px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors text-center"
+                      >
+                        View Details →
+                      </Link>
+                    </div>
                   </div>
                 </div>
-                <div className="mt-4 pt-4 border-t border-gray-200">
-                  <Link
-                    href={`/jobs/${job.id}`}
-                    className="inline-block bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors"
-                  >
-                    View Details
-                  </Link>
-                </div>
-              </div>
             ))}
           </div>
         )}

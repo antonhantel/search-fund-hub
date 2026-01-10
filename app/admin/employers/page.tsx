@@ -1,3 +1,36 @@
+import { prisma } from '@/lib/prisma'
+import Link from 'next/link'
+
+export default async function AdminEmployersPage() {
+  const employers = await prisma.employer.findMany({ orderBy: { createdAt: 'desc' } })
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-bold">Employers</h2>
+      </div>
+
+      <div className="grid gap-4">
+        {employers.map((e) => (
+          <div key={e.id} className="bg-white rounded-lg shadow-md border border-gray-200 p-6">
+            <div className="flex items-start justify-between">
+              <div>
+                <h3 className="text-xl font-bold text-gray-900">{e.companyName}</h3>
+                <p className="text-sm text-gray-600 mt-1">{e.industry}</p>
+                <p className="text-sm text-gray-500 mt-2">{e.contactEmail}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Link href={`/admin/employers/${e.id}`} className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-md">Edit</Link>
+                <Link href="#" className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md">Approve</Link>
+                <Link href="#" className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md">Reject</Link>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
 import { prisma } from "@/lib/prisma"
 import { ApproveEmployerButton, RejectEmployerButton } from "./actions"
 import Link from "next/link"

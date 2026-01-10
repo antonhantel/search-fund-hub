@@ -22,16 +22,16 @@ export function AdminNav() {
   }
 
   return (
-    <nav className="bg-white border-b border-gray-200 shadow-sm">
+    <nav className="sticky top-14 z-10 bg-white border-b shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex space-x-1">
-          <Link href="/admin" className={getLinkClass('/admin')}>
+        <div className="flex gap-2 py-2">
+          <Link href="/admin" className={getLinkClass('/admin')} aria-current={pathname === '/admin' ? 'page' : undefined}>
             Dashboard
           </Link>
-          <Link href="/admin/employers" className={getLinkClass('/admin/employers')}>
+          <Link href="/admin/employers" className={getLinkClass('/admin/employers')} aria-current={pathname.startsWith('/admin/employers') ? 'page' : undefined}>
             Employers
           </Link>
-          <Link href="/admin/jobs" className={getLinkClass('/admin/jobs')}>
+          <Link href="/admin/jobs" className={getLinkClass('/admin/jobs')} aria-current={pathname.startsWith('/admin/jobs') ? 'page' : undefined}>
             Jobs
           </Link>
         </div>

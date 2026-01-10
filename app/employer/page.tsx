@@ -1,25 +1,39 @@
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
+import { redirect } from "next/navigation"
 
 export default async function EmployerDashboard() {
   const session = await auth()
-  
-  // Session check is done by layout/middleware, so we should have a valid session here
-  if (!session?.user?.employerId) {
+
+  // If no session, send to login
+  if (!session) {
+    redirect('/login')
+  }
+
+  // Resolve employerId: prefer session token, otherwise look up by user email
+  let employerId = session.user?.employerId
+
+  if (!employerId && session.user?.email) {
+    const maybe = await prisma.employer.findFirst({
+      where: { user: { email: session.user.email } }
+    })
+    if (maybe) employerId = maybe.id
+  }
+
+  if (!employerId) {
+    // Show helpful message; user is authenticated but no employer linked
     return (
       <div className="text-center py-12">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">No Employer Account Found</h2>
-        <p className="text-gray-600">Please contact support to set up your employer account.</p>
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">No Employer Account Linked</h2>
+        <p className="text-gray-600">Your user is authenticated but no employer profile is attached. Please contact support.</p>
       </div>
     )
   }
 
   const employer = await prisma.employer.findUnique({
-    where: { id: session.user.employerId },
-    include: {
-      jobs: true
-    }
+    where: { id: employerId },
+    include: { jobs: true }
   })
 
   if (!employer) {

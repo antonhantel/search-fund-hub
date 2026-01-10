@@ -2,116 +2,40 @@ import Link from "next/link"
 import { prisma } from "@/lib/prisma"
 
 export default async function HomePage() {
-  // Get statistics
-  const activeJobs = await prisma.job.count({
-    where: { status: 'active' }
-  })
-
-  const uniqueEmployers = await prisma.employer.count({
-    where: { status: 'approved' }
-  })
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white pt-20">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-4 py-20 text-center">
-        <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-          Find Your Next <span className="text-blue-600">Search Fund Opportunity</span>
-        </h1>
-        <div className="flex flex-col md:flex-row gap-4 justify-center">
-          <Link
-            href="/jobs"
-            className="px-8 py-4 bg-blue-600 text-white text-lg font-semibold rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Browse Jobs
-          </Link>
-          <Link
-            href="/login"
-            className="px-8 py-4 border-2 border-blue-600 text-blue-600 text-lg font-semibold rounded-lg hover:bg-blue-50 transition-colors"
-          >
-            Post a Job
-          </Link>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="max-w-7xl mx-auto px-4 py-20">
-        <h2 className="text-4xl font-bold text-gray-900 text-center mb-16">
-          How It Works
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* For Searchers */}
-          <div className="bg-white rounded-lg shadow-md p-8 hover:shadow-lg transition-shadow">
-            <div className="text-4xl mb-4">🚀</div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">
-              For Search Funders
-            </h3>
-            <p className="text-gray-600 text-lg">
-              Discover CEO and leadership opportunities in search fund acquisitions. 
-              Find the perfect role to lead a thriving business.
-            </p>
-          </div>
-
-          {/* For Entrepreneurs */}
-          <div className="bg-white rounded-lg shadow-md p-8 hover:shadow-lg transition-shadow">
-            <div className="text-4xl mb-4">💼</div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">
-              For Entrepreneurs
-            </h3>
-            <p className="text-gray-600 text-lg">
-              Connect with talented operators to lead your acquired business. 
-              Build your dream team with experienced professionals.
-            </p>
-          </div>
-
-          {/* For Companies */}
-          <div className="bg-white rounded-lg shadow-md p-8 hover:shadow-lg transition-shadow">
-            <div className="text-4xl mb-4">🏆</div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">
-              For Companies
-            </h3>
-            <p className="text-gray-600 text-lg">
-              Find experienced leaders for your executive team. 
-              Connect with talented professionals ready for their next challenge.
-            </p>
+      <section className="py-20 md:py-32">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
+            Find your next great role — faster.
+          </h1>
+          <p className="mt-6 text-lg text-gray-700 max-w-2xl mx-auto">
+            Browse curated job listings from top employers. Post and manage jobs with an intuitive employer dashboard.
+          </p>
+          <div className="mt-8 flex justify-center gap-4">
+            <Link href="/jobs" className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:scale-105 transition-transform">Browse Jobs</Link>
+            <Link href="/login" className="inline-block bg-white border border-gray-200 px-6 py-3 rounded-lg font-medium hover:scale-105 transition-transform">Sign in</Link>
           </div>
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="bg-blue-600 text-white py-20">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            <div>
-              <div className="text-5xl font-bold mb-2">{activeJobs}</div>
-              <div className="text-lg text-blue-100">Active Jobs</div>
-            </div>
-            <div>
-              <div className="text-5xl font-bold mb-2">{uniqueEmployers}</div>
-              <div className="text-lg text-blue-100">Companies Hiring</div>
-            </div>
-            <div>
-              <div className="text-5xl font-bold mb-2">500+</div>
-              <div className="text-lg text-blue-100">Success Stories</div>
-            </div>
+      {/* Feature Cards */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+            <h3 className="text-lg font-semibold">Trusted Employers</h3>
+            <p className="mt-2 text-gray-600">Work with reputable companies that value talent.</p>
+          </div>
+          <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+            <h3 className="text-lg font-semibold">Easy Applications</h3>
+            <p className="mt-2 text-gray-600">Apply quickly using our streamlined application flow.</p>
+          </div>
+          <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+            <h3 className="text-lg font-semibold">Powerful Employer Tools</h3>
+            <p className="mt-2 text-gray-600">Post, manage and track applicants from one dashboard.</p>
           </div>
         </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="max-w-7xl mx-auto px-4 py-20 text-center">
-        <h2 className="text-4xl font-bold text-gray-900 mb-6">
-          Ready to Get Started?
-        </h2>
-        <p className="text-xl text-gray-600 mb-8">
-          Join thousands of search fund professionals finding their next opportunity.
-        </p>
-        <Link
-          href="/jobs"
-          className="inline-block px-8 py-4 bg-blue-600 text-white text-lg font-semibold rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          Explore Opportunities
-        </Link>
       </section>
     </div>
   )

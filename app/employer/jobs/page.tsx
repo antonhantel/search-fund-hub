@@ -37,7 +37,7 @@ export default async function EmployerJobsPage() {
         <h2 className="text-2xl font-bold text-gray-900">My Jobs</h2>
         <Link
           href="/employer/jobs/new"
-          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 shadow-md"
         >
           Post New Job
         </Link>
@@ -55,33 +55,28 @@ export default async function EmployerJobsPage() {
         </div>
       ) : (
         <div className="bg-white shadow overflow-hidden sm:rounded-md">
-          <ul className="divide-y divide-gray-200">
+          <ul className="space-y-4">
             {jobs.map((job) => (
-              <li key={job.id} className="px-6 py-4 hover:bg-gray-50">
-                <div className="flex items-start justify-between">
+              <li key={job.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
-                    <h3 className="text-lg font-medium text-gray-900">
-                      {job.title}
-                    </h3>
-                    <div className="mt-1 flex items-center gap-3 text-sm text-gray-500">
-                      {job.location && <span>📍 {job.location}</span>}
-                      {job.industry && <span>🏢 {job.industry}</span>}
-                      <span>Created {new Date(job.createdAt).toLocaleDateString()}</span>
+                    <h3 className="text-xl md:text-2xl font-bold text-gray-900">{job.title}</h3>
+                    <div className="mt-2 flex items-center gap-4 text-sm text-gray-500">
+                      {job.location && <span className="px-3 py-1 bg-gray-100 rounded-full text-gray-700">📍 {job.location}</span>}
+                      {job.industry && <span className="px-3 py-1 bg-gray-100 rounded-full text-gray-700">🏢 {job.industry}</span>}
+                      <span className="text-sm text-gray-500">Created {new Date(job.createdAt).toLocaleDateString()}</span>
                     </div>
-                    <p className="mt-2 text-sm text-gray-700 line-clamp-2">
-                      {job.description}
-                    </p>
+                    <p className="mt-3 text-sm text-gray-700 line-clamp-2">{job.description}</p>
                   </div>
-                  <div className="ml-4 flex flex-col items-end gap-2">
+                  <div className="flex flex-col items-end gap-3">
                     {getStatusBadge(job.status)}
-                    <div className="flex gap-2">
-                      <Link
-                        href={`/employer/jobs/${job.id}`}
-                        className="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
-                      >
-                        Edit
+                    <div className="flex items-center gap-2">
+                      <Link href={`/employer/jobs/${job.id}`} aria-label={`Edit ${job.title}`} className="p-2 rounded-md hover:bg-gray-100">
+                        <span role="img" aria-hidden="true" className="text-gray-600">✏️</span>
                       </Link>
-                      <DeleteButton jobId={job.id} />
+                      <button aria-label={`Delete ${job.title}`} className="p-2 rounded-md hover:bg-red-50">
+                        <span role="img" aria-hidden="true" className="text-red-600">🗑️</span>
+                      </button>
                     </div>
                   </div>
                 </div>
