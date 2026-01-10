@@ -8,8 +8,10 @@ export const dynamic = 'force-dynamic'
 export default async function JobsPage({
   searchParams
 }: {
-  searchParams: { search?: string; industry?: string; location?: string; functionArea?: string }
+  searchParams: Promise<{ search?: string; industry?: string; location?: string; functionArea?: string }>
 }) {
+  const params = await searchParams
+
   // Build filter conditions
   type WhereClause = {
     status: string
@@ -21,23 +23,23 @@ export default async function JobsPage({
 
   const where: WhereClause = { status: 'active' }
 
-  if (searchParams.search) {
+  if (params.search) {
     where.OR = [
-      { title: { contains: searchParams.search, mode: 'insensitive' } },
-      { description: { contains: searchParams.search, mode: 'insensitive' } }
+      { title: { contains: params.search, mode: 'insensitive' } },
+      { description: { contains: params.search, mode: 'insensitive' } }
     ]
   }
 
-  if (searchParams.industry) {
-    where.industry = searchParams.industry
+  if (params.industry) {
+    where.industry = params.industry
   }
 
-  if (searchParams.location) {
-    where.location = { contains: searchParams.location, mode: 'insensitive' }
+  if (params.location) {
+    where.location = { contains: params.location, mode: 'insensitive' }
   }
 
-  if (searchParams.functionArea) {
-    where.functionArea = searchParams.functionArea
+  if (params.functionArea) {
+    where.functionArea = params.functionArea
   }
 
   // Fetch all active jobs for filter options
@@ -80,69 +82,92 @@ export default async function JobsPage({
   })
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900">Search Fund Jobs</h1>
-          <p className="mt-2 text-gray-600">Find your next opportunity in search funds</p>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-gray-50">
+      {/* Hero Section */}
+      <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+        <div className="max-w-7xl mx-auto px-4 py-16">
+          <h1 className="text-5xl md:text-6xl font-bold mb-4">Search Fund Jobs</h1>
+          <p className="text-xl text-blue-100 max-w-2xl">
+            Discover exceptional opportunities in search funds, ETA, and micro private equity
+          </p>
+          <div className="mt-6 flex items-center gap-4 text-sm">
+            <span className="bg-white/20 backdrop-blur px-4 py-2 rounded-full">
+              {jobs.length} Active Positions
+            </span>
+          </div>
         </div>
+      </div>
 
+      <div className="max-w-7xl mx-auto px-4 py-12">
         <Filters />
 
         {jobs.length === 0 ? (
-          <div className="text-center py-12 bg-white rounded-lg shadow">
-            <p className="text-gray-500 text-lg">No jobs match your filters. Try adjusting your search criteria.</p>
+          <div className="text-center py-16 bg-white rounded-2xl shadow-lg border border-gray-100">
+            <div className="text-6xl mb-4">🔍</div>
+            <p className="text-gray-600 text-xl mb-2">No jobs match your filters</p>
+            <p className="text-gray-500">Try adjusting your search criteria to see more opportunities</p>
           </div>
         ) : (
           <div className="grid gap-6">
             {jobs.map((job) => (
-                <div key={job.id} className="bg-white rounded-xl shadow-md border border-gray-200 p-8 hover:shadow-lg hover:border-blue-200 transition-all duration-200">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1 pr-6">
-                      <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">{job.title}</h2>
-                      <p className="text-lg text-blue-600 font-medium mb-4">{job.employer.companyName}</p>
+                <div key={job.id} className="group bg-white rounded-2xl shadow-md border border-gray-200 p-8 hover:shadow-2xl hover:border-blue-300 hover:-translate-y-1 transition-all duration-300">
+                  <div className="flex flex-col md:flex-row items-start justify-between gap-6">
+                    <div className="flex-1">
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                            {job.title}
+                          </h2>
+                          <p className="text-lg text-blue-600 font-semibold mb-4">{job.employer.companyName}</p>
+                        </div>
+                      </div>
 
-                      <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600 mb-4">
+                      <div className="flex flex-wrap gap-2 mb-4">
                         {job.location && (
-                          <div className="flex items-center gap-2">
-                            <span className="text-xl">📍</span>
-                            <span>{job.location}</span>
-                          </div>
+                          <span className="inline-flex items-center gap-1.5 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg text-sm font-medium">
+                            <span>📍</span>
+                            {job.location}
+                          </span>
                         )}
 
                         {job.industry && (
-                          <div className="flex items-center gap-2">
-                            <span className="text-xl">🏢</span>
-                            <span>{job.industry}</span>
-                          </div>
+                          <span className="inline-flex items-center gap-1.5 bg-purple-50 text-purple-700 px-3 py-1.5 rounded-lg text-sm font-medium">
+                            <span>🏢</span>
+                            {job.industry}
+                          </span>
                         )}
 
                         {job.functionArea && (
-                          <div className="flex items-center gap-2">
-                            <span className="text-xl">💼</span>
-                            <span>{job.functionArea}</span>
-                          </div>
+                          <span className="inline-flex items-center gap-1.5 bg-green-50 text-green-700 px-3 py-1.5 rounded-lg text-sm font-medium">
+                            <span>💼</span>
+                            {job.functionArea}
+                          </span>
+                        )}
+
+                        {job.salaryRange && (
+                          <span className="inline-flex items-center gap-1.5 bg-yellow-50 text-yellow-700 px-3 py-1.5 rounded-lg text-sm font-medium">
+                            <span>💰</span>
+                            {job.salaryRange}
+                          </span>
                         )}
 
                         {job.languageRequirements && (
-                          <div className="flex items-center gap-2">
-                            <span className="text-xl">🌐</span>
-                            <span className="text-sm">
-                              {Array.isArray(job.languageRequirements)
-                                ? job.languageRequirements.join(', ')
-                                : String(job.languageRequirements)}
-                            </span>
-                          </div>
+                          <span className="inline-flex items-center gap-1.5 bg-orange-50 text-orange-700 px-3 py-1.5 rounded-lg text-sm font-medium">
+                            <span>🌐</span>
+                            {Array.isArray(job.languageRequirements)
+                              ? job.languageRequirements.join(', ')
+                              : String(job.languageRequirements)}
+                          </span>
                         )}
                       </div>
 
-                      <p className="text-gray-700 mb-6 line-clamp-3">{job.description}</p>
+                      <p className="text-gray-700 leading-relaxed line-clamp-3">{job.description}</p>
                     </div>
 
-                    <div className="flex-shrink-0 w-full md:w-auto md:pl-4">
+                    <div className="flex-shrink-0 w-full md:w-auto">
                       <Link
                         href={`/jobs/${job.id}`}
-                        className="w-full md:w-auto inline-block bg-blue-600 text-white font-semibold px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors text-center"
+                        className="block w-full md:w-auto bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold px-8 py-3.5 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all shadow-md hover:shadow-xl text-center group-hover:scale-105"
                       >
                         View Details →
                       </Link>
