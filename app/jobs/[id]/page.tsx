@@ -11,12 +11,19 @@ export default async function JobDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const job = await prisma.job.findUnique({
-    where: { id, status: 'active' },
-    include: {
-      employer: true
-    }
-  })
+
+  let job
+  try {
+    job = await prisma.job.findUnique({
+      where: { id, status: 'active' },
+      include: {
+        employer: true
+      }
+    })
+  } catch (error) {
+    console.error('Error fetching job:', error)
+    notFound()
+  }
 
   if (!job) {
     notFound()

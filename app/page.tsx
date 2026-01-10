@@ -2,10 +2,16 @@ import Link from "next/link"
 import { prisma } from "@/lib/prisma"
 
 export default async function HomePage() {
-  const stats = await prisma.job.aggregate({
-    where: { status: 'active' },
-    _count: true
-  })
+  let stats
+  try {
+    stats = await prisma.job.aggregate({
+      where: { status: 'active' },
+      _count: true
+    })
+  } catch (error) {
+    console.error('Error fetching job stats:', error)
+    stats = { _count: 0 }
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50">
