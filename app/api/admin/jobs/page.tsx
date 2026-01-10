@@ -4,18 +4,24 @@ import { ApproveJobButton, RejectJobButton } from "./actions"
 export const dynamic = 'force-dynamic'
 
 export default async function JobsPage() {
-  const jobs = await prisma.job.findMany({
-    include: {
-      employer: {
-        select: {
-          companyName: true
+  let jobs = []
+  try {
+    jobs = await prisma.job.findMany({
+      include: {
+        employer: {
+          select: {
+            companyName: true
+          }
         }
+      },
+      orderBy: {
+        createdAt: 'desc'
       }
-    },
-    orderBy: {
-      createdAt: 'desc'
-    }
-  })
+    })
+  } catch (error) {
+    console.error('Error fetching jobs:', error)
+    // Return empty array if there's an error
+  }
 
   const pending = jobs.filter(j => j.status === 'pending')
   const active = jobs.filter(j => j.status === 'active')

@@ -31,10 +31,22 @@ export default async function EmployerDashboard() {
     )
   }
 
-  const employer = await prisma.employer.findUnique({
-    where: { id: employerId },
-    include: { jobs: true }
-  })
+  let employer
+  try {
+    employer = await prisma.employer.findUnique({
+      where: { id: employerId },
+      include: { jobs: true }
+    })
+  } catch (error) {
+    console.error('Error fetching employer:', error)
+    return (
+      <div className="text-center py-12">
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">Error Loading Dashboard</h2>
+        <p className="text-gray-600 mb-4">There was an error loading your dashboard. This might be due to corrupted data.</p>
+        <p className="text-sm text-gray-500">Please contact the admin to run the &quot;Fix Database Errors&quot; tool.</p>
+      </div>
+    )
+  }
 
   if (!employer) {
     return (

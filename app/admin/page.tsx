@@ -2,12 +2,18 @@ import { prisma } from "@/lib/prisma"
 import { AdminActions } from "./admin-actions"
 
 export default async function AdminDashboard() {
-  const stats = await Promise.all([
-    prisma.employer.count({ where: { status: 'pending' } }),
-    prisma.employer.count({ where: { status: 'approved' } }),
-    prisma.job.count({ where: { status: 'pending' } }),
-    prisma.job.count({ where: { status: 'active' } }),
-  ])
+  let stats
+  try {
+    stats = await Promise.all([
+      prisma.employer.count({ where: { status: 'pending' } }),
+      prisma.employer.count({ where: { status: 'approved' } }),
+      prisma.job.count({ where: { status: 'pending' } }),
+      prisma.job.count({ where: { status: 'active' } }),
+    ])
+  } catch (error) {
+    console.error('Error fetching stats:', error)
+    stats = [0, 0, 0, 0]
+  }
 
   const [pendingEmployers, approvedEmployers, pendingJobs, activeJobs] = stats
 
