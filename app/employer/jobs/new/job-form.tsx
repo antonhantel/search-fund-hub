@@ -1,47 +1,10 @@
 "use client"
 
-import React, { useState } from 'react'
-
-export default function JobForm() {
-  const [loading, setLoading] = useState(false)
-
-  return (
-    <form className="max-w-4xl mx-auto bg-white rounded-xl shadow-md p-8 space-y-6">
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Job Title</label>
-        <input className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Company</label>
-        <input className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
-        <textarea className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 min-h-[200px] resize-y" />
-      </div>
-
-      <div className="flex gap-4 items-center">
-        <button
-          type="button"
-          disabled={loading}
-          onClick={() => setLoading(true)}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {loading ? 'Posting...' : 'Post Job'}
-        </button>
-      </div>
-    </form>
-  )
-}
-"use client"
-
 import { useRouter } from "next/navigation"
 import { FormEvent, useState } from "react"
 import { INDUSTRY_OPTIONS, FUNCTION_AREA_OPTIONS, COMPANY_SIZE_OPTIONS } from "@/lib/constants"
 
-export function JobForm({ employerId }: { employerId: string }) {
+export default function JobForm({ employerId }: { employerId: string }) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -198,6 +161,7 @@ export function JobForm({ employerId }: { employerId: string }) {
                 </option>
               ))}
             </select>
+          </div>
           </div>
 
           <div>
