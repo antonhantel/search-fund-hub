@@ -99,8 +99,8 @@ export function EditForm({ employer, jobCount }: { employer: Employer; jobCount:
           </p>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
+        <div>
+          <label htmlFor="companyName" className="block text-sm font-medium text-gray-900">
             Company Name
           </label>
           <input
