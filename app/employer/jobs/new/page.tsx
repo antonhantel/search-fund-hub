@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth"
 import { redirect } from "next/navigation"
-import { JobForm } from "./job-form"
+import JobForm from "./job-form"
 
 export default async function NewJobPage() {
   const session = await auth()
