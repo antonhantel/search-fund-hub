@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma"
 import { redirect } from "next/navigation"
 import { JobForm } from "./job-form"
 
+export const dynamic = 'force-dynamic'
+
 export default async function NewJobPage() {
   const session = await auth()
   

@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma"
 import { redirect } from "next/navigation"
 import KanbanBoard from "./kanban-board"
 
+export const dynamic = 'force-dynamic'
+
 export default async function ApplicationsPage() {
   const session = await auth()
 

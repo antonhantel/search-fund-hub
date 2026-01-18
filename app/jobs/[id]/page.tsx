@@ -3,6 +3,8 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import { JobDetailActions } from "./job-detail-actions"
 
+export const dynamic = 'force-dynamic'
+
 export default async function JobDetailPage({
   params,
 }: {

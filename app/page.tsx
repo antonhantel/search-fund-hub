@@ -1,6 +1,8 @@
 import Link from "next/link"
 import { prisma } from "@/lib/prisma"
 
+export const dynamic = 'force-dynamic'
+
 // University clubs data - placeholder for now
 const universityClubs = [
   { name: "WHU Entrepreneurship Club", members: "500+", logo: "🎓", link: "https://whu.edu" },

@@ -4,6 +4,8 @@ import Link from "next/link"
 import { redirect } from "next/navigation"
 import { DeleteJobButton } from "./delete-button"
 
+export const dynamic = 'force-dynamic'
+
 export default async function EmployerJobsPage() {
   const session = await auth()
 

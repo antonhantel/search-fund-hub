@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma"
 import { ApproveJobButton, RejectJobButton } from "./actions"
 import Link from "next/link"
 
+export const dynamic = 'force-dynamic'
+
 export default async function JobsPage() {
   const jobs = await prisma.job.findMany({
     include: {

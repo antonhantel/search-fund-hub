@@ -2,6 +2,8 @@ import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { ApproveEmployerButton, RejectEmployerButton } from './actions'
 
+export const dynamic = 'force-dynamic'
+
 export default async function AdminEmployersPage() {
   const employers = await prisma.employer.findMany({
     include: {
