@@ -1,10 +1,11 @@
 'use client'
 
+import { Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Check, AlertCircle } from 'lucide-react'
 
-export default function VerifyEmailPage() {
+function VerifyEmailContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [status, setStatus] = useState<'verifying' | 'success' | 'error'>('verifying')
@@ -43,39 +44,39 @@ export default function VerifyEmailPage() {
   }, [searchParams, router])
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center px-6 py-12">
       <div className="max-w-md w-full text-center">
         {status === 'verifying' && (
           <div>
             <div className="inline-block">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
             </div>
-            <h1 className="mt-4 text-2xl font-bold text-gray-900">Verifying Email</h1>
-            <p className="mt-2 text-gray-600">Please wait while we verify your email address...</p>
+            <h1 className="mt-4 text-2xl font-bold text-white">Verifying Email</h1>
+            <p className="mt-2 text-slate-400">Please wait while we verify your email address...</p>
           </div>
         )}
 
         {status === 'success' && (
           <div>
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
-              <Check className="w-8 h-8 text-green-600" />
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-green-500/20 rounded-full mb-4">
+              <Check className="w-8 h-8 text-green-400" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900">Email Verified!</h1>
-            <p className="mt-2 text-gray-600">{message}</p>
-            <p className="mt-4 text-sm text-gray-500">Redirecting to your profile...</p>
+            <h1 className="text-2xl font-bold text-white">Email Verified!</h1>
+            <p className="mt-2 text-slate-300">{message}</p>
+            <p className="mt-4 text-sm text-slate-500">Redirecting to your profile...</p>
           </div>
         )}
 
         {status === 'error' && (
           <div>
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
-              <AlertCircle className="w-8 h-8 text-red-600" />
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-red-500/20 rounded-full mb-4">
+              <AlertCircle className="w-8 h-8 text-red-400" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900">Verification Failed</h1>
-            <p className="mt-2 text-gray-600">{message}</p>
+            <h1 className="text-2xl font-bold text-white">Verification Failed</h1>
+            <p className="mt-2 text-slate-300">{message}</p>
             <button
               onClick={() => router.push('/employer/profile')}
-              className="mt-6 bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 font-medium"
+              className="mt-6 bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-lg font-medium transition-colors"
             >
               Back to Profile
             </button>
@@ -83,5 +84,26 @@ export default function VerifyEmailPage() {
         )}
       </div>
     </div>
+  )
+}
+
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center px-6 py-12">
+      <div className="max-w-md w-full text-center">
+        <div className="inline-block">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        </div>
+        <h1 className="mt-4 text-2xl font-bold text-white">Loading...</h1>
+      </div>
+    </div>
+  )
+}
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <VerifyEmailContent />
+    </Suspense>
   )
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, Suspense } from 'react'
 
 interface FiltersProps {
   industries?: string[]
@@ -9,7 +9,7 @@ interface FiltersProps {
   functionAreas?: string[]
 }
 
-export default function Filters({ industries = [], locations = [], functionAreas = [] }: FiltersProps) {
+function FiltersContent({ industries = [], locations = [], functionAreas = [] }: FiltersProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
   
@@ -143,5 +143,27 @@ export default function Filters({ industries = [], locations = [], functionAreas
         </div>
       </div>
     </div>
+  )
+}
+
+function FiltersSkeleton() {
+  return (
+    <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-4 md:p-6 mb-6 animate-pulse">
+      <div className="h-6 bg-slate-700 rounded w-40 mb-4"></div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+        <div className="h-10 bg-slate-700 rounded"></div>
+        <div className="h-10 bg-slate-700 rounded"></div>
+        <div className="h-10 bg-slate-700 rounded"></div>
+        <div className="h-10 bg-slate-700 rounded"></div>
+      </div>
+    </div>
+  )
+}
+
+export default function Filters(props: FiltersProps) {
+  return (
+    <Suspense fallback={<FiltersSkeleton />}>
+      <FiltersContent {...props} />
+    </Suspense>
   )
 }
