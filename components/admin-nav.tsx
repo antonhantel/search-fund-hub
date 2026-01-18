@@ -14,31 +14,25 @@ export function AdminNav() {
   }
 
   const getLinkClass = (href: string): string => {
-    const baseClass = 'px-4 py-3 font-medium transition-colors border-b-2'
+    const baseClass = 'px-4 py-2.5 font-medium rounded-lg transition-all'
     if (isActive(href)) {
-      return `${baseClass} bg-blue-50 text-blue-600 border-blue-600`
+      return `${baseClass} bg-blue-600 text-white`
     }
-    return `${baseClass} text-gray-700 hover:bg-gray-50 border-transparent hover:border-gray-300`
+    return `${baseClass} text-slate-300 hover:text-white hover:bg-slate-700`
   }
 
   return (
-    <nav className="sticky top-14 z-10 bg-white border-b shadow-sm">
+    <nav className="bg-slate-800/30 border-b border-slate-700">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex gap-2 py-2">
+        <div className="flex gap-2 py-3 overflow-x-auto">
           <Link href="/admin" className={getLinkClass('/admin')} aria-current={pathname === '/admin' ? 'page' : undefined}>
             Dashboard
-          </Link>
-          <Link href="/admin/employers" className={getLinkClass('/admin/employers')} aria-current={pathname.startsWith('/admin/employers') ? 'page' : undefined}>
-            Employers
           </Link>
           <Link href="/admin/jobs" className={getLinkClass('/admin/jobs')} aria-current={pathname.startsWith('/admin/jobs') ? 'page' : undefined}>
             Jobs
           </Link>
-          <Link href="/admin/users/new" className={getLinkClass('/admin/users/new')} aria-current={pathname.startsWith('/admin/users/new') ? 'page' : undefined}>
-            Create User
-          </Link>
-          <Link href="/admin/profile" className={getLinkClass('/admin/profile')} aria-current={pathname.startsWith('/admin/profile') ? 'page' : undefined}>
-            Profile
+          <Link href="/admin/employers" className={getLinkClass('/admin/employers')} aria-current={pathname.startsWith('/admin/employers') ? 'page' : undefined}>
+            Employers
           </Link>
         </div>
       </div>

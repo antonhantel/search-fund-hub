@@ -11,6 +11,7 @@ interface EmployerData {
   companyName: string
   industry?: string | null
   website?: string | null
+  linkedinUrl?: string | null
   description?: string | null
   user: {
     email: string
@@ -65,6 +66,7 @@ export default function EmployerProfilePage() {
           companyName: formData.get('companyName'),
           industry: formData.get('industry'),
           website: formData.get('website'),
+          linkedinUrl: formData.get('linkedinUrl'),
           description: formData.get('description')
         })
       })
@@ -123,12 +125,12 @@ export default function EmployerProfilePage() {
 
   if (isLoading) {
     return (
-      <div className="max-w-4xl mx-auto px-6 py-16">
+      <div className="max-w-4xl mx-auto">
         <div className="animate-pulse space-y-8">
-          <div className="h-8 bg-gray-200 rounded w-1/4"></div>
-          <div className="bg-white rounded-2xl p-8 space-y-4">
-            <div className="h-4 bg-gray-200 rounded"></div>
-            <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+          <div className="h-8 bg-slate-700 rounded w-1/4"></div>
+          <div className="bg-slate-800/50 rounded-xl p-8 space-y-4">
+            <div className="h-4 bg-slate-700 rounded"></div>
+            <div className="h-4 bg-slate-700 rounded w-3/4"></div>
           </div>
         </div>
       </div>
@@ -137,8 +139,8 @@ export default function EmployerProfilePage() {
 
   if (!employer) {
     return (
-      <div className="max-w-4xl mx-auto px-6 py-16">
-        <div className="bg-red-50 border border-red-200 text-red-700 rounded-md p-4">
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-red-500/20 border border-red-500/50 text-red-300 rounded-xl p-4">
           Failed to load profile. Please try again later.
         </div>
       </div>
@@ -146,89 +148,119 @@ export default function EmployerProfilePage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-16">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Company Profile</h1>
+    <div className="max-w-4xl mx-auto">
+      <h1 className="text-3xl font-bold text-white mb-8">Company Profile</h1>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-md">
+        <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 text-red-300 rounded-xl">
           {error}
         </div>
       )}
 
       {success && (
-        <div className="mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-md">
+        <div className="mb-6 p-4 bg-green-500/20 border border-green-500/50 text-green-300 rounded-xl">
           {success}
         </div>
       )}
 
       {/* Company Info Card */}
-      <div className="bg-white rounded-2xl p-8 shadow-lg mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Company Information</h2>
+      <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 md:p-8 mb-6">
+        <h2 className="text-xl font-bold text-white mb-6">Company Information</h2>
         
         <form onSubmit={handleProfileSubmit} className="space-y-6">
-          <div>
-            <label htmlFor="companyName" className="block text-sm font-medium text-gray-900">
-              Company Name
-            </label>
-            <input
-              type="text"
-              name="companyName"
-              id="companyName"
-              defaultValue={employer.companyName}
-              required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border px-3 py-2"
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="companyName" className="block text-sm font-medium text-slate-300 mb-1">
+                Company Name
+              </label>
+              <input
+                type="text"
+                name="companyName"
+                id="companyName"
+                defaultValue={employer.companyName}
+                required
+                className="w-full px-4 py-2.5 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="industry" className="block text-sm font-medium text-slate-300 mb-1">
+                Industry
+              </label>
+              <select
+                name="industry"
+                id="industry"
+                defaultValue={employer.industry || ''}
+                className="w-full px-4 py-2.5 bg-slate-700/50 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="">Select Industry</option>
+                {INDUSTRY_OPTIONS.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="website" className="block text-sm font-medium text-slate-300 mb-1">
+                Website
+              </label>
+              <input
+                type="url"
+                name="website"
+                id="website"
+                defaultValue={employer.website || ''}
+                className="w-full px-4 py-2.5 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="https://yourcompany.com"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="linkedinUrl" className="block text-sm font-medium text-slate-300 mb-1">
+                LinkedIn Profile URL
+              </label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2">
+                  <svg className="w-5 h-5 text-[#0A66C2]" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                  </svg>
+                </span>
+                <input
+                  type="url"
+                  name="linkedinUrl"
+                  id="linkedinUrl"
+                  defaultValue={employer.linkedinUrl || ''}
+                  placeholder="https://linkedin.com/in/yourprofile"
+                  className="w-full pl-11 pr-4 py-2.5 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <p className="mt-1 text-xs text-slate-500">
+                Displayed on your job listings
+              </p>
+            </div>
           </div>
 
           <div>
-            <label htmlFor="industry" className="block text-sm font-medium text-gray-900">
-              Industry
-            </label>
-            <select
-              name="industry"
-              id="industry"
-              defaultValue={employer.industry || ''}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border px-3 py-2"
-            >
-              <option value="">Select Industry</option>
-              {INDUSTRY_OPTIONS.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label htmlFor="website" className="block text-sm font-medium text-gray-900">
-              Website
-            </label>
-            <input
-              type="url"
-              name="website"
-              id="website"
-              defaultValue={employer.website || ''}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border px-3 py-2"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-900">
-              Description
+            <label htmlFor="description" className="block text-sm font-medium text-slate-300 mb-1">
+              Company Description
             </label>
             <textarea
               name="description"
               id="description"
               rows={4}
               defaultValue={employer.description || ''}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border px-3 py-2"
+              className="w-full px-4 py-2.5 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Tell candidates about your search fund..."
             />
           </div>
 
           <button
             type="submit"
             disabled={isSaving}
-            className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 font-medium"
+            className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg transition-colors disabled:opacity-50"
           >
             {isSaving ? 'Saving...' : 'Save Changes'}
           </button>
@@ -236,18 +268,18 @@ export default function EmployerProfilePage() {
       </div>
 
       {/* Email Section */}
-      <div className="bg-white rounded-2xl p-8 shadow-lg mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Email Address</h2>
+      <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 md:p-8 mb-6">
+        <h2 className="text-xl font-bold text-white mb-6">Email Address</h2>
         
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-gray-600 mb-1">Current Email</p>
-            <p className="text-lg font-medium text-gray-900">{employer.user.email}</p>
+            <p className="text-sm text-slate-400 mb-1">Current Email</p>
+            <p className="text-lg font-medium text-white">{employer.user.email}</p>
           </div>
           <button
             type="button"
             disabled
-            className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md bg-gray-50 cursor-not-allowed opacity-50"
+            className="px-4 py-2 border border-slate-600 text-slate-500 rounded-lg cursor-not-allowed opacity-50"
             title="Email change functionality coming soon"
           >
             Change Email
@@ -256,12 +288,12 @@ export default function EmployerProfilePage() {
       </div>
 
       {/* Password Section */}
-      <div className="bg-white rounded-2xl p-8 shadow-lg">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Change Password</h2>
+      <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 md:p-8">
+        <h2 className="text-xl font-bold text-white mb-6">Change Password</h2>
         
-        <form onSubmit={handlePasswordSubmit} className="space-y-6">
+        <form onSubmit={handlePasswordSubmit} className="space-y-4">
           <div>
-            <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-900">
+            <label htmlFor="currentPassword" className="block text-sm font-medium text-slate-300 mb-1">
               Current Password
             </label>
             <input
@@ -271,12 +303,12 @@ export default function EmployerProfilePage() {
               value={passwordForm.currentPassword}
               onChange={(e) => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border px-3 py-2"
+              className="w-full px-4 py-2.5 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
           <div>
-            <label htmlFor="newPassword" className="block text-sm font-medium text-gray-900">
+            <label htmlFor="newPassword" className="block text-sm font-medium text-slate-300 mb-1">
               New Password
             </label>
             <input
@@ -286,15 +318,15 @@ export default function EmployerProfilePage() {
               value={passwordForm.newPassword}
               onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border px-3 py-2"
+              className="w-full px-4 py-2.5 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
-            <div className="mt-3">
+            <div className="mt-2">
               <PasswordStrength password={passwordForm.newPassword} />
             </div>
           </div>
 
           <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-900">
+            <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-300 mb-1">
               Confirm New Password
             </label>
             <input
@@ -304,14 +336,14 @@ export default function EmployerProfilePage() {
               value={passwordForm.confirmPassword}
               onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border px-3 py-2"
+              className="w-full px-4 py-2.5 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
           <button
             type="submit"
             disabled={isChangingPassword}
-            className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 font-medium"
+            className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg transition-colors disabled:opacity-50"
           >
             {isChangingPassword ? 'Updating...' : 'Update Password'}
           </button>

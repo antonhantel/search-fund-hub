@@ -6,12 +6,10 @@ import { redirect } from "next/navigation"
 export default async function EmployerDashboard() {
   const session = await auth()
 
-  // If no session, send to login
   if (!session) {
     redirect('/login')
   }
 
-  // Resolve employerId: prefer session token, otherwise look up by user email
   let employerId = session.user?.employerId
 
   if (!employerId && session.user?.email) {
@@ -22,11 +20,13 @@ export default async function EmployerDashboard() {
   }
 
   if (!employerId) {
-    // Show helpful message; user is authenticated but no employer linked
     return (
       <div className="text-center py-12">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">No Employer Account Linked</h2>
-        <p className="text-gray-600">Your user is authenticated but no employer profile is attached. Please contact support.</p>
+        <div className="w-16 h-16 bg-yellow-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+          <span className="text-3xl">⚠️</span>
+        </div>
+        <h2 className="text-2xl font-bold text-white mb-4">No Employer Account Linked</h2>
+        <p className="text-slate-400">Your user is authenticated but no employer profile is attached. Please contact support.</p>
       </div>
     )
   }
@@ -39,8 +39,11 @@ export default async function EmployerDashboard() {
   if (!employer) {
     return (
       <div className="text-center py-12">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">Employer Account Not Found</h2>
-        <p className="text-gray-600">We couldn't find your employer account. Please contact support.</p>
+        <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+          <span className="text-3xl">❌</span>
+        </div>
+        <h2 className="text-2xl font-bold text-white mb-4">Employer Account Not Found</h2>
+        <p className="text-slate-400">We couldn't find your employer account. Please contact support.</p>
       </div>
     )
   }
@@ -55,37 +58,37 @@ export default async function EmployerDashboard() {
     <div>
       {/* Welcome Section */}
       <div className="mb-8">
-        <h2 className="text-3xl font-bold text-gray-900">Welcome back, {employer.companyName}!</h2>
-        <p className="text-gray-600 mt-2">Manage your job postings and applicants from here.</p>
+        <h2 className="text-3xl font-bold text-white">Welcome back, {employer.companyName}!</h2>
+        <p className="text-slate-400 mt-2">Manage your job postings and applicants from here.</p>
         
         {employer.status === 'pending' && (
-          <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-            <p className="text-yellow-800 font-medium">
-              ⏳ Your employer account is pending approval
+          <div className="mt-4 bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4">
+            <p className="text-yellow-400 font-medium flex items-center gap-2">
+              <span>⏳</span> Your employer account is pending approval
             </p>
-            <p className="text-yellow-700 text-sm mt-1">
-              You can create job drafts, but they won&apos;t be published until your account is approved by our admin team.
+            <p className="text-yellow-400/70 text-sm mt-1">
+              You can create job drafts, but they won't be published until your account is approved by our admin team.
             </p>
           </div>
         )}
         
         {employer.status === 'approved' && (
-          <div className="mt-4 bg-green-50 border border-green-200 rounded-lg p-4">
-            <p className="text-green-800 font-medium">
-              ✓ Your employer account is approved
+          <div className="mt-4 bg-green-500/10 border border-green-500/30 rounded-xl p-4">
+            <p className="text-green-400 font-medium flex items-center gap-2">
+              <span>✓</span> Your employer account is approved
             </p>
-            <p className="text-green-700 text-sm mt-1">
-              You can now post jobs and they&apos;ll be visible to job seekers immediately.
+            <p className="text-green-400/70 text-sm mt-1">
+              You can now post jobs and they'll be visible to job seekers immediately.
             </p>
           </div>
         )}
 
         {employer.status === 'rejected' && (
-          <div className="mt-4 bg-red-50 border border-red-200 rounded-lg p-4">
-            <p className="text-red-800 font-medium">
-              ✗ Your employer account was rejected
+          <div className="mt-4 bg-red-500/10 border border-red-500/30 rounded-xl p-4">
+            <p className="text-red-400 font-medium flex items-center gap-2">
+              <span>✗</span> Your employer account was rejected
             </p>
-            <p className="text-red-700 text-sm mt-1">
+            <p className="text-red-400/70 text-sm mt-1">
               Please contact support for more information.
             </p>
           </div>
@@ -94,68 +97,94 @@ export default async function EmployerDashboard() {
 
       {/* Stats Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white overflow-hidden shadow rounded-lg border border-gray-100">
-          <div className="p-6">
-            <div className="flex items-center">
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-500">Draft Jobs</p>
-                <p className="mt-2 text-4xl font-bold text-gray-900">
-                  {jobStats.draft}
-                </p>
-                <p className="text-xs text-gray-500 mt-2">Ready to publish</p>
-              </div>
-              <span className="text-5xl opacity-10">📝</span>
+        <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 hover:border-slate-600 transition-colors">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-slate-400">Draft Jobs</p>
+              <p className="mt-2 text-4xl font-bold text-white">
+                {jobStats.draft}
+              </p>
+              <p className="text-xs text-slate-500 mt-2">Ready to publish</p>
+            </div>
+            <div className="w-12 h-12 bg-slate-700/50 rounded-xl flex items-center justify-center">
+              <span className="text-2xl">📝</span>
             </div>
           </div>
         </div>
 
-        <div className="bg-white overflow-hidden shadow rounded-lg border border-gray-100">
-          <div className="p-6">
-            <div className="flex items-center">
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-500">Pending Review</p>
-                <p className="mt-2 text-4xl font-bold text-yellow-600">
-                  {jobStats.pending}
-                </p>
-                <p className="text-xs text-gray-500 mt-2">Awaiting approval</p>
-              </div>
-              <span className="text-5xl opacity-10">⏳</span>
+        <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 hover:border-slate-600 transition-colors">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-slate-400">Pending Review</p>
+              <p className="mt-2 text-4xl font-bold text-yellow-400">
+                {jobStats.pending}
+              </p>
+              <p className="text-xs text-slate-500 mt-2">Awaiting approval</p>
+            </div>
+            <div className="w-12 h-12 bg-yellow-500/20 rounded-xl flex items-center justify-center">
+              <span className="text-2xl">⏳</span>
             </div>
           </div>
         </div>
 
-        <div className="bg-white overflow-hidden shadow rounded-lg border border-gray-100">
-          <div className="p-6">
-            <div className="flex items-center">
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-500">Active Jobs</p>
-                <p className="mt-2 text-4xl font-bold text-green-600">
-                  {jobStats.active}
-                </p>
-                <p className="text-xs text-gray-500 mt-2">Currently published</p>
-              </div>
-              <span className="text-5xl opacity-10">✓</span>
+        <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 hover:border-slate-600 transition-colors">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-slate-400">Active Jobs</p>
+              <p className="mt-2 text-4xl font-bold text-green-400">
+                {jobStats.active}
+              </p>
+              <p className="text-xs text-slate-500 mt-2">Currently published</p>
+            </div>
+            <div className="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center">
+              <span className="text-2xl">✓</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Actions Section */}
-      <div className="bg-white shadow rounded-lg p-6 border border-gray-100">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
-        <div className="space-y-3">
-          <Link
-            href="/employer/jobs/new"
-            className="block px-4 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors text-center"
-          >
-            + Post a New Job
-          </Link>
-          <Link
-            href="/employer/jobs"
-            className="block px-4 py-3 bg-gray-100 text-gray-900 font-medium rounded-lg hover:bg-gray-200 transition-colors text-center"
-          >
-            View All My Jobs
-          </Link>
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-white mb-4">Quick Actions</h3>
+          <div className="space-y-3">
+            <Link
+              href="/employer/jobs/new"
+              className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg transition-colors"
+            >
+              <span>+</span> Post a New Job
+            </Link>
+            <Link
+              href="/employer/jobs"
+              className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-slate-700 hover:bg-slate-600 text-white font-medium rounded-lg transition-colors"
+            >
+              View All My Jobs
+            </Link>
+            <Link
+              href="/employer/applications"
+              className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-slate-700 hover:bg-slate-600 text-white font-medium rounded-lg transition-colors"
+            >
+              📋 Applicant Pipeline
+            </Link>
+          </div>
+        </div>
+
+        <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-white mb-4">Tips</h3>
+          <ul className="space-y-3 text-sm text-slate-400">
+            <li className="flex items-start gap-2">
+              <span className="text-blue-400">💡</span>
+              <span>Add a LinkedIn profile to your company to build trust with candidates</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-blue-400">💡</span>
+              <span>Detailed job descriptions get 3x more qualified applicants</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-blue-400">💡</span>
+              <span>Use the Pipeline feature to track candidates through your hiring process</span>
+            </li>
+          </ul>
         </div>
       </div>
     </div>

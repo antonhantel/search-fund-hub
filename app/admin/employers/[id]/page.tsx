@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { redirect } from "next/navigation"
+import Link from "next/link"
 import { EditForm } from "./edit-form"
 
 export default async function AdminEditEmployerPage({
@@ -31,10 +32,13 @@ export default async function AdminEditEmployerPage({
   }
 
   return (
-    <div className="px-4 py-6">
+    <div>
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">Edit Employer</h2>
-        <p className="text-gray-600 mt-1">
+        <Link href="/admin/employers" className="text-blue-400 hover:text-blue-300 text-sm mb-2 inline-block">
+          ← Back to Employers
+        </Link>
+        <h2 className="text-2xl font-bold text-white">Edit Employer</h2>
+        <p className="text-slate-400 mt-1">
           {employer.companyName} • {employer.user.email}
         </p>
       </div>

@@ -16,22 +16,30 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       {/* Top Header */}
-      <header className="bg-white shadow">
+      <header className="bg-slate-800/50 backdrop-blur-sm border-b border-slate-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-            <p className="text-sm text-gray-600 mt-1">{session.user?.email}</p>
+          <div className="flex items-center gap-4">
+            <Link href="/" className="flex items-center gap-2 text-white hover:text-blue-400 transition-colors">
+              <img src="/logo.svg" alt="Search Fund Hub" className="h-8 w-8" />
+              <span className="text-xl font-bold">Search Fund Hub</span>
+            </Link>
+            <span className="px-2 py-1 bg-red-500/20 text-red-400 text-xs font-semibold rounded-full">
+              ADMIN
+            </span>
           </div>
-          <form action="/api/auth/signout" method="POST">
-            <button
-              type="submit"
-              className="px-4 py-2 text-sm font-medium text-red-600 hover:text-red-800 hover:bg-red-50 rounded-md transition-colors"
-            >
-              Sign out
-            </button>
-          </form>
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-slate-400">{session.user?.email}</span>
+            <form action="/api/auth/signout" method="POST">
+              <button
+                type="submit"
+                className="px-4 py-2 text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition-colors"
+              >
+                Sign out
+              </button>
+            </form>
+          </div>
         </div>
       </header>
 
@@ -39,7 +47,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
       <AdminNav />
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+      <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         {children}
       </main>
     </div>

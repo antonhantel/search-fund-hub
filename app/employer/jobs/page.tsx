@@ -1,88 +1,130 @@
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
-import { redirect } from "next/navigation"
 import Link from "next/link"
-import { DeleteButton } from "./delete-button"
+import { redirect } from "next/navigation"
+import { DeleteJobButton } from "./delete-button"
 
 export default async function EmployerJobsPage() {
   const session = await auth()
-  
-  if (!session?.user?.employerId) {
+
+  if (!session) {
     redirect('/login')
   }
 
+  let employerId = session.user?.employerId
+
+  if (!employerId && session.user?.email) {
+    const employer = await prisma.employer.findFirst({
+      where: { user: { email: session.user.email } }
+    })
+    if (employer) employerId = employer.id
+  }
+
+  if (!employerId) {
+    return (
+      <div className="text-center py-12">
+        <h2 className="text-2xl font-bold text-white mb-4">No Employer Account</h2>
+        <p className="text-slate-400">Please contact support to link your employer account.</p>
+      </div>
+    )
+  }
+
   const jobs = await prisma.job.findMany({
-    where: { employerId: session.user.employerId },
+    where: { employerId },
     orderBy: { createdAt: 'desc' }
   })
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'draft':
-        return <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded">Draft</span>
-      case 'pending':
-        return <span className="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded">Pending Review</span>
       case 'active':
-        return <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded">Active</span>
-      case 'closed':
-        return <span className="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded">Closed</span>
+        return <span className="px-2 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-medium">Active</span>
+      case 'pending':
+        return <span className="px-2 py-1 bg-yellow-500/20 text-yellow-400 rounded-full text-xs font-medium">Pending</span>
+      case 'draft':
+        return <span className="px-2 py-1 bg-slate-500/20 text-slate-400 rounded-full text-xs font-medium">Draft</span>
+      case 'rejected':
+        return <span className="px-2 py-1 bg-red-500/20 text-red-400 rounded-full text-xs font-medium">Rejected</span>
       default:
-        return <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded">{status}</span>
+        return <span className="px-2 py-1 bg-slate-500/20 text-slate-400 rounded-full text-xs font-medium">{status}</span>
     }
   }
 
   return (
-    <div className="px-4 py-6">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">My Jobs</h2>
+    <div>
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h2 className="text-3xl font-bold text-white">My Jobs</h2>
+          <p className="text-slate-400 mt-2">Manage your job postings</p>
+        </div>
         <Link
           href="/employer/jobs/new"
-          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 shadow-md"
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg transition-colors"
         >
-          Post New Job
+          + Post New Job
         </Link>
       </div>
 
       {jobs.length === 0 ? (
-        <div className="bg-white rounded-lg shadow p-8 text-center">
-          <p className="text-gray-500 mb-4">You haven&apos;t posted any jobs yet.</p>
+        <div className="text-center py-16 bg-slate-800/50 border border-slate-700 rounded-xl">
+          <div className="text-5xl mb-4">💼</div>
+          <h3 className="text-xl font-semibold text-white mb-2">No jobs yet</h3>
+          <p className="text-slate-400 mb-6">Create your first job posting to start attracting candidates</p>
           <Link
             href="/employer/jobs/new"
-            className="inline-block bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700"
+            className="inline-block px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg transition-colors"
           >
             Post Your First Job
           </Link>
         </div>
       ) : (
-        <div className="bg-white shadow overflow-hidden sm:rounded-md">
-          <ul className="space-y-4">
-            {jobs.map((job) => (
-              <li key={job.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1">
-                    <h3 className="text-xl md:text-2xl font-bold text-gray-900">{job.title}</h3>
-                    <div className="mt-2 flex items-center gap-4 text-sm text-gray-500">
-                      {job.location && <span className="px-3 py-1 bg-gray-100 rounded-full text-gray-700">📍 {job.location}</span>}
-                      {job.industry && <span className="px-3 py-1 bg-gray-100 rounded-full text-gray-700">🏢 {job.industry}</span>}
-                      <span className="text-sm text-gray-500">Created {new Date(job.createdAt).toLocaleDateString()}</span>
-                    </div>
-                    <p className="mt-3 text-sm text-gray-700 line-clamp-2">{job.description}</p>
-                  </div>
-                  <div className="flex flex-col items-end gap-3">
+        <div className="space-y-4">
+          {jobs.map((job) => (
+            <div
+              key={job.id}
+              className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 hover:border-slate-600 transition-colors"
+            >
+              <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-2">
+                    <h3 className="text-lg font-semibold text-white">{job.title}</h3>
                     {getStatusBadge(job.status)}
-                    <div className="flex items-center gap-2">
-                      <Link href={`/employer/jobs/${job.id}`} aria-label={`Edit ${job.title}`} className="p-2 rounded-md hover:bg-gray-100">
-                        <span role="img" aria-hidden="true" className="text-gray-600">✏️</span>
-                      </Link>
-                      <button aria-label={`Delete ${job.title}`} className="p-2 rounded-md hover:bg-red-50">
-                        <span role="img" aria-hidden="true" className="text-red-600">🗑️</span>
-                      </button>
-                    </div>
                   </div>
+                  <div className="flex flex-wrap gap-2 text-xs text-slate-400 mb-3">
+                    {job.location && (
+                      <span className="px-2 py-1 bg-slate-700/50 rounded">📍 {job.location}</span>
+                    )}
+                    {job.industry && (
+                      <span className="px-2 py-1 bg-slate-700/50 rounded">🏢 {job.industry}</span>
+                    )}
+                    {job.functionArea && (
+                      <span className="px-2 py-1 bg-slate-700/50 rounded">💼 {job.functionArea}</span>
+                    )}
+                  </div>
+                  <p className="text-sm text-slate-400 line-clamp-2">{job.description}</p>
+                  <p className="text-xs text-slate-500 mt-2">
+                    Created {new Date(job.createdAt).toLocaleDateString()}
+                  </p>
                 </div>
-              </li>
-            ))}
-          </ul>
+                <div className="flex gap-2">
+                  {job.status === 'active' && (
+                    <Link
+                      href={`/jobs/${job.id}`}
+                      className="px-3 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm transition-colors"
+                    >
+                      View Live
+                    </Link>
+                  )}
+                  <Link
+                    href={`/employer/jobs/${job.id}`}
+                    className="px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm transition-colors"
+                  >
+                    Edit
+                  </Link>
+                  <DeleteJobButton jobId={job.id} />
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>

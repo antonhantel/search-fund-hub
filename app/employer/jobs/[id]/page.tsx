@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { redirect } from "next/navigation"
+import Link from "next/link"
 import { EditForm } from "./edit-form"
 
 export default async function EmployerEditJobPage({
@@ -10,7 +11,21 @@ export default async function EmployerEditJobPage({
 }) {
   const session = await auth()
   
-  if (!session?.user?.employerId) {
+  if (!session) {
+    redirect("/login")
+  }
+
+  // Get employerId
+  let employerId = session.user?.employerId
+
+  if (!employerId && session.user?.email) {
+    const employer = await prisma.employer.findFirst({
+      where: { user: { email: session.user.email } }
+    })
+    if (employer) employerId = employer.id
+  }
+
+  if (!employerId) {
     redirect("/login")
   }
 
@@ -31,17 +46,18 @@ export default async function EmployerEditJobPage({
   }
 
   // Verify ownership
-  if (job.employer.id !== session.user.employerId) {
+  if (job.employer.id !== employerId) {
     redirect("/employer/jobs")
   }
 
   return (
-    <div className="px-4 py-6">
+    <div>
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">Edit Job</h2>
-        <p className="text-gray-600 mt-1">
-          {job.employer.companyName} • {job.title}
-        </p>
+        <Link href="/employer/jobs" className="text-blue-400 hover:text-blue-300 text-sm mb-2 inline-block">
+          ← Back to My Jobs
+        </Link>
+        <h2 className="text-2xl font-bold text-white">Edit Job</h2>
+        <p className="text-slate-400 mt-1">{job.title}</p>
       </div>
       <EditForm job={job} />
     </div>

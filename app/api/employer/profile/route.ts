@@ -40,7 +40,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     const data = await request.json()
-    const { companyName, industry, website, description } = data
+    const { companyName, industry, website, linkedinUrl, description } = data
 
     if (!session.user.email) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
@@ -61,6 +61,7 @@ export async function PATCH(request: NextRequest) {
         companyName: companyName || user.employer.companyName,
         industry: industry || user.employer.industry,
         website: website || user.employer.website,
+        linkedinUrl: linkedinUrl !== undefined ? linkedinUrl : user.employer.linkedinUrl,
         description: description || user.employer.description,
       }
     })

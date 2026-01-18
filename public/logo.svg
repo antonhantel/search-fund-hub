@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a"/>
+      <stop offset="100%" style="stop-color:#1e3a5f"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="200" height="200" rx="20" fill="url(#bgGrad)"/>
+  
+  <!-- Magnifying glass circle -->
+  <circle cx="90" cy="85" r="40" fill="none" stroke="white" stroke-width="6"/>
+  
+  <!-- Magnifying glass handle -->
+  <line x1="120" y1="115" x2="155" y2="150" stroke="white" stroke-width="8" stroke-linecap="round"/>
+  
+  <!-- Network nodes inside -->
+  <circle cx="75" cy="70" r="6" fill="white"/>
+  <circle cx="105" cy="75" r="6" fill="white"/>
+  <circle cx="90" cy="100" r="6" fill="white"/>
+  <circle cx="70" cy="95" r="4" fill="white" opacity="0.7"/>
+  <circle cx="110" cy="95" r="4" fill="white" opacity="0.7"/>
+  
+  <!-- Network connections -->
+  <line x1="75" y1="70" x2="105" y2="75" stroke="white" stroke-width="2" opacity="0.8"/>
+  <line x1="75" y1="70" x2="90" y2="100" stroke="white" stroke-width="2" opacity="0.8"/>
+  <line x1="105" y1="75" x2="90" y2="100" stroke="white" stroke-width="2" opacity="0.8"/>
+  <line x1="70" y1="95" x2="90" y2="100" stroke="white" stroke-width="1.5" opacity="0.6"/>
+  <line x1="110" y1="95" x2="90" y2="100" stroke="white" stroke-width="1.5" opacity="0.6"/>
+  
+  <!-- Text "SEARCH FUND HUB" -->
+  <text x="100" y="175" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="14" font-weight="bold">
+    <tspan x="100" dy="0">SEARCH</tspan>
+  </text>
+  <text x="100" y="190" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="10" font-weight="normal">
+    <tspan x="100" dy="0">FUND HUB</tspan>
+  </text>
+</svg>

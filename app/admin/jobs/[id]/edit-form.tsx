@@ -93,16 +93,16 @@ export function EditForm({ job }: { job: Job }) {
   }
 
   return (
-    <div className="bg-white shadow sm:rounded-lg p-6">
+    <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6">
       {error && (
-        <div className="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-md">
+        <div className="mb-4 p-4 bg-red-500/20 border border-red-500/50 text-red-300 rounded-lg">
           {error}
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-900">
+          <label htmlFor="title" className="block text-sm font-medium text-slate-200 mb-1">
             Job Title
           </label>
           <input
@@ -111,12 +111,12 @@ export function EditForm({ job }: { job: Job }) {
             id="title"
             defaultValue={job.title}
             required
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border px-3 py-2"
+            className="w-full px-4 py-2.5 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
 
         <div>
-          <label htmlFor="description" className="block text-sm font-medium text-gray-900">
+          <label htmlFor="description" className="block text-sm font-medium text-slate-200 mb-1">
             Description
           </label>
           <textarea
@@ -125,12 +125,12 @@ export function EditForm({ job }: { job: Job }) {
             rows={5}
             defaultValue={job.description}
             required
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border px-3 py-2"
+            className="w-full px-4 py-2.5 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
 
         <div>
-          <label htmlFor="requirements" className="block text-sm font-medium text-gray-900">
+          <label htmlFor="requirements" className="block text-sm font-medium text-slate-200 mb-1">
             Requirements
           </label>
           <textarea
@@ -138,12 +138,12 @@ export function EditForm({ job }: { job: Job }) {
             id="requirements"
             rows={3}
             defaultValue={job.requirements || ""}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border px-3 py-2"
+            className="w-full px-4 py-2.5 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-900 mb-2">
+          <label className="block text-sm font-medium text-slate-200 mb-2">
             Language Requirements
           </label>
           <LanguageRequirements 
@@ -152,9 +152,9 @@ export function EditForm({ job }: { job: Job }) {
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="location" className="block text-sm font-medium text-gray-900">
+            <label htmlFor="location" className="block text-sm font-medium text-slate-200 mb-1">
               Location
             </label>
             <input
@@ -163,19 +163,19 @@ export function EditForm({ job }: { job: Job }) {
               id="location"
               defaultValue={job.location}
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border px-3 py-2"
+              className="w-full px-4 py-2.5 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
           <div>
-            <label htmlFor="industry" className="block text-sm font-medium text-gray-900">
+            <label htmlFor="industry" className="block text-sm font-medium text-slate-200 mb-1">
               Industry
             </label>
             <select
               name="industry"
               id="industry"
               defaultValue={job.industry || ""}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border px-3 py-2"
+              className="w-full px-4 py-2.5 bg-slate-700/50 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="">Select Industry</option>
               {INDUSTRY_OPTIONS.map((option) => (
@@ -187,14 +187,14 @@ export function EditForm({ job }: { job: Job }) {
           </div>
 
           <div>
-            <label htmlFor="functionArea" className="block text-sm font-medium text-gray-900">
+            <label htmlFor="functionArea" className="block text-sm font-medium text-slate-200 mb-1">
               Function Area
             </label>
             <select
               name="functionArea"
               id="functionArea"
               defaultValue={job.functionArea || ""}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border px-3 py-2"
+              className="w-full px-4 py-2.5 bg-slate-700/50 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="">Select Function Area</option>
               {FUNCTION_AREA_OPTIONS.map((option) => (
@@ -206,14 +206,14 @@ export function EditForm({ job }: { job: Job }) {
           </div>
 
           <div>
-            <label htmlFor="companySize" className="block text-sm font-medium text-gray-900">
+            <label htmlFor="companySize" className="block text-sm font-medium text-slate-200 mb-1">
               Company Size
             </label>
             <select
               name="companySize"
               id="companySize"
               defaultValue={job.companySize || ""}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border px-3 py-2"
+              className="w-full px-4 py-2.5 bg-slate-700/50 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="">Select Company Size</option>
               {COMPANY_SIZE_OPTIONS.map((option) => (
@@ -226,7 +226,7 @@ export function EditForm({ job }: { job: Job }) {
         </div>
 
         <div>
-          <label htmlFor="salaryRange" className="block text-sm font-medium text-gray-900">
+          <label htmlFor="salaryRange" className="block text-sm font-medium text-slate-200 mb-1">
             Salary Range
           </label>
           <input
@@ -234,19 +234,19 @@ export function EditForm({ job }: { job: Job }) {
             name="salaryRange"
             id="salaryRange"
             defaultValue={job.salaryRange || ""}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border px-3 py-2"
+            className="w-full px-4 py-2.5 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
 
         <div>
-          <label htmlFor="status" className="block text-sm font-medium text-gray-900">
+          <label htmlFor="status" className="block text-sm font-medium text-slate-200 mb-1">
             Status
           </label>
           <select
             name="status"
             id="status"
             defaultValue={job.status}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border px-3 py-2"
+            className="w-full px-4 py-2.5 bg-slate-700/50 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
             <option value="draft">Draft</option>
             <option value="pending">Pending</option>
@@ -259,7 +259,7 @@ export function EditForm({ job }: { job: Job }) {
           <button
             type="submit"
             disabled={isLoading}
-            className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50"
+            className="flex-1 bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-lg font-medium transition-colors disabled:opacity-50"
           >
             {isLoading ? "Saving..." : "Save Changes"}
           </button>
@@ -267,9 +267,9 @@ export function EditForm({ job }: { job: Job }) {
             type="button"
             onClick={handleDelete}
             disabled={isLoading}
-            className="px-4 py-2 border border-red-300 text-red-700 rounded-md hover:bg-red-50 disabled:opacity-50"
+            className="px-6 py-3 border border-red-500/50 text-red-400 rounded-lg hover:bg-red-500/20 disabled:opacity-50 transition-colors"
           >
-            {isLoading ? "Deleting..." : "Delete Job"}
+            {isLoading ? "Deleting..." : "Delete"}
           </button>
         </div>
       </form>

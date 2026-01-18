@@ -22,7 +22,7 @@ export function ApproveEmployerButton({ employerId }: { employerId: string }) {
     <button
       onClick={handleApprove}
       disabled={loading}
-      className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 disabled:opacity-50"
+      className="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg font-medium transition-colors disabled:opacity-50 text-sm"
     >
       {loading ? 'Approving...' : 'Approve'}
     </button>
@@ -48,7 +48,7 @@ export function RejectEmployerButton({ employerId }: { employerId: string }) {
     <button
       onClick={handleReject}
       disabled={loading}
-      className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 disabled:opacity-50"
+      className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg font-medium transition-colors disabled:opacity-50 text-sm"
     >
       {loading ? 'Rejecting...' : 'Reject'}
     </button>
