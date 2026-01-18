@@ -13,17 +13,26 @@ const universityClubs = [
   { name: "CBS Entrepreneurship", members: "300+", logo: "🔥", link: "https://cbs.dk" },
 ]
 
+async function getStats() {
+  try {
+    const [totalJobs, totalEmployers, latestJob] = await Promise.all([
+      prisma.job.count({ where: { status: 'active' } }),
+      prisma.employer.count({ where: { status: 'approved' } }),
+      prisma.job.findFirst({
+        where: { status: 'active' },
+        include: { employer: { select: { companyName: true, linkedinUrl: true } } },
+        orderBy: { createdAt: 'desc' }
+      })
+    ])
+    return { totalJobs, totalEmployers, latestJob }
+  } catch (error) {
+    console.error('Database error:', error)
+    return { totalJobs: 0, totalEmployers: 0, latestJob: null }
+  }
+}
+
 export default async function HomePage() {
-  // Fetch stats
-  const [totalJobs, totalEmployers, latestJob] = await Promise.all([
-    prisma.job.count({ where: { status: 'active' } }),
-    prisma.employer.count({ where: { status: 'approved' } }),
-    prisma.job.findFirst({
-      where: { status: 'active' },
-      include: { employer: { select: { companyName: true, linkedinUrl: true } } },
-      orderBy: { createdAt: 'desc' }
-    })
-  ])
+  const { totalJobs, totalEmployers, latestJob } = await getStats()
 
   // Placeholder stats (can be made dynamic later)
   const stats = {
@@ -112,7 +121,7 @@ export default async function HomePage() {
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-white">Why Search Fund Hub?</h2>
           <p className="mt-4 text-slate-400 max-w-2xl mx-auto">
-            We're not just another job board. We're a curated community connecting ambitious talent with exceptional opportunities.
+            We&apos;re not just another job board. We&apos;re a curated community connecting ambitious talent with exceptional opportunities.
           </p>
         </div>
         
@@ -244,7 +253,7 @@ export default async function HomePage() {
           
           <div className="mt-10 text-center">
             <p className="text-slate-500 text-sm">
-              Want to add your university club? {' '}
+              Want to add your university club?{' '}
               <a href="mailto:partners@searchfundhub.com" className="text-blue-400 hover:text-blue-300">
                 Contact us
               </a>

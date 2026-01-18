@@ -2,8 +2,6 @@
 
 A modern job platform connecting search fund entrepreneurs with top talent from elite European business schools.
 
-![Search Fund Hub](public/logo.svg)
-
 ## Features
 
 ### For Job Seekers
