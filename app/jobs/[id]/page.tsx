@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { JobDetailActions } from "./job-detail-actions"
+import { ApplicationForm } from "./application-form"
 
 export const dynamic = 'force-dynamic'
 
@@ -199,7 +199,11 @@ export default async function JobDetailPage({
 
           {/* Apply Section */}
           <div className="p-6 md:p-8 border-t border-slate-700 bg-slate-800/30">
-            <JobDetailActions />
+            <ApplicationForm
+              jobId={job.id}
+              jobTitle={job.title}
+              companyName={job.employer.companyName}
+            />
           </div>
         </div>
       </div>
