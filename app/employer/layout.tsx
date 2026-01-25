@@ -21,9 +21,8 @@ export default async function EmployerLayout({ children }: EmployerLayoutProps) 
       <header className="bg-slate-800/50 backdrop-blur-sm border-b border-slate-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
           <div className="flex items-center gap-4">
-            <Link href="/" className="flex items-center gap-2 text-white hover:text-blue-400 transition-colors">
-              <img src="/logo.svg" alt="Search Fund Hub" className="h-8 w-8" />
-              <span className="text-xl font-bold">Search Fund Hub</span>
+            <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
+              <img src="/logo-white.svg" alt="Search Fund Hub" className="h-8 w-auto" />
             </Link>
             <span className="px-2 py-1 bg-blue-500/20 text-blue-400 text-xs font-semibold rounded-full">
               EMPLOYER

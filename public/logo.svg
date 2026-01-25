@@ -1,39 +1,38 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-  <defs>
-    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#0f172a"/>
-      <stop offset="100%" style="stop-color:#1e3a5f"/>
-    </linearGradient>
-  </defs>
-  
-  <!-- Background -->
-  <rect width="200" height="200" rx="20" fill="url(#bgGrad)"/>
-  
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120">
   <!-- Magnifying glass circle -->
-  <circle cx="90" cy="85" r="40" fill="none" stroke="white" stroke-width="6"/>
-  
+  <circle cx="50" cy="50" r="42" fill="none" stroke="#1e3a5f" stroke-width="6"/>
+
   <!-- Magnifying glass handle -->
-  <line x1="120" y1="115" x2="155" y2="150" stroke="white" stroke-width="8" stroke-linecap="round"/>
-  
-  <!-- Network nodes inside -->
-  <circle cx="75" cy="70" r="6" fill="white"/>
-  <circle cx="105" cy="75" r="6" fill="white"/>
-  <circle cx="90" cy="100" r="6" fill="white"/>
-  <circle cx="70" cy="95" r="4" fill="white" opacity="0.7"/>
-  <circle cx="110" cy="95" r="4" fill="white" opacity="0.7"/>
-  
-  <!-- Network connections -->
-  <line x1="75" y1="70" x2="105" y2="75" stroke="white" stroke-width="2" opacity="0.8"/>
-  <line x1="75" y1="70" x2="90" y2="100" stroke="white" stroke-width="2" opacity="0.8"/>
-  <line x1="105" y1="75" x2="90" y2="100" stroke="white" stroke-width="2" opacity="0.8"/>
-  <line x1="70" y1="95" x2="90" y2="100" stroke="white" stroke-width="1.5" opacity="0.6"/>
-  <line x1="110" y1="95" x2="90" y2="100" stroke="white" stroke-width="1.5" opacity="0.6"/>
-  
-  <!-- Text "SEARCH FUND HUB" -->
-  <text x="100" y="175" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="14" font-weight="bold">
-    <tspan x="100" dy="0">SEARCH</tspan>
-  </text>
-  <text x="100" y="190" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="10" font-weight="normal">
-    <tspan x="100" dy="0">FUND HUB</tspan>
-  </text>
+  <line x1="80" y1="80" x2="105" y2="105" stroke="#1e3a5f" stroke-width="8" stroke-linecap="round"/>
+
+  <!-- 3D Tetrahedron/Network inside -->
+  <!-- Top left node -->
+  <circle cx="28" cy="35" r="5" fill="#1e3a5f"/>
+  <!-- Top right node -->
+  <circle cx="72" cy="35" r="5" fill="#1e3a5f"/>
+  <!-- Bottom center node -->
+  <circle cx="50" cy="70" r="5" fill="#1e3a5f"/>
+  <!-- Center node (front of tetrahedron) -->
+  <circle cx="50" cy="45" r="5" fill="#1e3a5f"/>
+
+  <!-- Connections -->
+  <!-- Top edge -->
+  <line x1="28" y1="35" x2="72" y2="35" stroke="#1e3a5f" stroke-width="3"/>
+  <!-- Left edge -->
+  <line x1="28" y1="35" x2="50" y2="70" stroke="#1e3a5f" stroke-width="3"/>
+  <!-- Right edge -->
+  <line x1="72" y1="35" x2="50" y2="70" stroke="#1e3a5f" stroke-width="3"/>
+  <!-- Center connections -->
+  <line x1="28" y1="35" x2="50" y2="45" stroke="#1e3a5f" stroke-width="3"/>
+  <line x1="72" y1="35" x2="50" y2="45" stroke="#1e3a5f" stroke-width="3"/>
+  <line x1="50" y1="45" x2="50" y2="70" stroke="#1e3a5f" stroke-width="3"/>
+
+  <!-- Arrow pointing up-right from top-right node -->
+  <line x1="72" y1="35" x2="85" y2="22" stroke="#1e3a5f" stroke-width="3"/>
+  <polyline points="79,20 85,22 83,28" fill="none" stroke="#1e3a5f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Text "SEARCH FUND HUB" stacked -->
+  <text x="130" y="40" fill="#1e3a5f" font-family="Arial, Helvetica, sans-serif" font-size="32" font-weight="bold">SEARCH</text>
+  <text x="130" y="72" fill="#1e3a5f" font-family="Arial, Helvetica, sans-serif" font-size="32" font-weight="bold">FUND</text>
+  <text x="130" y="104" fill="#1e3a5f" font-family="Arial, Helvetica, sans-serif" font-size="32" font-weight="bold">HUB</text>
 </svg>
