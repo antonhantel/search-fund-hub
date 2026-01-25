@@ -22,14 +22,15 @@ export function Navbar() {
     <nav className={`fixed top-0 w-full z-50 ${isDarkPage ? 'bg-slate-900/80 backdrop-blur-md border-b border-slate-700' : 'bg-white shadow-md'}`}>
       <div className="max-w-7xl mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          <Link 
+          <Link
             href="/"
-            className="flex items-center gap-2"
+            className="flex items-center"
           >
-            <img src="/logo.svg" alt="Search Fund Hub" className="h-10 w-10" />
-            <span className={`text-xl font-bold ${isDarkPage ? 'text-white hover:text-blue-400' : 'text-blue-600 hover:text-blue-700'}`}>
-              Search Fund Hub
-            </span>
+            <img
+              src={isDarkPage ? "/logo-white.svg" : "/logo.svg"}
+              alt="Search Fund Hub"
+              className="h-10 w-auto"
+            />
           </Link>
 
           <div className="hidden md:flex items-center gap-8">

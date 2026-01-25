@@ -54,8 +54,8 @@ export default async function ApplicationsPage() {
   return (
     <div>
       <div className="mb-8">
-        <h2 className="text-3xl font-bold text-gray-900">Applicant Pipeline</h2>
-        <p className="text-gray-600 mt-2">
+        <h1 className="text-3xl font-bold text-white">Applicant Pipeline</h1>
+        <p className="text-slate-400 mt-2">
           Track and manage candidates through your recruiting process
         </p>
       </div>
