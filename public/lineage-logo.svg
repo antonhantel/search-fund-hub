@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 50" fill="#0D5E47">
+  <!-- L -->
+  <path d="M0 8h5v30h20v5H0V8z"/>
+  <!-- I -->
+  <path d="M32 8h5v35h-5V8z"/>
+  <!-- N -->
+  <path d="M48 8h5v28l20-28h5v35h-5V15l-20 28h-5V8z"/>
+  <!-- E -->
+  <path d="M88 8h25v5H93v10h18v5H93v10h20v5H88V8z"/>
+  <!-- A (no crossbar) -->
+  <path d="M130 43h-5l15-35h6l15 35h-5l-4-10h-18l-4 10zm7-15h14l-7-17-7 17z"/>
+  <!-- G -->
+  <path d="M168 8h25v5h-20v25h15v-10h-8v-5h13v20h-25V8z"/>
+  <!-- E -->
+  <path d="M218 8h25v5h-20v10h18v5h-18v10h20v5h-25V8z"/>
+</svg>

@@ -395,12 +395,13 @@ export default async function HomePage() {
               href="https://lineage.partners"
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center justify-center p-6 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-blue-500/50 rounded-xl transition-all duration-300"
+              className="group flex items-center justify-center p-8 bg-white hover:bg-slate-50 border border-slate-200 hover:border-blue-400 rounded-xl transition-all duration-300 hover:shadow-lg"
             >
-              {/* Lineage Partners Logo - using text since we can't access their image directly */}
-              <div className="text-white font-bold text-2xl tracking-wider group-hover:text-blue-400 transition-colors">
-                <span className="font-light">L</span>INEAGE
-              </div>
+              <img
+                src="/lineage-logo.svg"
+                alt="Lineage Partners"
+                className="h-10 w-auto"
+              />
             </a>
           </div>
         </div>
