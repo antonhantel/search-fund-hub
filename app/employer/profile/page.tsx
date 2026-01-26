@@ -37,7 +37,16 @@ export default function EmployerProfilePage() {
     const fetchEmployer = async () => {
       try {
         const response = await fetch('/api/employer/profile')
-        if (!response.ok) throw new Error('Failed to load profile')
+        if (!response.ok) {
+          const data = await response.json().catch(() => ({}))
+          if (response.status === 401) {
+            throw new Error('Session expired. Please log in again.')
+          } else if (response.status === 404) {
+            throw new Error('Employer profile not found. Please contact support.')
+          } else {
+            throw new Error(data.error || 'Failed to load profile')
+          }
+        }
         const data = await response.json()
         setEmployer(data)
       } catch (err) {
@@ -47,8 +56,13 @@ export default function EmployerProfilePage() {
       }
     }
 
-    fetchEmployer()
-  }, [])
+    if (session?.user?.email) {
+      fetchEmployer()
+    } else if (session === null) {
+      setError('Please log in to view your profile')
+      setIsLoading(false)
+    }
+  }, [session])
 
   async function handleProfileSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
