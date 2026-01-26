@@ -15,10 +15,12 @@ export function JobForm({ employerId }: { employerId: string }) {
     location: '',
     industry: '',
     employmentType: 'full-time',
-    salary: '',
+    remoteType: 'onsite',
     externalUrl: '',
     function: '',
-    requirements: ''
+    requirements: '',
+    preExperience: '',
+    linkedinUrl: ''
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -190,20 +192,54 @@ export function JobForm({ employerId }: { employerId: string }) {
           </div>
         </div>
 
-        {/* Salary */}
+        {/* Work Arrangement */}
         <div>
-          <label htmlFor="salary" className="block text-sm font-medium text-slate-200 mb-2">
-            Salary Range
+          <label className="block text-sm font-medium text-slate-200 mb-2">
+            Work Arrangement *
           </label>
-          <input
-            type="text"
-            id="salary"
-            name="salary"
-            value={formData.salary}
+          <div className="flex flex-wrap gap-3">
+            {[
+              { value: 'onsite', label: 'On-site' },
+              { value: 'hybrid', label: 'Hybrid' },
+              { value: 'remote', label: 'Remote' }
+            ].map((option) => (
+              <label
+                key={option.value}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg cursor-pointer transition-all ${
+                  formData.remoteType === option.value
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-slate-700/50 text-slate-300 hover:bg-slate-700'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="remoteType"
+                  value={option.value}
+                  checked={formData.remoteType === option.value}
+                  onChange={handleChange}
+                  className="sr-only"
+                />
+                <span className="font-medium">{option.label}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        {/* Pre-Experience Section */}
+        <div>
+          <label htmlFor="preExperience" className="block text-sm font-medium text-slate-200 mb-2">
+            Pre-Experience / Entry Requirements
+          </label>
+          <textarea
+            id="preExperience"
+            name="preExperience"
+            value={formData.preExperience}
             onChange={handleChange}
+            rows={3}
             className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="e.g., €50,000 - €80,000"
+            placeholder="What experience or background should candidates have? E.g., MBA preferred, consulting experience, prior search fund experience..."
           />
+          <p className="text-xs text-slate-400 mt-2">Describe ideal background for searchers, operators, or interns</p>
         </div>
 
         {/* Language Requirements */}
@@ -218,20 +254,38 @@ export function JobForm({ employerId }: { employerId: string }) {
           <p className="text-xs text-slate-400 mt-2">Select the languages required for this position</p>
         </div>
 
-        {/* External URL */}
-        <div>
-          <label htmlFor="externalUrl" className="block text-sm font-medium text-slate-200 mb-2">
-            Application URL
-          </label>
-          <input
-            type="url"
-            id="externalUrl"
-            name="externalUrl"
-            value={formData.externalUrl}
-            onChange={handleChange}
-            className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="https://careers.company.com/apply"
-          />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* External URL */}
+          <div>
+            <label htmlFor="externalUrl" className="block text-sm font-medium text-slate-200 mb-2">
+              Application URL
+            </label>
+            <input
+              type="url"
+              id="externalUrl"
+              name="externalUrl"
+              value={formData.externalUrl}
+              onChange={handleChange}
+              className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="https://careers.company.com/apply"
+            />
+          </div>
+
+          {/* LinkedIn URL */}
+          <div>
+            <label htmlFor="linkedinUrl" className="block text-sm font-medium text-slate-200 mb-2">
+              LinkedIn Job/Company Page
+            </label>
+            <input
+              type="url"
+              id="linkedinUrl"
+              name="linkedinUrl"
+              value={formData.linkedinUrl}
+              onChange={handleChange}
+              className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="https://linkedin.com/jobs/view/..."
+            />
+          </div>
         </div>
       </div>
 

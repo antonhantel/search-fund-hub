@@ -51,6 +51,9 @@ model Job {
   functionArea          String?
   companySize           String?
   salaryRange           String?
+  remoteType            String?       // onsite, hybrid, remote
+  preExperience         String?       // Pre-experience requirements for searchers/operators
+  linkedinUrl           String?       // LinkedIn URL for job posting or company page
   status                String        @default("draft")
   approvedBy            String?
   approvedAt            DateTime?

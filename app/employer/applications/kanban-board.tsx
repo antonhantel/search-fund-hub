@@ -41,6 +41,8 @@ export default function KanbanBoard({ applications: initialApplications, jobs }:
   const [selectedApp, setSelectedApp] = useState<Application | null>(null)
   const [selectedJobFilter, setSelectedJobFilter] = useState<string>('all')
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null)
+  const [recentlyMovedApp, setRecentlyMovedApp] = useState<string | null>(null)
+  const [stageChangeSuccess, setStageChangeSuccess] = useState<{ appId: string; newStage: string } | null>(null)
 
   const handleDragStart = (e: React.DragEvent, appId: string) => {
     setDraggedApp(appId)
@@ -74,6 +76,16 @@ export default function KanbanBoard({ applications: initialApplications, jobs }:
       prev.map(a => a.id === draggedApp ? { ...a, stage: newStage } : a)
     )
 
+    // Show animation
+    setRecentlyMovedApp(draggedApp)
+    setStageChangeSuccess({ appId: draggedApp, newStage })
+
+    // Clear animation after delay
+    setTimeout(() => {
+      setRecentlyMovedApp(null)
+      setStageChangeSuccess(null)
+    }, 2000)
+
     // Server update
     startTransition(async () => {
       try {
@@ -83,6 +95,7 @@ export default function KanbanBoard({ applications: initialApplications, jobs }:
         setApplications(prev =>
           prev.map(a => a.id === draggedApp ? { ...a, stage: app.stage } : a)
         )
+        setStageChangeSuccess(null)
         console.error('Failed to update stage:', error)
       }
     })
@@ -177,6 +190,7 @@ export default function KanbanBoard({ applications: initialApplications, jobs }:
               const count = getApplicationsByStage(stage.id).length
               const isActive = selectedStage === stage.id
               const isDragOver = dragOverStage === stage.id
+              const justReceived = stageChangeSuccess?.newStage === stage.id
 
               return (
                 <button
@@ -185,21 +199,21 @@ export default function KanbanBoard({ applications: initialApplications, jobs }:
                   onDragOver={(e) => handleDragOver(e, stage.id)}
                   onDragLeave={handleDragLeave}
                   onDrop={(e) => handleDrop(e, stage.id)}
-                  className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all ${
+                  className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-300 ${
                     isActive
                       ? `${stage.activeColor} text-white`
                       : isDragOver
                         ? `bg-slate-700 border-2 ${stage.borderColor} text-white`
                         : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
-                  }`}
+                  } ${justReceived && !isActive ? 'ring-2 ring-green-500/50 animate-pulse' : ''}`}
                 >
                   <div className="flex items-center gap-3">
                     <div className={`w-3 h-3 rounded-full ${stage.color}`} />
                     <span className="font-medium">{stage.label}</span>
                   </div>
-                  <span className={`text-sm font-semibold px-2 py-0.5 rounded-full ${
+                  <span className={`text-sm font-semibold px-2 py-0.5 rounded-full transition-all duration-300 ${
                     isActive ? 'bg-white/20 text-white' : 'bg-slate-700 text-slate-400'
-                  }`}>
+                  } ${justReceived ? 'bg-green-500 text-white scale-110' : ''}`}>
                     {count}
                   </span>
                 </button>
@@ -250,8 +264,12 @@ export default function KanbanBoard({ applications: initialApplications, jobs }:
                   draggable
                   onDragStart={(e) => handleDragStart(e, app.id)}
                   onClick={() => setSelectedApp(app)}
-                  className={`bg-slate-800 border border-slate-700 rounded-xl p-5 cursor-grab active:cursor-grabbing hover:border-slate-600 hover:bg-slate-750 transition-all ${
+                  className={`bg-slate-800 border rounded-xl p-5 cursor-grab active:cursor-grabbing hover:border-slate-600 hover:bg-slate-750 transition-all duration-300 ${
                     draggedApp === app.id ? 'opacity-50 scale-95' : ''
+                  } ${
+                    recentlyMovedApp === app.id
+                      ? 'animate-pulse border-green-500 ring-2 ring-green-500/50 scale-[1.02]'
+                      : 'border-slate-700'
                   }`}
                 >
                   {/* Candidate Header */}
@@ -322,12 +340,24 @@ export default function KanbanBoard({ applications: initialApplications, jobs }:
 
       {/* Loading indicator */}
       {isPending && (
-        <div className="fixed bottom-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2">
+        <div className="fixed bottom-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 z-50">
           <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
           </svg>
           Saving...
+        </div>
+      )}
+
+      {/* Stage Change Success Notification */}
+      {stageChangeSuccess && !isPending && (
+        <div className="fixed bottom-4 right-4 bg-green-600 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 z-50 animate-in slide-in-from-bottom-4 fade-in duration-300">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+          <span>
+            Moved to <span className="font-semibold">{STAGES.find(s => s.id === stageChangeSuccess.newStage)?.label}</span>
+          </span>
         </div>
       )}
 
@@ -352,6 +382,20 @@ export default function KanbanBoard({ applications: initialApplications, jobs }:
             setApplications(prev =>
               prev.map(a => a.id === selectedApp.id ? { ...a, stage: newStage } : a)
             )
+
+            // Show animation
+            setRecentlyMovedApp(selectedApp.id)
+            setStageChangeSuccess({ appId: selectedApp.id, newStage })
+
+            // Auto-switch to new stage view
+            setSelectedStage(newStage)
+
+            // Clear animation after delay
+            setTimeout(() => {
+              setRecentlyMovedApp(null)
+              setStageChangeSuccess(null)
+            }, 2000)
+
             startTransition(async () => {
               await updateApplicationStage(selectedApp.id, newStage)
             })
