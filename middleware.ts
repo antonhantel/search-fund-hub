@@ -1,5 +1,5 @@
 import { withAuth } from "next-auth/middleware"
-import { NextRequest } from "next/server"
+import { NextResponse, NextRequest } from "next/server"
 
 export default withAuth(
   function middleware(request: NextRequest) {
@@ -9,18 +9,18 @@ export default withAuth(
     // Check admin routes
     if (pathname.startsWith("/admin")) {
       if (token?.role !== "admin") {
-        return Response.redirect(new URL("/login", request.url))
+        return NextResponse.redirect(new URL("/login", request.url))
       }
     }
 
     // Check employer routes
     if (pathname.startsWith("/employer")) {
       if (token?.role !== "employer") {
-        return Response.redirect(new URL("/login", request.url))
+        return NextResponse.redirect(new URL("/login", request.url))
       }
     }
 
-    return null
+    return NextResponse.next()
   },
   {
     callbacks: {
