@@ -12,17 +12,15 @@ export function Navbar() {
   const pathname = usePathname()
   const isHomePage = pathname === '/'
 
-  // Don't show navbar on admin or employer pages (they have their own headers)
-  if (pathname.startsWith('/admin') || pathname.startsWith('/employer')) {
-    return null
-  }
+  // Check if we should hide navbar (admin/employer pages have their own headers)
+  const shouldHideNavbar = pathname.startsWith('/admin') || pathname.startsWith('/employer')
 
   // Check if we're on a dark page (landing, login, signup, for-employers, jobs)
   const isDarkPage = pathname === '/' || pathname === '/login' || pathname.startsWith('/signup') || pathname === '/for-employers' || pathname.startsWith('/jobs')
 
   // Scroll handler for homepage - show navbar after scrolling past hero logo
   useEffect(() => {
-    if (!isHomePage) {
+    if (!isHomePage || shouldHideNavbar) {
       setIsVisible(true)
       return
     }
@@ -38,7 +36,12 @@ export function Navbar() {
 
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [isHomePage])
+  }, [isHomePage, shouldHideNavbar])
+
+  // Don't show navbar on admin or employer pages (they have their own headers)
+  if (shouldHideNavbar) {
+    return null
+  }
 
   return (
     <nav className={`fixed top-0 w-full z-50 transition-transform duration-300 ${
