@@ -76,6 +76,9 @@ export default function KanbanBoard({ applications: initialApplications, jobs }:
       prev.map(a => a.id === draggedApp ? { ...a, stage: newStage } : a)
     )
 
+    // Auto-switch to the new stage view so user can see the moved card
+    setSelectedStage(newStage)
+
     // Show animation
     setRecentlyMovedApp(draggedApp)
     setStageChangeSuccess({ appId: draggedApp, newStage })
