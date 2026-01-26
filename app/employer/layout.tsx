@@ -19,21 +19,21 @@ export default async function EmployerLayout({ children }: EmployerLayoutProps) 
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       {/* Top Header */}
       <header className="bg-slate-800/50 backdrop-blur-sm border-b border-slate-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-4">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-3 md:py-4 flex justify-between items-center">
+          <div className="flex items-center gap-2 md:gap-4">
             <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
-              <img src="/logo-white.svg" alt="Search Fund Hub" className="h-8 w-auto" />
+              <img src="/logo-white.svg" alt="Search Fund Hub" className="h-6 md:h-8 w-auto" />
             </Link>
-            <span className="px-2 py-1 bg-blue-500/20 text-blue-400 text-xs font-semibold rounded-full">
+            <span className="px-2 py-1 bg-blue-500/20 text-blue-400 text-[10px] md:text-xs font-semibold rounded-full">
               EMPLOYER
             </span>
           </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-slate-400">{session.user?.email}</span>
+          <div className="flex items-center gap-2 md:gap-4">
+            <span className="text-xs md:text-sm text-slate-400 hidden sm:block truncate max-w-[150px] md:max-w-none">{session.user?.email}</span>
             <form action="/api/auth/signout" method="POST">
               <button
                 type="submit"
-                className="px-4 py-2 text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition-colors"
+                className="px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition-colors"
               >
                 Sign out
               </button>
@@ -46,7 +46,7 @@ export default async function EmployerLayout({ children }: EmployerLayoutProps) 
       <EmployerNav />
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+      <main className="max-w-7xl mx-auto py-4 md:py-8 px-3 sm:px-4 md:px-6 lg:px-8">
         {children}
       </main>
     </div>

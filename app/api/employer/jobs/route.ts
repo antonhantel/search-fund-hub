@@ -21,9 +21,12 @@ export async function POST(req: Request) {
       languageRequirements: data.languageRequirements || null,
       location: data.location,
       industry: data.industry || null,
-      functionArea: data.functionArea || null,
+      functionArea: data.function || data.functionArea || null,
       companySize: data.companySize || null,
       salaryRange: data.salaryRange || null,
+      remoteType: data.remoteType || null,
+      preExperience: data.preExperience || null,
+      linkedinUrl: data.linkedinUrl || null,
       status: data.status || 'draft'
     }
   })

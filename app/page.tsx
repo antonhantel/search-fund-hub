@@ -5,7 +5,7 @@ import { UniversityLogos } from "@/components/university-logos"
 
 export const dynamic = 'force-dynamic'
 
-// FAQ Data
+// FAQ Data - removed "What is ETA" since it's explained above
 const faqs = [
   {
     q: "Do I need to register for a Stammtisch?",
@@ -22,10 +22,6 @@ const faqs = [
   {
     q: "What does this community cost?",
     a: "Nothing. It is volunteer-led."
-  },
-  {
-    q: "What is Entrepreneurship-through-Acquisition (ETA)?",
-    a: "ETA is an entrepreneurial approach where individuals or teams search for, acquire, and then lead and develop an existing company, rather than founding a new one."
   }
 ]
 
@@ -48,13 +44,7 @@ async function getStats() {
 }
 
 export default async function HomePage() {
-  const { totalJobs, totalEmployers, latestJob } = await getStats()
-
-  const stats = {
-    registeredFunds: totalEmployers || 24,
-    studentsInNetwork: 2500,
-    activeJobs: totalJobs
-  }
+  const { totalJobs, latestJob } = await getStats()
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
@@ -70,14 +60,14 @@ export default async function HomePage() {
         </div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          {/* Logo */}
+          {/* Centered White Logo */}
           <div className="flex justify-center mb-8">
             <Image
-              src="/logo.svg"
+              src="/logo-white.svg"
               alt="Search Fund Hub"
-              width={280}
-              height={90}
-              className="h-20 md:h-24 w-auto"
+              width={320}
+              height={100}
+              className="h-24 md:h-28 w-auto"
               priority
             />
           </div>
@@ -90,53 +80,60 @@ export default async function HomePage() {
             Community
           </h1>
 
+          {/* Germany's largest ETA community tagline */}
+          <p className="mt-4 text-xl md:text-2xl font-semibold text-blue-400">
+            Germany&apos;s Largest ETA Community
+          </p>
+
           <p className="mt-6 text-lg md:text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
             A volunteer-driven community for everyone in the ETA ecosystem in Germany.
             Our goal is simple: create real connections, share experiences and support each other
             through in-person events, peer exchange, and career opportunities.
           </p>
 
+          {/* Updated CTAs */}
           <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
-            <Link
-              href="/jobs"
+            <a
+              href="#events-community"
               className="inline-flex items-center justify-center bg-blue-500 hover:bg-blue-400 text-white px-8 py-4 rounded-xl font-semibold text-lg shadow-lg shadow-blue-500/25 hover:shadow-blue-400/40 hover:scale-105 transition-all duration-200"
             >
-              Browse Opportunities
+              Events & Community
+              <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+              </svg>
+            </a>
+            <Link
+              href="/jobs"
+              className="inline-flex items-center justify-center bg-white/10 hover:bg-white/20 text-white border border-white/20 px-8 py-4 rounded-xl font-semibold text-lg backdrop-blur-sm hover:scale-105 transition-all duration-200"
+            >
+              Intern & Working Student Job Board
               <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
             </Link>
-            <a
-              href="https://lu.ma/searchfundhub?k=c"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center bg-white/10 hover:bg-white/20 text-white border border-white/20 px-8 py-4 rounded-xl font-semibold text-lg backdrop-blur-sm hover:scale-105 transition-all duration-200"
-            >
-              View All Events
-            </a>
           </div>
         </div>
       </section>
 
-      {/* ETA Stats Section - The Succession Gap */}
+      {/* Community Stats Section */}
       <section className="py-12 border-y border-white/10 bg-white/5 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-white">200k</div>
-              <div className="mt-2 text-sm text-slate-400">Companies in Germany with open succession</div>
+              <div className="text-3xl md:text-4xl font-bold text-white">350+</div>
+              <div className="mt-2 text-sm text-slate-400">Community Members</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-white">50+</div>
-              <div className="mt-2 text-sm text-slate-400">Years - average age of business owners</div>
+              <div className="text-3xl md:text-4xl font-bold text-white">Multiple</div>
+              <div className="mt-2 text-sm text-slate-400">Events Monthly</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-white">{stats.studentsInNetwork.toLocaleString()}+</div>
-              <div className="mt-2 text-sm text-slate-400">Students in our network</div>
+              <div className="text-3xl md:text-4xl font-bold text-white">2,500+</div>
+              <div className="mt-2 text-sm text-slate-400">Students in Job Board Network</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-white">{stats.activeJobs || stats.registeredFunds}</div>
-              <div className="mt-2 text-sm text-slate-400">Active opportunities</div>
+              <div className="text-3xl md:text-4xl font-bold text-white">{totalJobs || 3}</div>
+              <div className="mt-2 text-sm text-slate-400">Active Opportunities</div>
             </div>
           </div>
         </div>
@@ -225,7 +222,7 @@ export default async function HomePage() {
       </section>
 
       {/* Events & Community Section */}
-      <section className="py-16 md:py-20 bg-white/5 border-y border-white/10">
+      <section id="events-community" className="py-16 md:py-20 bg-gradient-to-b from-blue-900/30 to-transparent border-y border-blue-500/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
@@ -295,19 +292,20 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Latest Job Preview */}
-      {latestJob && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Career Opportunities
-            </h2>
-            <p className="text-slate-400 max-w-2xl mx-auto">
-              Explore roles at search funds and portfolio companies across Germany.
-            </p>
-          </div>
+      {/* Job Board Section - Updated styling */}
+      <section id="job-board" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+            Intern & Working Student Job Board
+          </h2>
+          <p className="text-slate-400 max-w-2xl mx-auto">
+            Explore ETA roles or find out how to submit your own job post
+          </p>
+        </div>
 
-          <div className="bg-gradient-to-r from-blue-600/20 to-cyan-600/20 border border-blue-500/30 rounded-2xl p-8 md:p-10">
+        {/* Latest Job Preview */}
+        {latestJob && (
+          <div className="bg-gradient-to-r from-blue-600/20 to-cyan-600/20 border border-blue-500/30 rounded-2xl p-8 md:p-10 mb-8">
             <div className="flex items-center gap-2 mb-4">
               <span className="px-3 py-1 bg-green-500/20 text-green-400 text-xs font-semibold rounded-full">
                 LATEST OPENING
@@ -341,14 +339,6 @@ export default async function HomePage() {
                       {latestJob.industry}
                     </span>
                   )}
-                  {latestJob.functionArea && (
-                    <span className="flex items-center gap-1">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                      </svg>
-                      {latestJob.functionArea}
-                    </span>
-                  )}
                 </div>
               </div>
 
@@ -365,21 +355,56 @@ export default async function HomePage() {
               </div>
             </div>
           </div>
+        )}
 
-          {/* Browse More CTA */}
-          <div className="mt-6 text-center">
-            <Link
-              href="/jobs"
-              className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 font-medium transition-colors"
-            >
-              Browse {totalJobs > 1 ? `all ${totalJobs}` : 'all'} opportunities
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
-            </Link>
+        {/* Highlighted Browse Button */}
+        <div className="flex flex-col items-center gap-4">
+          <Link
+            href="/jobs"
+            className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-400 hover:to-cyan-400 text-white font-bold text-lg rounded-xl shadow-lg shadow-blue-500/30 hover:shadow-blue-400/40 hover:scale-105 transition-all duration-200"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            Browse All {totalJobs || 3} Opportunities
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </Link>
+
+          <Link
+            href="/for-employers"
+            className="inline-flex items-center gap-2 text-slate-400 hover:text-blue-400 font-medium transition-colors"
+          >
+            Find out how to post your own job openings
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
+        </div>
+      </section>
+
+      {/* Partners Section */}
+      <section className="py-12 border-y border-white/10 bg-white/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-8">
+            <h2 className="text-xl font-semibold text-slate-400 uppercase tracking-wider">Our Partners</h2>
           </div>
-        </section>
-      )}
+          <div className="flex justify-center items-center">
+            <a
+              href="https://lineage.partners"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center justify-center p-6 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-blue-500/50 rounded-xl transition-all duration-300"
+            >
+              {/* Lineage Partners Logo - using text since we can't access their image directly */}
+              <div className="text-white font-bold text-2xl tracking-wider group-hover:text-blue-400 transition-colors">
+                <span className="font-light">L</span>INEAGE
+              </div>
+            </a>
+          </div>
+        </div>
+      </section>
 
       {/* University Network Section */}
       <section className="py-16 md:py-20 bg-white/5 border-t border-white/10">
@@ -484,7 +509,7 @@ export default async function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-3">
-              <Image src="/logo.svg" alt="Search Fund Hub" width={120} height={40} className="h-8 w-auto" />
+              <Image src="/logo-white.svg" alt="Search Fund Hub" width={120} height={40} className="h-8 w-auto" />
             </div>
             <div className="text-slate-400 text-sm">
               © 2026 Search Fund Hub. Volunteer-led community.
@@ -492,7 +517,7 @@ export default async function HomePage() {
             <div className="flex gap-6 text-sm">
               <a href="#" className="text-slate-400 hover:text-white transition-colors">Privacy</a>
               <a href="#" className="text-slate-400 hover:text-white transition-colors">Terms</a>
-              <a href="mailto:hello@searchfundhub.de" className="text-slate-400 hover:text-white transition-colors">Contact</a>
+              <a href="#" className="text-slate-400 hover:text-white transition-colors">Imprint</a>
             </div>
           </div>
         </div>
