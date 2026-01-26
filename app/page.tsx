@@ -1,18 +1,9 @@
 import Link from "next/link"
 import Image from "next/image"
 import { prisma } from "@/lib/prisma"
+import { UniversityLogos } from "@/components/university-logos"
 
 export const dynamic = 'force-dynamic'
-
-// University clubs data
-const universityClubs = [
-  { name: "WHU Entrepreneurship Club", members: "500+", abbrev: "WHU", link: "https://whu.edu" },
-  { name: "HEC Entrepreneurs", members: "400+", abbrev: "HEC", link: "https://hec.edu" },
-  { name: "INSEAD PE/VC Club", members: "600+", abbrev: "INSEAD", link: "https://insead.edu" },
-  { name: "LBS Private Equity Club", members: "450+", abbrev: "LBS", link: "https://london.edu" },
-  { name: "HSG Founders Club", members: "350+", abbrev: "HSG", link: "https://unisg.ch" },
-  { name: "CBS Entrepreneurship", members: "300+", abbrev: "CBS", link: "https://cbs.dk" },
-]
 
 // FAQ Data
 const faqs = [
@@ -403,23 +394,7 @@ export default async function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {universityClubs.map((club, index) => (
-              <a
-                key={index}
-                href={club.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-white/5 border border-white/10 rounded-xl p-6 text-center hover:bg-white/10 hover:border-blue-500/50 transition-all duration-300 group"
-              >
-                <div className="h-12 flex items-center justify-center mb-3">
-                  <span className="text-2xl font-bold text-blue-400 group-hover:text-blue-300 transition-colors">{club.abbrev}</span>
-                </div>
-                <h4 className="text-sm font-semibold text-white mb-1 line-clamp-2">{club.name}</h4>
-                <p className="text-xs text-slate-400">{club.members} members</p>
-              </a>
-            ))}
-          </div>
+          <UniversityLogos />
 
           <div className="mt-10 text-center">
             <p className="text-slate-500 text-sm">
