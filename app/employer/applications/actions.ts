@@ -90,11 +90,49 @@ export async function addApplication(data: {
   })
 
   revalidatePath('/employer/applications')
-  return { 
-    success: true, 
+  return {
+    success: true,
     application: {
       ...application,
       appliedAt: application.appliedAt.toISOString()
     }
   }
+}
+
+export async function deleteApplication(applicationId: string) {
+  const session = await auth()
+
+  if (!session) {
+    throw new Error('Unauthorized')
+  }
+
+  // Verify the application belongs to one of the employer's jobs
+  let employerId = session.user?.employerId
+
+  if (!employerId && session.user?.email) {
+    const employer = await prisma.employer.findFirst({
+      where: { user: { email: session.user.email } }
+    })
+    if (employer) employerId = employer.id
+  }
+
+  if (!employerId) {
+    throw new Error('No employer account found')
+  }
+
+  const application = await prisma.application.findUnique({
+    where: { id: applicationId },
+    include: { job: true }
+  })
+
+  if (!application || application.job.employerId !== employerId) {
+    throw new Error('Application not found or unauthorized')
+  }
+
+  await prisma.application.delete({
+    where: { id: applicationId }
+  })
+
+  revalidatePath('/employer/applications')
+  return { success: true }
 }

@@ -1,38 +1,42 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 120">
   <!-- Magnifying glass circle -->
-  <circle cx="50" cy="50" r="42" fill="none" stroke="#1e3a5f" stroke-width="6"/>
+  <circle cx="50" cy="52" r="42" fill="none" stroke="#1e3a5f" stroke-width="4.5"/>
 
-  <!-- Magnifying glass handle -->
-  <line x1="80" y1="80" x2="105" y2="105" stroke="#1e3a5f" stroke-width="8" stroke-linecap="round"/>
+  <!-- Magnifying glass handle - going to bottom left -->
+  <line x1="22" y1="84" x2="0" y2="108" stroke="#1e3a5f" stroke-width="6" stroke-linecap="round"/>
 
-  <!-- 3D Tetrahedron/Network inside -->
-  <!-- Top left node -->
-  <circle cx="28" cy="35" r="5" fill="#1e3a5f"/>
-  <!-- Top right node -->
-  <circle cx="72" cy="35" r="5" fill="#1e3a5f"/>
-  <!-- Bottom center node -->
-  <circle cx="50" cy="70" r="5" fill="#1e3a5f"/>
-  <!-- Center node (front of tetrahedron) -->
-  <circle cx="50" cy="45" r="5" fill="#1e3a5f"/>
+  <!-- 3D Network inside magnifying glass -->
+  <!-- Vertices (nodes) -->
+  <!-- Top left -->
+  <circle cx="28" cy="38" r="4" fill="#1e3a5f"/>
+  <!-- Top right -->
+  <circle cx="58" cy="32" r="4" fill="#1e3a5f"/>
+  <!-- Middle center -->
+  <circle cx="42" cy="52" r="4" fill="#1e3a5f"/>
+  <!-- Bottom left -->
+  <circle cx="32" cy="68" r="4" fill="#1e3a5f"/>
+  <!-- Bottom right -->
+  <circle cx="62" cy="62" r="4" fill="#1e3a5f"/>
 
-  <!-- Connections -->
-  <!-- Top edge -->
-  <line x1="28" y1="35" x2="72" y2="35" stroke="#1e3a5f" stroke-width="3"/>
-  <!-- Left edge -->
-  <line x1="28" y1="35" x2="50" y2="70" stroke="#1e3a5f" stroke-width="3"/>
-  <!-- Right edge -->
-  <line x1="72" y1="35" x2="50" y2="70" stroke="#1e3a5f" stroke-width="3"/>
-  <!-- Center connections -->
-  <line x1="28" y1="35" x2="50" y2="45" stroke="#1e3a5f" stroke-width="3"/>
-  <line x1="72" y1="35" x2="50" y2="45" stroke="#1e3a5f" stroke-width="3"/>
-  <line x1="50" y1="45" x2="50" y2="70" stroke="#1e3a5f" stroke-width="3"/>
+  <!-- Network edges (connections) -->
+  <!-- Top connections -->
+  <line x1="28" y1="38" x2="58" y2="32" stroke="#1e3a5f" stroke-width="2"/>
+  <line x1="28" y1="38" x2="42" y2="52" stroke="#1e3a5f" stroke-width="2"/>
+  <line x1="58" y1="32" x2="42" y2="52" stroke="#1e3a5f" stroke-width="2"/>
+  <line x1="58" y1="32" x2="62" y2="62" stroke="#1e3a5f" stroke-width="2"/>
 
-  <!-- Arrow pointing up-right from top-right node -->
-  <line x1="72" y1="35" x2="85" y2="22" stroke="#1e3a5f" stroke-width="3"/>
-  <polyline points="79,20 85,22 83,28" fill="none" stroke="#1e3a5f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Middle to bottom connections -->
+  <line x1="42" y1="52" x2="32" y2="68" stroke="#1e3a5f" stroke-width="2"/>
+  <line x1="42" y1="52" x2="62" y2="62" stroke="#1e3a5f" stroke-width="2"/>
+  <line x1="28" y1="38" x2="32" y2="68" stroke="#1e3a5f" stroke-width="2"/>
+  <line x1="32" y1="68" x2="62" y2="62" stroke="#1e3a5f" stroke-width="2"/>
+
+  <!-- Arrow pointing up-right from top-right vertex -->
+  <line x1="58" y1="32" x2="74" y2="16" stroke="#1e3a5f" stroke-width="2"/>
+  <polygon points="74,16 66,18 68,24" fill="#1e3a5f"/>
 
   <!-- Text "SEARCH FUND HUB" stacked -->
-  <text x="130" y="40" fill="#1e3a5f" font-family="Arial, Helvetica, sans-serif" font-size="32" font-weight="bold">SEARCH</text>
-  <text x="130" y="72" fill="#1e3a5f" font-family="Arial, Helvetica, sans-serif" font-size="32" font-weight="bold">FUND</text>
-  <text x="130" y="104" fill="#1e3a5f" font-family="Arial, Helvetica, sans-serif" font-size="32" font-weight="bold">HUB</text>
+  <text x="115" y="40" fill="#1e3a5f" font-family="Arial, Helvetica, sans-serif" font-size="32" font-weight="bold" letter-spacing="1">SEARCH</text>
+  <text x="115" y="74" fill="#1e3a5f" font-family="Arial, Helvetica, sans-serif" font-size="32" font-weight="bold" letter-spacing="1">FUND</text>
+  <text x="115" y="108" fill="#1e3a5f" font-family="Arial, Helvetica, sans-serif" font-size="32" font-weight="bold" letter-spacing="1">HUB</text>
 </svg>

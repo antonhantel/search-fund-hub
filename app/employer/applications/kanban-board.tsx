@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { updateApplicationStage, addApplication } from './actions'
+import { updateApplicationStage, addApplication, deleteApplication } from './actions'
 
 interface Application {
   id: string
@@ -39,6 +39,8 @@ export default function KanbanBoard({ applications: initialApplications, jobs }:
   const [dragOverStage, setDragOverStage] = useState<string | null>(null)
   const [showAddModal, setShowAddModal] = useState(false)
   const [selectedApp, setSelectedApp] = useState<Application | null>(null)
+  const [selectedJobFilter, setSelectedJobFilter] = useState<string>('all')
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null)
 
   const handleDragStart = (e: React.DragEvent, appId: string) => {
     setDraggedApp(appId)
@@ -89,7 +91,28 @@ export default function KanbanBoard({ applications: initialApplications, jobs }:
   }
 
   const getApplicationsByStage = (stage: string) => {
-    return applications.filter(app => app.stage === stage)
+    return applications.filter(app => {
+      const matchesStage = app.stage === stage
+      const matchesJob = selectedJobFilter === 'all' || app.jobId === selectedJobFilter
+      return matchesStage && matchesJob
+    })
+  }
+
+  const filteredApplications = selectedJobFilter === 'all'
+    ? applications
+    : applications.filter(app => app.jobId === selectedJobFilter)
+
+  const handleDeleteCandidate = (applicationId: string) => {
+    startTransition(async () => {
+      try {
+        await deleteApplication(applicationId)
+        setApplications(prev => prev.filter(a => a.id !== applicationId))
+        setShowDeleteConfirm(null)
+        setSelectedApp(null)
+      } catch (error) {
+        console.error('Failed to delete candidate:', error)
+      }
+    })
   }
 
   const currentStageApps = getApplicationsByStage(selectedStage)
@@ -122,9 +145,31 @@ export default function KanbanBoard({ applications: initialApplications, jobs }:
       {/* Left Side - Stage Navigation */}
       <div className="lg:w-64 flex-shrink-0">
         <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-4">
+          {/* Job Filter */}
+          {jobs.length > 1 && (
+            <div className="mb-4 pb-4 border-b border-slate-700">
+              <label className="block text-sm font-semibold text-slate-300 uppercase tracking-wide mb-2">Filter by Job</label>
+              <select
+                value={selectedJobFilter}
+                onChange={(e) => setSelectedJobFilter(e.target.value)}
+                className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="all">All Jobs ({applications.length})</option>
+                {jobs.map(job => {
+                  const count = applications.filter(a => a.jobId === job.id).length
+                  return (
+                    <option key={job.id} value={job.id}>
+                      {job.title} ({count})
+                    </option>
+                  )
+                })}
+              </select>
+            </div>
+          )}
+
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wide">Stages</h3>
-            <span className="text-xs text-slate-500">{applications.length} total</span>
+            <span className="text-xs text-slate-500">{filteredApplications.length} total</span>
           </div>
 
           <nav className="space-y-2">
@@ -312,7 +357,45 @@ export default function KanbanBoard({ applications: initialApplications, jobs }:
             })
           }}
           onViewResume={handleViewResume}
+          onDelete={() => setShowDeleteConfirm(selectedApp.id)}
         />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60] p-4">
+          <div className="bg-slate-800 border border-slate-700 rounded-xl shadow-xl max-w-md w-full p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 bg-red-500/20 rounded-full flex items-center justify-center">
+                <svg className="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-white">Delete Candidate</h3>
+                <p className="text-slate-400 text-sm">This action cannot be undone</p>
+              </div>
+            </div>
+            <p className="text-slate-300 mb-6">
+              Are you sure you want to delete this candidate? All their application data will be permanently removed.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowDeleteConfirm(null)}
+                className="flex-1 px-4 py-2.5 bg-slate-700 hover:bg-slate-600 text-white font-medium rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleDeleteCandidate(showDeleteConfirm)}
+                disabled={isPending}
+                className="flex-1 px-4 py-2.5 bg-red-600 hover:bg-red-500 text-white font-medium rounded-lg transition-colors disabled:opacity-50"
+              >
+                {isPending ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )
@@ -457,12 +540,14 @@ function CandidateDetailModal({
   application,
   onClose,
   onStageChange,
-  onViewResume
+  onViewResume,
+  onDelete
 }: {
   application: Application
   onClose: () => void
   onStageChange: (stage: string) => void
   onViewResume: (url: string | null, name: string) => void
+  onDelete: () => void
 }) {
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -568,12 +653,21 @@ function CandidateDetailModal({
           )}
         </div>
 
-        <div className="sticky bottom-0 bg-slate-800 border-t border-slate-700 p-4">
+        <div className="sticky bottom-0 bg-slate-800 border-t border-slate-700 p-4 flex gap-3">
           <button
             onClick={onClose}
-            className="w-full px-4 py-2.5 bg-slate-700 hover:bg-slate-600 text-white font-medium rounded-lg transition-colors"
+            className="flex-1 px-4 py-2.5 bg-slate-700 hover:bg-slate-600 text-white font-medium rounded-lg transition-colors"
           >
             Close
+          </button>
+          <button
+            onClick={onDelete}
+            className="px-4 py-2.5 bg-red-600/20 hover:bg-red-600/40 text-red-400 font-medium rounded-lg transition-colors flex items-center gap-2"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            Delete
           </button>
         </div>
       </div>

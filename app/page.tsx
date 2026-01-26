@@ -4,14 +4,50 @@ import { prisma } from "@/lib/prisma"
 
 export const dynamic = 'force-dynamic'
 
-// University clubs data
+// University clubs data with logo URLs from official sources/brandfetch
 const universityClubs = [
-  { name: "WHU Entrepreneurship Club", members: "500+", logo: "WHU", link: "https://whu.edu" },
-  { name: "HEC Entrepreneurs", members: "400+", logo: "HEC", link: "https://hec.edu" },
-  { name: "INSEAD PE/VC Club", members: "600+", logo: "INSEAD", link: "https://insead.edu" },
-  { name: "LBS Private Equity Club", members: "450+", logo: "LBS", link: "https://london.edu" },
-  { name: "HSG Founders Club", members: "350+", logo: "HSG", link: "https://unisg.ch" },
-  { name: "CBS Entrepreneurship", members: "300+", logo: "CBS", link: "https://cbs.dk" },
+  {
+    name: "WHU Entrepreneurship Club",
+    members: "500+",
+    abbrev: "WHU",
+    link: "https://whu.edu",
+    logoUrl: "https://asset.brandfetch.io/idC8X5E0CK/idwCzf3v9J.svg"
+  },
+  {
+    name: "HEC Entrepreneurs",
+    members: "400+",
+    abbrev: "HEC",
+    link: "https://hec.edu",
+    logoUrl: "https://asset.brandfetch.io/idAOqDqMgf/idlKAcCHqp.svg"
+  },
+  {
+    name: "INSEAD PE/VC Club",
+    members: "600+",
+    abbrev: "INSEAD",
+    link: "https://insead.edu",
+    logoUrl: "https://asset.brandfetch.io/idqvd6fxF_/id7hQP_1xM.svg"
+  },
+  {
+    name: "LBS Private Equity Club",
+    members: "450+",
+    abbrev: "LBS",
+    link: "https://london.edu",
+    logoUrl: "https://asset.brandfetch.io/idBfbL7qX7/idlBwvmcqx.svg"
+  },
+  {
+    name: "HSG Founders Club",
+    members: "350+",
+    abbrev: "HSG",
+    link: "https://unisg.ch",
+    logoUrl: "https://asset.brandfetch.io/idB3zVoOqp/idHXdGvWup.svg"
+  },
+  {
+    name: "CBS Entrepreneurship",
+    members: "300+",
+    abbrev: "CBS",
+    link: "https://cbs.dk",
+    logoUrl: "https://asset.brandfetch.io/id5xj0q_XB/idHj6CmZjU.svg"
+  },
 ]
 
 // FAQ Data
@@ -412,7 +448,20 @@ export default async function HomePage() {
                 rel="noopener noreferrer"
                 className="bg-white/5 border border-white/10 rounded-xl p-6 text-center hover:bg-white/10 hover:border-blue-500/50 transition-all duration-300 group"
               >
-                <div className="text-2xl font-bold text-blue-400 mb-3">{club.logo}</div>
+                <div className="h-12 flex items-center justify-center mb-3">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={club.logoUrl}
+                    alt={club.abbrev}
+                    className="h-10 w-auto max-w-full object-contain brightness-0 invert opacity-80 group-hover:opacity-100 transition-opacity"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement
+                      target.style.display = 'none'
+                      if (target.nextSibling) (target.nextSibling as HTMLElement).style.display = 'block'
+                    }}
+                  />
+                  <span className="text-2xl font-bold text-blue-400 hidden">{club.abbrev}</span>
+                </div>
                 <h4 className="text-sm font-semibold text-white mb-1 line-clamp-2">{club.name}</h4>
                 <p className="text-xs text-slate-400">{club.members} members</p>
               </a>
