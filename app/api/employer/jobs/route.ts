@@ -24,9 +24,6 @@ export async function POST(req: Request) {
       functionArea: data.function || data.functionArea || null,
       companySize: data.companySize || null,
       salaryRange: data.salaryRange || null,
-      remoteType: data.remoteType || null,
-      preExperience: data.preExperience || null,
-      linkedinUrl: data.linkedinUrl || null,
       status: data.status || 'draft'
     }
   })
