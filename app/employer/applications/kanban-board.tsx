@@ -89,21 +89,31 @@ export default function KanbanBoard({ applications: initialApplications, jobs }:
       setStageChangeSuccess(null)
     }, 2000)
 
-    // Server update
-    startTransition(async () => {
+    // Store the app id before clearing draggedApp
+    const appId = draggedApp
+    const originalStage = app.stage
+    setDraggedApp(null)
+
+    // Server update - use regular async/await, not startTransition
+    // startTransition can cause issues with server action state
+    ;(async () => {
       try {
-        await updateApplicationStage(draggedApp, newStage)
+        const result = await updateApplicationStage(appId, newStage)
+        if (!result.success) {
+          throw new Error('Server update failed')
+        }
+        // Server confirmed the update - state is already correct
       } catch (error) {
         // Revert on error
         setApplications(prev =>
-          prev.map(a => a.id === draggedApp ? { ...a, stage: app.stage } : a)
+          prev.map(a => a.id === appId ? { ...a, stage: originalStage } : a)
         )
+        setSelectedStage(originalStage)
         setStageChangeSuccess(null)
+        setRecentlyMovedApp(null)
         console.error('Failed to update stage:', error)
       }
-    })
-
-    setDraggedApp(null)
+    })()
   }
 
   const getApplicationsByStage = (stage: string) => {
@@ -382,13 +392,20 @@ export default function KanbanBoard({ applications: initialApplications, jobs }:
           application={selectedApp}
           onClose={() => setSelectedApp(null)}
           onStageChange={(newStage) => {
+            const appId = selectedApp.id
+            const originalStage = selectedApp.stage
+
+            // Optimistic update
             setApplications(prev =>
-              prev.map(a => a.id === selectedApp.id ? { ...a, stage: newStage } : a)
+              prev.map(a => a.id === appId ? { ...a, stage: newStage } : a)
             )
 
+            // Update selectedApp to reflect new stage
+            setSelectedApp(prev => prev ? { ...prev, stage: newStage } : null)
+
             // Show animation
-            setRecentlyMovedApp(selectedApp.id)
-            setStageChangeSuccess({ appId: selectedApp.id, newStage })
+            setRecentlyMovedApp(appId)
+            setStageChangeSuccess({ appId, newStage })
 
             // Auto-switch to new stage view
             setSelectedStage(newStage)
@@ -399,9 +416,25 @@ export default function KanbanBoard({ applications: initialApplications, jobs }:
               setStageChangeSuccess(null)
             }, 2000)
 
-            startTransition(async () => {
-              await updateApplicationStage(selectedApp.id, newStage)
-            })
+            // Server update
+            ;(async () => {
+              try {
+                const result = await updateApplicationStage(appId, newStage)
+                if (!result.success) {
+                  throw new Error('Server update failed')
+                }
+              } catch (error) {
+                // Revert on error
+                setApplications(prev =>
+                  prev.map(a => a.id === appId ? { ...a, stage: originalStage } : a)
+                )
+                setSelectedApp(prev => prev ? { ...prev, stage: originalStage } : null)
+                setSelectedStage(originalStage)
+                setStageChangeSuccess(null)
+                setRecentlyMovedApp(null)
+                console.error('Failed to update stage:', error)
+              }
+            })()
           }}
           onViewResume={handleViewResume}
           onDelete={() => setShowDeleteConfirm(selectedApp.id)}

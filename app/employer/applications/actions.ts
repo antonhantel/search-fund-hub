@@ -2,11 +2,10 @@
 
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
-import { revalidatePath } from "next/cache"
 
 export async function updateApplicationStage(applicationId: string, newStage: string) {
   const session = await auth()
-  
+
   if (!session) {
     throw new Error('Unauthorized')
   }
@@ -34,13 +33,16 @@ export async function updateApplicationStage(applicationId: string, newStage: st
     throw new Error('Application not found or unauthorized')
   }
 
-  await prisma.application.update({
+  const updated = await prisma.application.update({
     where: { id: applicationId },
     data: { stage: newStage }
   })
 
-  revalidatePath('/employer/applications')
-  return { success: true }
+  // DO NOT call revalidatePath here - it causes the page to re-fetch
+  // and reset client state. The optimistic update handles the UI,
+  // and the database is already updated.
+
+  return { success: true, stage: updated.stage }
 }
 
 export async function addApplication(data: {
@@ -51,7 +53,7 @@ export async function addApplication(data: {
   notes?: string
 }) {
   const session = await auth()
-  
+
   if (!session) {
     throw new Error('Unauthorized')
   }
@@ -89,7 +91,6 @@ export async function addApplication(data: {
     }
   })
 
-  revalidatePath('/employer/applications')
   return {
     success: true,
     application: {
@@ -133,6 +134,5 @@ export async function deleteApplication(applicationId: string) {
     where: { id: applicationId }
   })
 
-  revalidatePath('/employer/applications')
   return { success: true }
 }
