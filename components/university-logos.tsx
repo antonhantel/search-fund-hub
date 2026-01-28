@@ -3,46 +3,47 @@
 import { useState } from 'react'
 
 const universityClubs = [
-  { name: "WHU Entrepreneurship Club", members: "500+", abbrev: "WHU", link: "https://whu.edu", logoUrl: "https://asset.brandfetch.io/idC8X5E0CK/idwCzf3v9J.svg" },
-  { name: "HEC Entrepreneurs", members: "400+", abbrev: "HEC", link: "https://hec.edu", logoUrl: "https://asset.brandfetch.io/idAOqDqMgf/idlKAcCHqp.svg" },
-  { name: "INSEAD PE/VC Club", members: "600+", abbrev: "INSEAD", link: "https://insead.edu", logoUrl: "https://asset.brandfetch.io/idqvd6fxF_/id7hQP_1xM.svg" },
-  { name: "LBS Private Equity Club", members: "450+", abbrev: "LBS", link: "https://london.edu", logoUrl: "https://asset.brandfetch.io/idBfbL7qX7/idlBwvmcqx.svg" },
-  { name: "HSG Founders Club", members: "350+", abbrev: "HSG", link: "https://unisg.ch", logoUrl: "https://asset.brandfetch.io/idB3zVoOqp/idHXdGvWup.svg" },
-  { name: "CBS Entrepreneurship", members: "300+", abbrev: "CBS", link: "https://cbs.dk", logoUrl: "https://asset.brandfetch.io/id5xj0q_XB/idHj6CmZjU.svg" },
+  { name: "WHU ETA Club", abbrev: "WHU" },
+  { name: "ETA Sankt Gallen", abbrev: "HSG" },
+  { name: "TU Investment Club", abbrev: "TUM" },
+  { name: "Green Finance Consulting", abbrev: "GFC" },
+  { name: "Integra e.V.", abbrev: "INT" },
+  { name: "Aachen Investment Club", abbrev: "AIC" },
+  { name: "HHL Private Equity Club", abbrev: "HHL" },
+  { name: "Further partnerships in the pipeline", abbrev: "+" },
 ]
 
 function UniversityCard({ club }: { club: typeof universityClubs[0] }) {
-  const [imgError, setImgError] = useState(false)
+  const [imgError, setImgError] = useState(true) // Default to true to show placeholder
 
   return (
-    <a
-      href={club.link}
-      target="_blank"
-      rel="noopener noreferrer"
+    <div
       className="bg-white/5 border border-white/10 rounded-xl p-6 text-center hover:bg-white/10 hover:border-blue-500/50 transition-all duration-300 group"
     >
       <div className="h-12 flex items-center justify-center mb-3">
         {!imgError ? (
+          // Placeholder for future club logo
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={club.logoUrl}
+            src=""
             alt={club.abbrev}
             className="h-10 w-auto max-w-full object-contain brightness-0 invert opacity-80 group-hover:opacity-100 transition-opacity"
             onError={() => setImgError(true)}
           />
         ) : (
-          <span className="text-2xl font-bold text-blue-400 group-hover:text-blue-300 transition-colors">{club.abbrev}</span>
+          <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center group-hover:bg-blue-500/30 transition-colors">
+            <span className="text-lg font-bold text-blue-400 group-hover:text-blue-300 transition-colors">{club.abbrev}</span>
+          </div>
         )}
       </div>
-      <h4 className="text-sm font-semibold text-white mb-1 line-clamp-2">{club.name}</h4>
-      <p className="text-xs text-slate-400">{club.members} members</p>
-    </a>
+      <h4 className="text-sm font-semibold text-white line-clamp-2">{club.name}</h4>
+    </div>
   )
 }
 
 export function UniversityLogos() {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
       {universityClubs.map((club, index) => (
         <UniversityCard key={index} club={club} />
       ))}
