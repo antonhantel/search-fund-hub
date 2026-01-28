@@ -138,7 +138,7 @@ export default function LoginPage() {
           <p className="text-slate-400 text-sm text-center mb-2">Demo Credentials</p>
           <div className="text-xs text-slate-500 space-y-1 text-center">
             <p><span className="text-slate-400">Admin:</span> admin@searchfundhub.de / admin123</p>
-            <p><span className="text-slate-400">Employer:</span> contact@indepsponssor-berlin.de / employer123</p>
+            <p><span className="text-slate-400">Employer:</span> employer@searchfundhub.de / Employer123</p>
           </div>
         </div>
 
