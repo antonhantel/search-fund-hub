@@ -1,7 +1,41 @@
 'use client'
 
-import { useState, useTransition } from 'react'
-import { updateApplicationStage, addApplication, deleteApplication } from './actions'
+import { useState } from 'react'
+
+// Use fetch() to API routes instead of server actions.
+// Server actions automatically trigger Next.js router cache revalidation,
+// which causes the page to re-fetch server data and reset client state.
+// API routes called via fetch() have NO such side effect.
+
+async function updateStageViaAPI(applicationId: string, stage: string) {
+  const res = await fetch('/api/employer/applications', {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ applicationId, stage })
+  })
+  if (!res.ok) throw new Error('Failed to update stage')
+  return res.json()
+}
+
+async function addApplicationViaAPI(data: { candidateName: string; candidateEmail: string; linkedinUrl?: string; jobId: string; notes?: string }) {
+  const res = await fetch('/api/employer/applications', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  })
+  if (!res.ok) throw new Error('Failed to add application')
+  return res.json()
+}
+
+async function deleteApplicationViaAPI(applicationId: string) {
+  const res = await fetch('/api/employer/applications', {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ applicationId })
+  })
+  if (!res.ok) throw new Error('Failed to delete application')
+  return res.json()
+}
 
 interface Application {
   id: string
@@ -33,7 +67,7 @@ const STAGES = [
 
 export default function KanbanBoard({ applications: initialApplications, jobs }: { applications: Application[], jobs: Job[] }) {
   const [applications, setApplications] = useState(initialApplications)
-  const [isPending, startTransition] = useTransition()
+  const [isSaving, setIsSaving] = useState(false)
   const [selectedStage, setSelectedStage] = useState('new')
   const [draggedApp, setDraggedApp] = useState<string | null>(null)
   const [dragOverStage, setDragOverStage] = useState<string | null>(null)
@@ -98,11 +132,7 @@ export default function KanbanBoard({ applications: initialApplications, jobs }:
     // startTransition can cause issues with server action state
     ;(async () => {
       try {
-        const result = await updateApplicationStage(appId, newStage)
-        if (!result.success) {
-          throw new Error('Server update failed')
-        }
-        // Server confirmed the update - state is already correct
+        await updateStageViaAPI(appId, newStage)
       } catch (error) {
         // Revert on error
         setApplications(prev =>
@@ -128,17 +158,18 @@ export default function KanbanBoard({ applications: initialApplications, jobs }:
     ? applications
     : applications.filter(app => app.jobId === selectedJobFilter)
 
-  const handleDeleteCandidate = (applicationId: string) => {
-    startTransition(async () => {
-      try {
-        await deleteApplication(applicationId)
-        setApplications(prev => prev.filter(a => a.id !== applicationId))
-        setShowDeleteConfirm(null)
-        setSelectedApp(null)
-      } catch (error) {
-        console.error('Failed to delete candidate:', error)
-      }
-    })
+  const handleDeleteCandidate = async (applicationId: string) => {
+    setIsSaving(true)
+    try {
+      await deleteApplicationViaAPI(applicationId)
+      setApplications(prev => prev.filter(a => a.id !== applicationId))
+      setShowDeleteConfirm(null)
+      setSelectedApp(null)
+    } catch (error) {
+      console.error('Failed to delete candidate:', error)
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   const currentStageApps = getApplicationsByStage(selectedStage)
@@ -352,7 +383,7 @@ export default function KanbanBoard({ applications: initialApplications, jobs }:
       </div>
 
       {/* Loading indicator */}
-      {isPending && (
+      {isSaving && (
         <div className="fixed bottom-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 z-50">
           <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
@@ -363,7 +394,7 @@ export default function KanbanBoard({ applications: initialApplications, jobs }:
       )}
 
       {/* Stage Change Success Notification */}
-      {stageChangeSuccess && !isPending && (
+      {stageChangeSuccess && !isSaving && (
         <div className="fixed bottom-4 right-4 bg-green-600 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 z-50 animate-in slide-in-from-bottom-4 fade-in duration-300">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -419,10 +450,7 @@ export default function KanbanBoard({ applications: initialApplications, jobs }:
             // Server update
             ;(async () => {
               try {
-                const result = await updateApplicationStage(appId, newStage)
-                if (!result.success) {
-                  throw new Error('Server update failed')
-                }
+                await updateStageViaAPI(appId, newStage)
               } catch (error) {
                 // Revert on error
                 setApplications(prev =>
@@ -468,10 +496,10 @@ export default function KanbanBoard({ applications: initialApplications, jobs }:
               </button>
               <button
                 onClick={() => handleDeleteCandidate(showDeleteConfirm)}
-                disabled={isPending}
+                disabled={isSaving}
                 className="flex-1 px-4 py-2.5 bg-red-600 hover:bg-red-500 text-white font-medium rounded-lg transition-colors disabled:opacity-50"
               >
-                {isPending ? 'Deleting...' : 'Delete'}
+                {isSaving ? 'Deleting...' : 'Delete'}
               </button>
             </div>
           </div>
@@ -490,7 +518,7 @@ function AddCandidateModal({
   onClose: () => void
   onAdd: (app: Application) => void
 }) {
-  const [isPending, startTransition] = useTransition()
+  const [isSaving, setIsSaving] = useState(false)
   const [formData, setFormData] = useState({
     candidateName: '',
     candidateEmail: '',
@@ -503,22 +531,23 @@ function AddCandidateModal({
     e.preventDefault()
     if (!formData.candidateName || !formData.candidateEmail || !formData.jobId) return
 
-    startTransition(async () => {
-      try {
-        const result = await addApplication(formData)
-        if (result.success && result.application) {
-          const job = jobs.find(j => j.id === formData.jobId)
-          onAdd({
-            ...result.application,
-            jobTitle: job?.title || '',
-            jobId: formData.jobId,
-            appliedAt: new Date(result.application.appliedAt)
-          })
-        }
-      } catch (error) {
-        console.error('Failed to add candidate:', error)
+    setIsSaving(true)
+    try {
+      const result = await addApplicationViaAPI(formData)
+      if (result.success && result.application) {
+        const job = jobs.find(j => j.id === formData.jobId)
+        onAdd({
+          ...result.application,
+          jobTitle: job?.title || '',
+          jobId: formData.jobId,
+          appliedAt: new Date(result.application.appliedAt)
+        })
       }
-    })
+    } catch (error) {
+      console.error('Failed to add candidate:', error)
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   return (
@@ -604,10 +633,10 @@ function AddCandidateModal({
             </button>
             <button
               type="submit"
-              disabled={isPending}
+              disabled={isSaving}
               className="flex-1 px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg transition-colors disabled:opacity-50"
             >
-              {isPending ? 'Adding...' : 'Add Candidate'}
+              {isSaving ? 'Adding...' : 'Add Candidate'}
             </button>
           </div>
         </form>
