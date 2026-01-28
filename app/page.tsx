@@ -65,9 +65,9 @@ export default async function HomePage() {
             <Image
               src="/logo-white.png"
               alt="Search Fund Hub"
-              width={600}
-              height={200}
-              className="h-44 md:h-56 w-auto"
+              width={700}
+              height={250}
+              className="h-52 md:h-64 w-auto"
               priority
             />
           </div>
@@ -223,7 +223,7 @@ export default async function HomePage() {
       </section>
 
       {/* Events & Community Section */}
-      <section id="events-community" className="py-16 md:py-20 bg-gradient-to-b from-blue-900/30 to-transparent border-y border-blue-500/20">
+      <section id="events-community" className="py-16 md:py-20 bg-gradient-to-b from-blue-900/30 to-transparent border-y border-blue-500/20 scroll-mt-28">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
@@ -378,7 +378,7 @@ export default async function HomePage() {
         <div className="mt-16 pt-12 border-t border-white/10">
           <div className="text-center max-w-2xl mx-auto">
             <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">
-              Hiring for Your Search Fund?
+              Hiring for Your Organization?
             </h3>
             <p className="text-slate-400 mb-8">
               Get access to our talent pipeline of ambitious, entrepreneurial candidates from top business schools.
@@ -500,8 +500,19 @@ export default async function HomePage() {
       <footer className="py-8 border-t border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
               <img src="/logo-white.png" alt="Search Fund Hub" className="h-14 w-auto" />
+              <a
+                href="https://www.linkedin.com/company/search-fund-hub"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center w-8 h-8 bg-[#0A66C2] hover:bg-[#004182] text-white rounded transition-colors"
+                title="Follow us on LinkedIn"
+              >
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                </svg>
+              </a>
             </div>
             <div className="text-slate-400 text-sm">
               © 2026 Search Fund Hub. Volunteer-led community.
