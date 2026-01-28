@@ -15,8 +15,8 @@ export function Navbar() {
   // Check if we should hide navbar (admin/employer pages have their own headers)
   const shouldHideNavbar = pathname.startsWith('/admin') || pathname.startsWith('/employer')
 
-  // Check if we're on a dark page (landing, login, signup, for-employers, jobs)
-  const isDarkPage = pathname === '/' || pathname === '/login' || pathname.startsWith('/signup') || pathname === '/for-employers' || pathname.startsWith('/jobs')
+  // Check if we're on a dark page (landing, login, signup, for-employers, jobs, team)
+  const isDarkPage = pathname === '/' || pathname === '/login' || pathname.startsWith('/signup') || pathname === '/for-employers' || pathname.startsWith('/jobs') || pathname === '/team'
 
   // Scroll handler for homepage - show navbar after scrolling past hero logo
   useEffect(() => {
@@ -56,7 +56,7 @@ export function Navbar() {
             <img
               src={isDarkPage ? "/logo-white.png" : "/Logo-blue.png"}
               alt="Search Fund Hub"
-              className="h-16 md:h-20 w-auto"
+              className="h-20 md:h-24 w-auto"
             />
           </Link>
 
@@ -79,6 +79,12 @@ export function Navbar() {
             >
               For Employers
             </Link>
+            <Link
+              href="/team"
+              className={`font-medium transition ${isDarkPage ? 'text-slate-300 hover:text-white' : 'text-gray-700 hover:text-blue-600'}`}
+            >
+              Team
+            </Link>
 
             <div className="flex items-center gap-4">
               {session?.user ? (
@@ -97,20 +103,12 @@ export function Navbar() {
                   </button>
                 </>
               ) : (
-                <>
-                  <Link
-                    href="/login"
-                    className={`px-4 py-2 rounded-lg transition font-medium ${isDarkPage ? 'text-slate-300 hover:text-white hover:bg-slate-800' : 'text-gray-700 hover:text-blue-600'}`}
-                  >
-                    Login
-                  </Link>
-                  <Link
-                    href="/signup"
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition font-medium"
-                  >
-                    Sign Up
-                  </Link>
-                </>
+                <Link
+                  href="/login"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition font-medium"
+                >
+                  Login / Sign Up
+                </Link>
               )}
             </div>
           </div>
@@ -145,6 +143,12 @@ export function Navbar() {
             >
               For Employers
             </Link>
+            <Link
+              href="/team"
+              className={`block font-medium ${isDarkPage ? 'text-slate-300 hover:text-white' : 'text-gray-700 hover:text-blue-600'}`}
+            >
+              Team
+            </Link>
             {session?.user ? (
               <>
                 <Link
@@ -161,20 +165,12 @@ export function Navbar() {
                 </button>
               </>
             ) : (
-              <>
-                <Link
-                  href="/login"
-                  className={`block px-4 py-2 ${isDarkPage ? 'text-slate-300' : 'text-gray-700'}`}
-                >
-                  Login
-                </Link>
-                <Link
-                  href="/signup"
-                  className="block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500"
-                >
-                  Sign Up
-                </Link>
-              </>
+              <Link
+                href="/login"
+                className="block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500"
+              >
+                Login / Sign Up
+              </Link>
             )}
           </div>
         )}

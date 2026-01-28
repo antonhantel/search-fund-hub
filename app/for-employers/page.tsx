@@ -53,7 +53,7 @@ export default function ForEmployersPage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-8">
             {/* Feature 1 */}
             <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover:bg-white/10 transition-all">
               <div className="w-14 h-14 bg-blue-500/20 rounded-xl flex items-center justify-center mb-6">
@@ -78,45 +78,12 @@ export default function ForEmployersPage() {
 
             {/* Feature 3 */}
             <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover:bg-white/10 transition-all">
-              <div className="w-14 h-14 bg-purple-500/20 rounded-xl flex items-center justify-center mb-6">
-                <span className="text-3xl">⚡</span>
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-3">Quick Setup</h3>
-              <p className="text-slate-400">
-                Post your first job in under 5 minutes. No complex forms, no lengthy approval processes for verified searchers.
-              </p>
-            </div>
-
-            {/* Feature 4 */}
-            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover:bg-white/10 transition-all">
               <div className="w-14 h-14 bg-yellow-500/20 rounded-xl flex items-center justify-center mb-6">
                 <span className="text-3xl">🔗</span>
               </div>
               <h3 className="text-xl font-semibold text-white mb-3">LinkedIn Integration</h3>
               <p className="text-slate-400">
                 Your LinkedIn profile is prominently displayed on job listings. Candidates can learn about you directly—building trust before they apply.
-              </p>
-            </div>
-
-            {/* Feature 5 */}
-            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover:bg-white/10 transition-all">
-              <div className="w-14 h-14 bg-red-500/20 rounded-xl flex items-center justify-center mb-6">
-                <span className="text-3xl">📊</span>
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-3">Analytics</h3>
-              <p className="text-slate-400">
-                See how many people viewed your job, applied, and where they came from. Make data-driven hiring decisions.
-              </p>
-            </div>
-
-            {/* Feature 6 */}
-            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover:bg-white/10 transition-all">
-              <div className="w-14 h-14 bg-cyan-500/20 rounded-xl flex items-center justify-center mb-6">
-                <span className="text-3xl">🤝</span>
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-3">Community</h3>
-              <p className="text-slate-400">
-                Join a network of search fund entrepreneurs sharing best practices, candidate recommendations, and industry insights.
               </p>
             </div>
           </div>
@@ -169,113 +136,62 @@ export default function ForEmployersPage() {
         </div>
       </section>
 
-      {/* Pricing */}
+      {/* University Network Section */}
       <section className="py-16 md:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
+          <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Simple, Transparent Pricing
+              Our University Partner Network
             </h2>
             <p className="text-slate-400 max-w-2xl mx-auto">
-              Start for free. Upgrade when you need more.
+              We partner with leading entrepreneurship and finance clubs at top universities
+              to bring you access to exceptional student talent.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* Free Tier */}
-            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8">
-              <div className="mb-6">
-                <h3 className="text-xl font-semibold text-white mb-2">Starter</h3>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-bold text-white">€0</span>
-                  <span className="text-slate-400">/month</span>
-                </div>
-              </div>
-              <ul className="space-y-3 mb-8">
-                <li className="flex items-center gap-2 text-slate-300">
-                  <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  1 active job posting
-                </li>
-                <li className="flex items-center gap-2 text-slate-300">
-                  <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  Basic Kanban board
-                </li>
-                <li className="flex items-center gap-2 text-slate-300">
-                  <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  LinkedIn profile link
-                </li>
-                <li className="flex items-center gap-2 text-slate-300">
-                  <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  Email support
-                </li>
-              </ul>
-              <Link
-                href="/login"
-                className="block w-full text-center px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-medium rounded-lg transition-colors"
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+            {[
+              { name: "WHU ETA Club", abbrev: "WHU" },
+              { name: "ETA Sankt Gallen", abbrev: "HSG" },
+              { name: "TU Investment Club", abbrev: "TUM" },
+              { name: "Green Finance Consulting", abbrev: "GFC" },
+              { name: "Integra e.V.", abbrev: "INT" },
+              { name: "Aachen Investment Club", abbrev: "AIC" },
+              { name: "HHL Private Equity Club", abbrev: "HHL" },
+              { name: "Further partnerships in the pipeline", abbrev: "+" },
+            ].map((club, index) => (
+              <div
+                key={index}
+                className="bg-white/5 border border-white/10 rounded-xl p-6 text-center hover:bg-white/10 hover:border-blue-500/50 transition-all duration-300"
               >
-                Get Started Free
-              </Link>
-            </div>
+                <div className="h-12 flex items-center justify-center mb-3">
+                  <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                    <span className="text-lg font-bold text-blue-400">{club.abbrev}</span>
+                  </div>
+                </div>
+                <h4 className="text-sm font-semibold text-white line-clamp-2">{club.name}</h4>
+              </div>
+            ))}
+          </div>
 
-            {/* Pro Tier */}
-            <div className="bg-gradient-to-br from-blue-600/20 to-cyan-600/20 border border-blue-500/30 rounded-2xl p-8 relative">
-              <div className="absolute top-4 right-4 px-3 py-1 bg-blue-500 text-white text-xs font-semibold rounded-full">
-                POPULAR
-              </div>
-              <div className="mb-6">
-                <h3 className="text-xl font-semibold text-white mb-2">Pro</h3>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-bold text-white">€49</span>
-                  <span className="text-slate-400">/month</span>
-                </div>
-              </div>
-              <ul className="space-y-3 mb-8">
-                <li className="flex items-center gap-2 text-slate-300">
-                  <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  Unlimited job postings
-                </li>
-                <li className="flex items-center gap-2 text-slate-300">
-                  <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  Advanced Kanban + notes
-                </li>
-                <li className="flex items-center gap-2 text-slate-300">
-                  <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  Email templates (AI-powered)
-                </li>
-                <li className="flex items-center gap-2 text-slate-300">
-                  <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  Priority support
-                </li>
-                <li className="flex items-center gap-2 text-slate-300">
-                  <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  Analytics dashboard
-                </li>
-              </ul>
-              <Link
-                href="/login"
-                className="block w-full text-center px-6 py-3 bg-blue-500 hover:bg-blue-400 text-white font-medium rounded-lg transition-colors shadow-lg shadow-blue-500/25"
-              >
-                Start 14-Day Free Trial
-              </Link>
-            </div>
+          {/* University Partnership CTA */}
+          <div className="bg-gradient-to-r from-blue-600/20 to-cyan-600/20 border border-blue-500/30 rounded-2xl p-8 text-center">
+            <h3 className="text-xl font-semibold text-white mb-3">
+              Want to Add Your University Club?
+            </h3>
+            <p className="text-slate-400 mb-6 max-w-xl mx-auto">
+              We&apos;re always looking to expand our network with entrepreneurship, finance, and consulting clubs
+              from universities across DACH and Europe.
+            </p>
+            <a
+              href="mailto:partners@searchfundhub.com?subject=University%20Club%20Partnership"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-500 hover:bg-blue-400 text-white font-medium rounded-lg transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+              Contact Us About Partnerships
+            </a>
           </div>
         </div>
       </section>
