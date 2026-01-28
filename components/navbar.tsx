@@ -56,7 +56,7 @@ export function Navbar() {
             <img
               src={isDarkPage ? "/logo-white.png" : "/Logo-blue.png"}
               alt="Search Fund Hub"
-              className="h-10 w-auto"
+              className="h-12 w-auto"
             />
           </Link>
 

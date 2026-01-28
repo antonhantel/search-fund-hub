@@ -65,9 +65,9 @@ export default async function HomePage() {
             <Image
               src="/logo-white.png"
               alt="Search Fund Hub"
-              width={320}
-              height={100}
-              className="h-24 md:h-28 w-auto"
+              width={400}
+              height={130}
+              className="h-32 md:h-40 w-auto"
               priority
             />
           </div>
@@ -511,7 +511,7 @@ export default async function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-3">
-              <Image src="/logo-white.svg" alt="Search Fund Hub" width={120} height={40} className="h-8 w-auto" />
+              <img src="/logo-white.png" alt="Search Fund Hub" className="h-10 w-auto" />
             </div>
             <div className="text-slate-400 text-sm">
               © 2026 Search Fund Hub. Volunteer-led community.
