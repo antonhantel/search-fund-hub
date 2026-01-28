@@ -132,8 +132,9 @@ export default async function HomePage() {
               <div className="mt-2 text-sm text-slate-400">Students in Job Board Network</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-white">{totalJobs || 3}</div>
-              <div className="mt-2 text-sm text-slate-400">Active Opportunities</div>
+              <div className="text-3xl md:text-4xl font-bold text-white">4</div>
+              <div className="mt-2 text-sm text-slate-400">Locations</div>
+              <div className="mt-1 text-xs text-slate-500">MUC · BER · FFM · HAM</div>
             </div>
           </div>
         </div>
@@ -382,6 +383,36 @@ export default async function HomePage() {
             </svg>
           </Link>
         </div>
+
+        {/* Employer CTA */}
+        <div className="mt-16 pt-12 border-t border-white/10">
+          <div className="text-center max-w-2xl mx-auto">
+            <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">
+              Hiring for Your Search Fund?
+            </h3>
+            <p className="text-slate-400 mb-8">
+              Get access to our talent pipeline of ambitious, entrepreneurial candidates from top business schools.
+              Manage your recruiting process with our intuitive Kanban-style dashboard.
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <Link
+                href="/for-employers"
+                className="inline-flex items-center justify-center bg-white/10 hover:bg-white/20 text-white border border-white/20 px-8 py-4 rounded-xl font-semibold transition-all duration-200"
+              >
+                Learn More
+              </Link>
+              <Link
+                href="/login"
+                className="inline-flex items-center justify-center bg-blue-500 hover:bg-blue-400 text-white px-8 py-4 rounded-xl font-semibold shadow-lg shadow-blue-500/25 transition-all duration-200"
+              >
+                Post Your First Job Free
+                <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* Partners Section */}
@@ -452,36 +483,6 @@ export default async function HomePage() {
                 <p className="text-slate-400">{faq.a}</p>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* For Employers CTA */}
-      <section className="py-16 md:py-20 bg-white/5 border-y border-white/10">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            Hiring for Your Search Fund?
-          </h2>
-          <p className="text-slate-400 mb-8 max-w-2xl mx-auto">
-            Get access to our talent pipeline of ambitious, entrepreneurial candidates from top business schools.
-            Manage your recruiting process with our intuitive Kanban-style dashboard.
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Link
-              href="/for-employers"
-              className="inline-flex items-center justify-center bg-white/10 hover:bg-white/20 text-white border border-white/20 px-8 py-4 rounded-xl font-semibold transition-all duration-200"
-            >
-              Learn More
-            </Link>
-            <Link
-              href="/login"
-              className="inline-flex items-center justify-center bg-blue-500 hover:bg-blue-400 text-white px-8 py-4 rounded-xl font-semibold shadow-lg shadow-blue-500/25 transition-all duration-200"
-            >
-              Post Your First Job Free
-              <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </Link>
           </div>
         </div>
       </section>

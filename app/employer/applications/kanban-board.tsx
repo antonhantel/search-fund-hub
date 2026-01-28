@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useOptimistic, useTransition } from 'react'
 import { updateApplicationStage, addApplication, deleteApplication } from './actions'
 
 interface Application {
@@ -22,6 +22,11 @@ interface Job {
   title: string
 }
 
+type OptimisticUpdate =
+  | { type: 'move'; appId: string; newStage: string }
+  | { type: 'delete'; appId: string }
+  | { type: 'add'; app: Application }
+
 const STAGES = [
   { id: 'new', label: 'New', color: 'bg-slate-500', textColor: 'text-slate-400', activeColor: 'bg-slate-600', borderColor: 'border-slate-500' },
   { id: 'screening', label: 'Screening', color: 'bg-blue-500', textColor: 'text-blue-400', activeColor: 'bg-blue-600', borderColor: 'border-blue-500' },
@@ -31,8 +36,29 @@ const STAGES = [
   { id: 'rejected', label: 'Rejected', color: 'bg-red-500', textColor: 'text-red-400', activeColor: 'bg-red-600', borderColor: 'border-red-500' },
 ]
 
-export default function KanbanBoard({ applications: initialApplications, jobs }: { applications: Application[], jobs: Job[] }) {
-  const [applications, setApplications] = useState(initialApplications)
+export default function KanbanBoard({ applications: serverApplications, jobs }: { applications: Application[], jobs: Job[] }) {
+  // useOptimistic: React 19 hook designed for optimistic UI updates.
+  // - Uses serverApplications (from server component props) as the base "truth"
+  // - During pending transitions, shows optimistic state
+  // - When transition completes and server revalidates, optimistic state is
+  //   replaced by the new server data (which now includes the DB update)
+  // - If the component remounts, serverApplications already has the updated DB data
+  const [optimisticApps, addOptimistic] = useOptimistic(
+    serverApplications,
+    (state: Application[], update: OptimisticUpdate) => {
+      switch (update.type) {
+        case 'move':
+          return state.map(a => a.id === update.appId ? { ...a, stage: update.newStage } : a)
+        case 'delete':
+          return state.filter(a => a.id !== update.appId)
+        case 'add':
+          return [update.app, ...state]
+        default:
+          return state
+      }
+    }
+  )
+
   const [isPending, startTransition] = useTransition()
   const [selectedStage, setSelectedStage] = useState('new')
   const [draggedApp, setDraggedApp] = useState<string | null>(null)
@@ -65,59 +91,34 @@ export default function KanbanBoard({ applications: initialApplications, jobs }:
 
     if (!draggedApp) return
 
-    const app = applications.find(a => a.id === draggedApp)
+    const app = optimisticApps.find(a => a.id === draggedApp)
     if (!app || app.stage === newStage) {
       setDraggedApp(null)
       return
     }
 
-    // Optimistic update
-    setApplications(prev =>
-      prev.map(a => a.id === draggedApp ? { ...a, stage: newStage } : a)
-    )
+    const appId = draggedApp
+    setDraggedApp(null)
 
-    // Auto-switch to the new stage view so user can see the moved card
+    // Immediate UI state updates
     setSelectedStage(newStage)
+    setRecentlyMovedApp(appId)
+    setStageChangeSuccess({ appId, newStage })
 
-    // Show animation
-    setRecentlyMovedApp(draggedApp)
-    setStageChangeSuccess({ appId: draggedApp, newStage })
-
-    // Clear animation after delay
     setTimeout(() => {
       setRecentlyMovedApp(null)
       setStageChangeSuccess(null)
     }, 2000)
 
-    // Store the app id before clearing draggedApp
-    const appId = draggedApp
-    const originalStage = app.stage
-    setDraggedApp(null)
-
-    // Server update - use regular async/await, not startTransition
-    // startTransition can cause issues with server action state
-    ;(async () => {
-      try {
-        const result = await updateApplicationStage(appId, newStage)
-        if (!result.success) {
-          throw new Error('Server update failed')
-        }
-        // Server confirmed the update - state is already correct
-      } catch (error) {
-        // Revert on error
-        setApplications(prev =>
-          prev.map(a => a.id === appId ? { ...a, stage: originalStage } : a)
-        )
-        setSelectedStage(originalStage)
-        setStageChangeSuccess(null)
-        setRecentlyMovedApp(null)
-        console.error('Failed to update stage:', error)
-      }
-    })()
+    // Optimistic update + server action inside transition
+    startTransition(async () => {
+      addOptimistic({ type: 'move', appId, newStage })
+      await updateApplicationStage(appId, newStage)
+    })
   }
 
   const getApplicationsByStage = (stage: string) => {
-    return applications.filter(app => {
+    return optimisticApps.filter(app => {
       const matchesStage = app.stage === stage
       const matchesJob = selectedJobFilter === 'all' || app.jobId === selectedJobFilter
       return matchesStage && matchesJob
@@ -125,31 +126,26 @@ export default function KanbanBoard({ applications: initialApplications, jobs }:
   }
 
   const filteredApplications = selectedJobFilter === 'all'
-    ? applications
-    : applications.filter(app => app.jobId === selectedJobFilter)
+    ? optimisticApps
+    : optimisticApps.filter(app => app.jobId === selectedJobFilter)
 
   const handleDeleteCandidate = (applicationId: string) => {
+    setShowDeleteConfirm(null)
+    setSelectedApp(null)
+
     startTransition(async () => {
-      try {
-        await deleteApplication(applicationId)
-        setApplications(prev => prev.filter(a => a.id !== applicationId))
-        setShowDeleteConfirm(null)
-        setSelectedApp(null)
-      } catch (error) {
-        console.error('Failed to delete candidate:', error)
-      }
+      addOptimistic({ type: 'delete', appId: applicationId })
+      await deleteApplication(applicationId)
     })
   }
 
   const currentStageApps = getApplicationsByStage(selectedStage)
   const currentStage = STAGES.find(s => s.id === selectedStage)
 
-  // Function to handle resume viewing
   const handleViewResume = (resumeUrl: string | null, candidateName: string) => {
     if (!resumeUrl) return
 
     if (resumeUrl.startsWith('data:')) {
-      // Open base64 data URL in new tab
       const win = window.open()
       if (win) {
         win.document.write(`
@@ -180,9 +176,9 @@ export default function KanbanBoard({ applications: initialApplications, jobs }:
                 onChange={(e) => setSelectedJobFilter(e.target.value)}
                 className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="all">All Jobs ({applications.length})</option>
+                <option value="all">All Jobs ({optimisticApps.length})</option>
                 {jobs.map(job => {
-                  const count = applications.filter(a => a.jobId === job.id).length
+                  const count = optimisticApps.filter(a => a.jobId === job.id).length
                   return (
                     <option key={job.id} value={job.id}>
                       {job.title} ({count})
@@ -380,8 +376,10 @@ export default function KanbanBoard({ applications: initialApplications, jobs }:
           jobs={jobs}
           onClose={() => setShowAddModal(false)}
           onAdd={(newApp) => {
-            setApplications(prev => [newApp, ...prev])
             setShowAddModal(false)
+            startTransition(async () => {
+              addOptimistic({ type: 'add', app: newApp })
+            })
           }}
         />
       )}
@@ -393,12 +391,6 @@ export default function KanbanBoard({ applications: initialApplications, jobs }:
           onClose={() => setSelectedApp(null)}
           onStageChange={(newStage) => {
             const appId = selectedApp.id
-            const originalStage = selectedApp.stage
-
-            // Optimistic update
-            setApplications(prev =>
-              prev.map(a => a.id === appId ? { ...a, stage: newStage } : a)
-            )
 
             // Update selectedApp to reflect new stage
             setSelectedApp(prev => prev ? { ...prev, stage: newStage } : null)
@@ -416,25 +408,11 @@ export default function KanbanBoard({ applications: initialApplications, jobs }:
               setStageChangeSuccess(null)
             }, 2000)
 
-            // Server update
-            ;(async () => {
-              try {
-                const result = await updateApplicationStage(appId, newStage)
-                if (!result.success) {
-                  throw new Error('Server update failed')
-                }
-              } catch (error) {
-                // Revert on error
-                setApplications(prev =>
-                  prev.map(a => a.id === appId ? { ...a, stage: originalStage } : a)
-                )
-                setSelectedApp(prev => prev ? { ...prev, stage: originalStage } : null)
-                setSelectedStage(originalStage)
-                setStageChangeSuccess(null)
-                setRecentlyMovedApp(null)
-                console.error('Failed to update stage:', error)
-              }
-            })()
+            // Optimistic update + server action
+            startTransition(async () => {
+              addOptimistic({ type: 'move', appId, newStage })
+              await updateApplicationStage(appId, newStage)
+            })
           }}
           onViewResume={handleViewResume}
           onDelete={() => setShowDeleteConfirm(selectedApp.id)}
@@ -490,7 +468,7 @@ function AddCandidateModal({
   onClose: () => void
   onAdd: (app: Application) => void
 }) {
-  const [isPending, startTransition] = useTransition()
+  const [isSaving, setIsSaving] = useState(false)
   const [formData, setFormData] = useState({
     candidateName: '',
     candidateEmail: '',
@@ -499,26 +477,27 @@ function AddCandidateModal({
     notes: ''
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!formData.candidateName || !formData.candidateEmail || !formData.jobId) return
 
-    startTransition(async () => {
-      try {
-        const result = await addApplication(formData)
-        if (result.success && result.application) {
-          const job = jobs.find(j => j.id === formData.jobId)
-          onAdd({
-            ...result.application,
-            jobTitle: job?.title || '',
-            jobId: formData.jobId,
-            appliedAt: new Date(result.application.appliedAt)
-          })
-        }
-      } catch (error) {
-        console.error('Failed to add candidate:', error)
+    setIsSaving(true)
+    try {
+      const result = await addApplication(formData)
+      if (result.success && result.application) {
+        const job = jobs.find(j => j.id === formData.jobId)
+        onAdd({
+          ...result.application,
+          jobTitle: job?.title || '',
+          jobId: formData.jobId,
+          appliedAt: new Date(result.application.appliedAt)
+        })
       }
-    })
+    } catch (error) {
+      console.error('Failed to add candidate:', error)
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   return (
@@ -604,10 +583,10 @@ function AddCandidateModal({
             </button>
             <button
               type="submit"
-              disabled={isPending}
+              disabled={isSaving}
               className="flex-1 px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg transition-colors disabled:opacity-50"
             >
-              {isPending ? 'Adding...' : 'Add Candidate'}
+              {isSaving ? 'Adding...' : 'Add Candidate'}
             </button>
           </div>
         </form>
