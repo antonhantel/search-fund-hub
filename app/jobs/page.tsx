@@ -7,8 +7,9 @@ export const dynamic = 'force-dynamic'
 export default async function JobsPage({
   searchParams
 }: {
-  searchParams: { search?: string; industry?: string; location?: string; functionArea?: string }
+  searchParams: Promise<{ search?: string; industry?: string; location?: string; functionArea?: string }>
 }) {
+  const params = await searchParams
   type WhereClause = {
     status: string
     OR?: Array<{ title?: { contains: string; mode: 'insensitive' }; description?: { contains: string; mode: 'insensitive' } }>
@@ -19,23 +20,23 @@ export default async function JobsPage({
 
   const where: WhereClause = { status: 'active' }
 
-  if (searchParams.search) {
+  if (params.search) {
     where.OR = [
-      { title: { contains: searchParams.search, mode: 'insensitive' } },
-      { description: { contains: searchParams.search, mode: 'insensitive' } }
+      { title: { contains: params.search, mode: 'insensitive' } },
+      { description: { contains: params.search, mode: 'insensitive' } }
     ]
   }
 
-  if (searchParams.industry) {
-    where.industry = searchParams.industry
+  if (params.industry) {
+    where.industry = params.industry
   }
 
-  if (searchParams.location) {
-    where.location = { contains: searchParams.location, mode: 'insensitive' }
+  if (params.location) {
+    where.location = { contains: params.location, mode: 'insensitive' }
   }
 
-  if (searchParams.functionArea) {
-    where.functionArea = searchParams.functionArea
+  if (params.functionArea) {
+    where.functionArea = params.functionArea
   }
 
   const allActiveJobs = await prisma.job.findMany({

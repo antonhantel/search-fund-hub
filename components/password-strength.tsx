@@ -62,7 +62,7 @@ export function PasswordStrength({ password, showRequirements = true }: Password
     <div className="space-y-3">
       <div className="flex items-center gap-3">
         <div className="flex-1">
-          <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+          <div className="h-2 bg-slate-600 rounded-full overflow-hidden">
             <div
               className={`h-full transition-all ${getStrengthColor()}`}
               style={{
@@ -71,19 +71,19 @@ export function PasswordStrength({ password, showRequirements = true }: Password
             />
           </div>
         </div>
-        <span className="text-sm font-medium text-gray-700 min-w-fit">{getStrengthText()}</span>
+        <span className="text-sm font-medium text-slate-300 min-w-fit">{getStrengthText()}</span>
       </div>
 
       {showRequirements && (
-        <div className="space-y-2 mt-4 pt-4 border-t border-gray-200">
+        <div className="space-y-2 mt-4 pt-4 border-t border-slate-600">
           {PASSWORD_REQUIREMENTS.map((req) => (
             <div key={req.id} className="flex items-center gap-2">
               {requirements[req.id] ? (
-                <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0" />
+                <CheckCircle2 className="w-4 h-4 text-green-400 flex-shrink-0" />
               ) : (
-                <Circle className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                <Circle className="w-4 h-4 text-slate-500 flex-shrink-0" />
               )}
-              <span className={`text-sm ${requirements[req.id] ? 'text-green-700' : 'text-gray-600'}`}>
+              <span className={`text-sm ${requirements[req.id] ? 'text-green-400' : 'text-slate-300'}`}>
                 {req.label}
               </span>
             </div>

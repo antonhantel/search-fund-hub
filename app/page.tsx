@@ -63,11 +63,11 @@ export default async function HomePage() {
           {/* Centered White Logo */}
           <div className="flex justify-center mb-8">
             <Image
-              src="/logo-white.svg"
+              src="/logo-white.png"
               alt="Search Fund Hub"
-              width={320}
-              height={100}
-              className="h-24 md:h-28 w-auto"
+              width={600}
+              height={200}
+              className="h-44 md:h-56 w-auto"
               priority
             />
           </div>
@@ -429,7 +429,7 @@ export default async function HomePage() {
               className="group flex items-center justify-center p-8 bg-white hover:bg-slate-50 border border-slate-200 hover:border-blue-400 rounded-xl transition-all duration-300 hover:shadow-lg"
             >
               <img
-                src="/lineage-logo.svg"
+                src="/lineage-logo.png"
                 alt="Lineage Partners"
                 className="h-10 w-auto"
               />
@@ -511,7 +511,7 @@ export default async function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-3">
-              <Image src="/logo-white.svg" alt="Search Fund Hub" width={120} height={40} className="h-8 w-auto" />
+              <img src="/logo-white.png" alt="Search Fund Hub" className="h-14 w-auto" />
             </div>
             <div className="text-slate-400 text-sm">
               © 2026 Search Fund Hub. Volunteer-led community.

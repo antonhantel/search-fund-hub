@@ -11,7 +11,7 @@ interface EmployerLayoutProps {
 export default async function EmployerLayout({ children }: EmployerLayoutProps) {
   const session = await auth()
 
-  if (!session || session.user.role !== 'employer') {
+  if (!session?.user?.role || session.user.role !== 'employer') {
     redirect('/login')
   }
 
@@ -22,7 +22,7 @@ export default async function EmployerLayout({ children }: EmployerLayoutProps) 
         <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-3 md:py-4 flex justify-between items-center">
           <div className="flex items-center gap-2 md:gap-4">
             <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
-              <img src="/logo-white.svg" alt="Search Fund Hub" className="h-6 md:h-8 w-auto" />
+              <img src="/logo-white.png" alt="Search Fund Hub" className="h-6 md:h-8 w-auto" />
             </Link>
             <span className="px-2 py-1 bg-blue-500/20 text-blue-400 text-[10px] md:text-xs font-semibold rounded-full">
               EMPLOYER

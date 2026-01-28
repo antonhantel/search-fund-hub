@@ -24,6 +24,30 @@ async function main() {
   })
   console.log('✅ Admin user created: admin@searchfundhub.de')
 
+  // Create Demo Employer User
+  const demoEmployerPassword = await bcrypt.hash('Employer123', 10)
+  const demoEmployer = await prisma.user.upsert({
+    where: { email: 'employer@searchfundhub.de' },
+    update: {},
+    create: {
+      email: 'employer@searchfundhub.de',
+      password: demoEmployerPassword,
+      role: 'employer',
+      employer: {
+        create: {
+          companyName: 'Demo Search Fund',
+          industry: 'Private Equity',
+          website: 'https://demo-searchfund.de',
+          description: 'Demo employer account for testing and demonstration purposes.',
+          status: 'approved',
+          approvedBy: 'admin@searchfundhub.de',
+          approvedAt: new Date()
+        }
+      }
+    }
+  })
+  console.log('✅ Demo employer created: employer@searchfundhub.de')
+
   // Create Real German Search Fund Employers
   const employers = [
     {
@@ -222,6 +246,7 @@ Position Details:
   console.log('\n✨ Database seeded successfully!')
   console.log('\n📧 Login Credentials:')
   console.log('Admin: admin@searchfundhub.de / admin123')
+  console.log('Demo Employer: employer@searchfundhub.de / Employer123')
   console.log('Employer 1: contact@indepsponssor-berlin.de / employer123')
   console.log('Employer 2: contact@mittelstand-ma.de / employer123')
   console.log('Employer 3: contact@digital-transformation-sf.de / employer123')

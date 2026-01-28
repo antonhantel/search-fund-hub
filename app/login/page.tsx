@@ -137,8 +137,8 @@ export default function LoginPage() {
         <div className="mt-6 p-4 bg-slate-800/50 border border-slate-700 rounded-xl">
           <p className="text-slate-400 text-sm text-center mb-2">Demo Credentials</p>
           <div className="text-xs text-slate-500 space-y-1 text-center">
-            <p><span className="text-slate-400">Admin:</span> admin@searchfund.com / admin123</p>
-            <p><span className="text-slate-400">Employer:</span> employer@example.com / employer123</p>
+            <p><span className="text-slate-400">Admin:</span> admin@searchfundhub.de / admin123</p>
+            <p><span className="text-slate-400">Employer:</span> employer@searchfundhub.de / Employer123</p>
           </div>
         </div>
 

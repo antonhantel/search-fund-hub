@@ -9,16 +9,17 @@ export const dynamic = 'force-dynamic'
 export default async function AdminEditJobPage({
   params,
 }: {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }) {
+  const { id } = await params
   const session = await auth()
-  
+
   if (!session?.user || session.user.role !== "admin") {
     redirect("/login")
   }
 
   const job = await prisma.job.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       employer: {
         select: {

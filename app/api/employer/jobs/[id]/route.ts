@@ -5,9 +5,10 @@ import { NextRequest, NextResponse } from "next/server"
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const session = await getServerSession(authOptions)
 
     if (!session?.user?.employerId) {
@@ -21,7 +22,7 @@ export async function PATCH(
 
     // Verify ownership
     const job = await prisma.job.findUnique({
-      where: { id: params.id },
+      where: { id },
       select: { employerId: true }
     })
 
@@ -36,7 +37,7 @@ export async function PATCH(
     const status = ['draft', 'pending'].includes(data.status) ? data.status : 'draft'
 
     const updatedJob = await prisma.job.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         title: data.title,
         description: data.description,
@@ -63,9 +64,10 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const session = await getServerSession(authOptions)
 
     if (!session?.user?.employerId) {
@@ -77,7 +79,7 @@ export async function DELETE(
 
     // Verify ownership
     const job = await prisma.job.findUnique({
-      where: { id: params.id },
+      where: { id },
       select: { employerId: true }
     })
 
@@ -89,7 +91,7 @@ export async function DELETE(
     }
 
     await prisma.job.delete({
-      where: { id: params.id },
+      where: { id },
     })
 
     return NextResponse.json({ success: true })
