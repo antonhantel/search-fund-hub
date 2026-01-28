@@ -9,10 +9,11 @@ export const dynamic = 'force-dynamic'
 export default async function EmployerEditJobPage({
   params,
 }: {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }) {
+  const { id } = await params
   const session = await auth()
-  
+
   if (!session) {
     redirect("/login")
   }
@@ -32,7 +33,7 @@ export default async function EmployerEditJobPage({
   }
 
   const job = await prisma.job.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       employer: {
         select: {
