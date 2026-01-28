@@ -11,7 +11,7 @@ interface AdminLayoutProps {
 export default async function AdminLayout({ children }: AdminLayoutProps) {
   const session = await auth()
 
-  if (!session || session.user.role !== 'admin') {
+  if (!session?.user?.role || session.user.role !== 'admin') {
     redirect('/login')
   }
 
@@ -22,7 +22,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
           <div className="flex items-center gap-4">
             <Link href="/" className="flex items-center gap-2 text-white hover:text-blue-400 transition-colors">
-              <img src="/logo.svg" alt="Search Fund Hub" className="h-8 w-8" />
+              <img src="/Logo-blue.png" alt="Search Fund Hub" className="h-8 w-auto" />
               <span className="text-xl font-bold">Search Fund Hub</span>
             </Link>
             <span className="px-2 py-1 bg-red-500/20 text-red-400 text-xs font-semibold rounded-full">

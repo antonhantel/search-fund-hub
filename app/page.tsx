@@ -63,7 +63,7 @@ export default async function HomePage() {
           {/* Centered White Logo */}
           <div className="flex justify-center mb-8">
             <Image
-              src="/logo-white.svg"
+              src="/logo-white.png"
               alt="Search Fund Hub"
               width={320}
               height={100}
@@ -429,7 +429,7 @@ export default async function HomePage() {
               className="group flex items-center justify-center p-8 bg-white hover:bg-slate-50 border border-slate-200 hover:border-blue-400 rounded-xl transition-all duration-300 hover:shadow-lg"
             >
               <img
-                src="/lineage-logo.svg"
+                src="/lineage-logo.png"
                 alt="Lineage Partners"
                 className="h-10 w-auto"
               />

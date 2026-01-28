@@ -54,7 +54,7 @@ export function Navbar() {
             className="flex items-center"
           >
             <img
-              src={isDarkPage ? "/logo-white.svg" : "/logo.svg"}
+              src={isDarkPage ? "/logo-white.png" : "/Logo-blue.png"}
               alt="Search Fund Hub"
               className="h-10 w-auto"
             />
