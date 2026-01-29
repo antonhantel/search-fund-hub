@@ -47,7 +47,7 @@ export function Navbar() {
     <nav className={`fixed top-0 w-full z-50 transition-transform duration-300 ${
       isHomePage && !isVisible ? '-translate-y-full' : 'translate-y-0'
     } ${isDarkPage ? 'bg-slate-900/95 backdrop-blur-md border-b border-slate-700' : 'bg-white shadow-md'}`}>
-      <div className="max-w-7xl mx-auto px-4 py-4">
+      <div className="max-w-7xl mx-auto px-4 py-2">
         <div className="flex items-center justify-between">
           <Link
             href="/"
@@ -56,7 +56,7 @@ export function Navbar() {
             <img
               src={isDarkPage ? "/logo-white.png" : "/Logo-blue.png"}
               alt="Search Fund Hub"
-              className="h-20 md:h-24 w-auto"
+              className="h-10 md:h-12 w-auto"
             />
           </Link>
 
@@ -69,13 +69,13 @@ export function Navbar() {
             </Link>
             <Link
               href="/jobs"
-              className={`font-medium transition ${isDarkPage ? 'text-slate-300 hover:text-white' : 'text-gray-700 hover:text-blue-600'}`}
+              className={`font-medium transition ${isDarkPage ? 'text-blue-300 hover:text-blue-200' : 'text-blue-600 hover:text-blue-700'}`}
             >
               Job Board
             </Link>
             <Link
               href="/for-employers"
-              className={`font-medium transition ${isDarkPage ? 'text-slate-300 hover:text-white' : 'text-gray-700 hover:text-blue-600'}`}
+              className={`font-medium transition ${isDarkPage ? 'text-blue-300 hover:text-blue-200' : 'text-blue-600 hover:text-blue-700'}`}
             >
               For Employers
             </Link>
@@ -133,13 +133,13 @@ export function Navbar() {
             </Link>
             <Link
               href="/jobs"
-              className={`block font-medium ${isDarkPage ? 'text-slate-300 hover:text-white' : 'text-gray-700 hover:text-blue-600'}`}
+              className={`block font-medium ${isDarkPage ? 'text-blue-300 hover:text-blue-200' : 'text-blue-600 hover:text-blue-700'}`}
             >
               Job Board
             </Link>
             <Link
               href="/for-employers"
-              className={`block font-medium ${isDarkPage ? 'text-slate-300 hover:text-white' : 'text-gray-700 hover:text-blue-600'}`}
+              className={`block font-medium ${isDarkPage ? 'text-blue-300 hover:text-blue-200' : 'text-blue-600 hover:text-blue-700'}`}
             >
               For Employers
             </Link>

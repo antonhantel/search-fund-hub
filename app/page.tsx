@@ -65,9 +65,9 @@ export default async function HomePage() {
             <Image
               src="/logo-white.png"
               alt="Search Fund Hub"
-              width={700}
-              height={250}
-              className="h-52 md:h-64 w-auto"
+              width={400}
+              height={120}
+              className="h-16 md:h-20 w-auto"
               priority
             />
           </div>
@@ -223,7 +223,7 @@ export default async function HomePage() {
       </section>
 
       {/* Events & Community Section */}
-      <section id="events-community" className="py-16 md:py-20 bg-gradient-to-b from-blue-900/30 to-transparent border-y border-blue-500/20 scroll-mt-28">
+      <section id="events-community" className="py-16 md:py-20 bg-gradient-to-b from-blue-900/30 to-transparent border-y border-blue-500/20 scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">

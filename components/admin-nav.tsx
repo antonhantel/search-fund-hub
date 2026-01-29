@@ -14,17 +14,17 @@ export function AdminNav() {
   }
 
   const getLinkClass = (href: string): string => {
-    const baseClass = 'px-4 py-2.5 font-medium rounded-lg transition-all'
+    const baseClass = 'px-3 py-2 md:px-4 md:py-2.5 text-sm md:text-base font-medium rounded-lg transition-all whitespace-nowrap'
     if (isActive(href)) {
       return `${baseClass} bg-blue-600 text-white`
     }
-    return `${baseClass} text-slate-300 hover:text-white hover:bg-slate-700`
+    return `${baseClass} text-slate-400 hover:text-white hover:bg-slate-700`
   }
 
   return (
-    <nav className="bg-slate-800/30 border-b border-slate-700">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex gap-2 py-3 overflow-x-auto">
+    <nav className="bg-slate-800/30 border-b border-slate-700 sticky top-0 z-40">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8">
+        <div className="flex gap-1 md:gap-2 py-2 md:py-3 overflow-x-auto scrollbar-hide">
           <Link href="/admin" className={getLinkClass('/admin')} aria-current={pathname === '/admin' ? 'page' : undefined}>
             Dashboard
           </Link>
@@ -33,6 +33,9 @@ export function AdminNav() {
           </Link>
           <Link href="/admin/employers" className={getLinkClass('/admin/employers')} aria-current={pathname.startsWith('/admin/employers') ? 'page' : undefined}>
             Employers
+          </Link>
+          <Link href="/admin/profile" className={getLinkClass('/admin/profile')} aria-current={pathname.startsWith('/admin/profile') ? 'page' : undefined}>
+            Profile
           </Link>
         </div>
       </div>
