@@ -2,52 +2,60 @@ import Link from "next/link"
 
 const teamMembers = [
   {
-    name: "Paul Liepe",
-    role: "Co-Founder",
-    description: "Bio coming soon.",
-    linkedIn: "https://www.linkedin.com/in/paul-liepe/",
-  },
-  {
     name: "Carlo Schmid",
     role: "Co-Founder",
-    description: "Bio coming soon.",
-    linkedIn: "https://www.linkedin.com/in/carlo-schmid/",
+    description: "Founder and General Partner of LINEAGE, a Fund of Searchers supporting succession entrepreneurs in Europe. Previously investor at Cherry Ventures, started career in Investment Banking at Merrill Lynch.",
+    linkedIn: "https://de.linkedin.com/in/crlschmd",
+    image: "/CSchmid.jpeg",
+  },
+  {
+    name: "Paul Liepe",
+    role: "Co-Founder",
+    description: "Enterprise Architect at Siemens Battery Solutions, focusing on IoT and AI innovations. Over 8 years of experience in agile project management with a technical background in industrial and energy systems.",
+    linkedIn: "https://de.linkedin.com/in/paulliepe",
+    image: "/PLiepe.jpeg",
   },
   {
     name: "John Schanbacher",
     role: "Board Member",
-    description: "Bio coming soon.",
-    linkedIn: "https://www.linkedin.com/in/john-schanbacher/",
+    description: "Works in Private Equity and succession entrepreneurship. Shares analysis on PE deals and operational value drivers for tech companies. Enabler for succession entrepreneurs through LINEAGE and Search Funds.",
+    linkedIn: "https://www.linkedin.com/in/john-schanbacher-8675563",
+    image: "/JSchanbacher.jpeg",
   },
   {
     name: "Clemens Hacker",
     role: "Job Board",
-    description: "Bio coming soon.",
+    description: "Finance background (Esade MiF) with experience at BCG and in VC (Redalpine). Combines analytical consulting experience with a strong focus on Search Funds and business succession.",
     linkedIn: "https://www.linkedin.com/in/clemens-hacker/",
+    image: "/CHacker.jpeg",
   },
   {
     name: "Alexander Rast",
     role: "Munich City Captain",
-    description: "Bio coming soon.",
+    description: "Actively involved in building the Search Fund Hub community. Focus on ETA/Search Funds and community building in the German Mittelstand.",
     linkedIn: "https://www.linkedin.com/in/alexander-rast/",
+    image: "/ARast.jpeg",
   },
   {
     name: "Lukas Pahl",
     role: "Hamburg City Captain",
-    description: "Bio coming soon.",
+    description: "Involved in organizing Search Fund Hub meetups and events. Focuses on networking and event organization in the growing German Search Fund community.",
     linkedIn: "https://www.linkedin.com/in/lukas-pahl/",
+    image: null,
   },
   {
     name: "Tobias Röhrl",
     role: "Berlin City Captain",
-    description: "Bio coming soon.",
+    description: "Part of the core team for German Search Fund activities. Combines transaction and deal focus with community work in the Search ecosystem.",
     linkedIn: "https://www.linkedin.com/in/tobias-roehrl/",
+    image: "/TRoehrl.jpeg",
   },
   {
     name: "TBD",
     role: "Frankfurt City Captain",
     description: "Position open - reach out if interested!",
     linkedIn: null,
+    image: null,
   },
 ]
 
@@ -87,11 +95,22 @@ export default function TeamPage() {
                 key={index}
                 className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:border-blue-500/50 transition-all duration-300 group"
               >
-                {/* Avatar Placeholder */}
-                <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center">
-                  <span className="text-2xl font-bold text-white">
-                    {member.name === "TBD" ? "?" : member.name.split(' ').map(n => n[0]).join('')}
-                  </span>
+                {/* Avatar */}
+                <div className="w-20 h-20 mx-auto mb-4 rounded-full overflow-hidden">
+                  {member.image ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={member.image}
+                      alt={member.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
+                      <span className="text-2xl font-bold text-white">
+                        {member.name === "TBD" ? "?" : member.name.split(' ').map(n => n[0]).join('')}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Name */}
@@ -158,7 +177,7 @@ export default function TeamPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-4">
-              <img src="/logo-white.png" alt="Search Fund Hub" className="h-14 w-auto" />
+              <img src="/logo-white.png" alt="Search Fund Hub" className="h-10 w-auto" />
               <a
                 href="https://www.linkedin.com/company/search-fund-hub"
                 target="_blank"
