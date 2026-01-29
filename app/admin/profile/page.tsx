@@ -1,12 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { PasswordStrength } from '@/components/password-strength'
 
 export default function AdminProfilePage() {
-  const router = useRouter()
   const { data: session } = useSession()
   const [isChangingPassword, setIsChangingPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -58,38 +56,48 @@ export default function AdminProfilePage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-16">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Admin Profile</h1>
+    <div className="max-w-4xl mx-auto">
+      <h1 className="text-3xl font-bold text-white mb-8">Admin Profile</h1>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-md">
+        <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 text-red-300 rounded-xl">
           {error}
         </div>
       )}
 
       {success && (
-        <div className="mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-md">
+        <div className="mb-6 p-4 bg-green-500/20 border border-green-500/50 text-green-300 rounded-xl">
           {success}
         </div>
       )}
 
       {/* Email Section */}
-      <div className="bg-white rounded-2xl p-8 shadow-lg mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Email Address</h2>
-        
-        <div>
-          <p className="text-sm text-gray-600 mb-1">Account Email</p>
-          <p className="text-lg font-medium text-gray-900">{session?.user?.email || 'Loading...'}</p>
+      <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 md:p-8 mb-6">
+        <h2 className="text-xl font-bold text-white mb-6">Email Address</h2>
+
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm text-slate-400 mb-1">Current Email</p>
+            <p className="text-lg font-medium text-white">{session?.user?.email || 'Loading...'}</p>
+          </div>
+          <button
+            type="button"
+            disabled
+            className="px-4 py-2 border border-slate-600 text-slate-500 rounded-lg cursor-not-allowed opacity-50"
+            title="Email change functionality coming soon"
+          >
+            Change Email
+          </button>
         </div>
       </div>
 
       {/* Password Section */}
-      <div className="bg-white rounded-2xl p-8 shadow-lg">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Change Password</h2>
-        
-        <form onSubmit={handlePasswordSubmit} className="space-y-6">
+      <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 md:p-8">
+        <h2 className="text-xl font-bold text-white mb-6">Change Password</h2>
+
+        <form onSubmit={handlePasswordSubmit} className="space-y-4">
           <div>
-            <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-900">
+            <label htmlFor="currentPassword" className="block text-sm font-medium text-slate-300 mb-1">
               Current Password
             </label>
             <input
@@ -99,12 +107,12 @@ export default function AdminProfilePage() {
               value={passwordForm.currentPassword}
               onChange={(e) => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border px-3 py-2"
+              className="w-full px-4 py-2.5 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
           <div>
-            <label htmlFor="newPassword" className="block text-sm font-medium text-gray-900">
+            <label htmlFor="newPassword" className="block text-sm font-medium text-slate-300 mb-1">
               New Password
             </label>
             <input
@@ -114,15 +122,15 @@ export default function AdminProfilePage() {
               value={passwordForm.newPassword}
               onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border px-3 py-2"
+              className="w-full px-4 py-2.5 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
-            <div className="mt-3">
+            <div className="mt-2">
               <PasswordStrength password={passwordForm.newPassword} />
             </div>
           </div>
 
           <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-900">
+            <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-300 mb-1">
               Confirm New Password
             </label>
             <input
@@ -132,14 +140,14 @@ export default function AdminProfilePage() {
               value={passwordForm.confirmPassword}
               onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border px-3 py-2"
+              className="w-full px-4 py-2.5 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
           <button
             type="submit"
             disabled={isChangingPassword}
-            className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 font-medium"
+            className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg transition-colors disabled:opacity-50"
           >
             {isChangingPassword ? 'Updating...' : 'Update Password'}
           </button>
