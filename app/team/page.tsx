@@ -19,14 +19,14 @@ const teamMembers = [
     name: "John Schanbacher",
     role: "Board Member",
     description: "Works in Private Equity and succession entrepreneurship. Shares analysis on PE deals and operational value drivers for tech companies. Enabler for succession entrepreneurs through LINEAGE and Search Funds.",
-    linkedIn: "https://www.linkedin.com/in/john-schanbacher-8675563",
+    linkedIn: "https://www.linkedin.com/in/john-schanbacher/",
     image: "/JSchanbacher.jpeg",
   },
   {
     name: "Clemens Hacker",
     role: "Job Board",
     description: "Finance background (Esade MiF) with experience at BCG and in VC (Redalpine). Combines analytical consulting experience with a strong focus on Search Funds and business succession.",
-    linkedIn: "https://www.linkedin.com/in/clemens-hacker/",
+    linkedIn: "https://www.linkedin.com/in/clemenshacker/",
     image: "/CHacker.jpeg",
   },
   {
@@ -41,13 +41,13 @@ const teamMembers = [
     role: "Hamburg City Captain",
     description: "Involved in organizing Search Fund Hub meetups and events. Focuses on networking and event organization in the growing German Search Fund community.",
     linkedIn: "https://www.linkedin.com/in/lukas-pahl/",
-    image: null,
+    image: "/LPahl.jpg",
   },
   {
     name: "Tobias Röhrl",
     role: "Berlin City Captain",
     description: "Part of the core team for German Search Fund activities. Combines transaction and deal focus with community work in the Search ecosystem.",
-    linkedIn: "https://www.linkedin.com/in/tobias-roehrl/",
+    linkedIn: "https://www.linkedin.com/in/tobiasroehrl/",
     image: "/TRoehrl.jpeg",
   },
   {
