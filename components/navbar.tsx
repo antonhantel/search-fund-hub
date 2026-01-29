@@ -69,13 +69,13 @@ export function Navbar() {
             </Link>
             <Link
               href="/jobs"
-              className={`font-medium transition ${isDarkPage ? 'text-slate-300 hover:text-white' : 'text-gray-700 hover:text-blue-600'}`}
+              className={`font-medium transition ${isDarkPage ? 'text-blue-300 hover:text-blue-200' : 'text-blue-600 hover:text-blue-700'}`}
             >
               Job Board
             </Link>
             <Link
               href="/for-employers"
-              className={`font-medium transition ${isDarkPage ? 'text-slate-300 hover:text-white' : 'text-gray-700 hover:text-blue-600'}`}
+              className={`font-medium transition ${isDarkPage ? 'text-blue-300 hover:text-blue-200' : 'text-blue-600 hover:text-blue-700'}`}
             >
               For Employers
             </Link>
@@ -133,13 +133,13 @@ export function Navbar() {
             </Link>
             <Link
               href="/jobs"
-              className={`block font-medium ${isDarkPage ? 'text-slate-300 hover:text-white' : 'text-gray-700 hover:text-blue-600'}`}
+              className={`block font-medium ${isDarkPage ? 'text-blue-300 hover:text-blue-200' : 'text-blue-600 hover:text-blue-700'}`}
             >
               Job Board
             </Link>
             <Link
               href="/for-employers"
-              className={`block font-medium ${isDarkPage ? 'text-slate-300 hover:text-white' : 'text-gray-700 hover:text-blue-600'}`}
+              className={`block font-medium ${isDarkPage ? 'text-blue-300 hover:text-blue-200' : 'text-blue-600 hover:text-blue-700'}`}
             >
               For Employers
             </Link>

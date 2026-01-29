@@ -20,18 +20,18 @@ function UniversityCard({ club }: { club: typeof universityClubs[0] }) {
     <div
       className="bg-white/5 border border-white/10 rounded-xl p-6 text-center hover:bg-white/10 hover:border-blue-500/50 transition-all duration-300 group"
     >
-      <div className="h-16 flex items-center justify-center mb-3">
+      <div className="h-24 flex items-center justify-center mb-3">
         {club.logo && !imgError ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={club.logo}
             alt={club.name}
-            className="h-14 w-auto max-w-full object-contain"
+            className="h-20 w-auto max-w-full object-contain"
             onError={() => setImgError(true)}
           />
         ) : (
-          <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center group-hover:bg-blue-500/30 transition-colors">
-            <span className="text-lg font-bold text-blue-400 group-hover:text-blue-300 transition-colors">{club.abbrev}</span>
+          <div className="w-16 h-16 bg-blue-500/20 rounded-lg flex items-center justify-center group-hover:bg-blue-500/30 transition-colors">
+            <span className="text-xl font-bold text-blue-400 group-hover:text-blue-300 transition-colors">{club.abbrev}</span>
           </div>
         )}
       </div>

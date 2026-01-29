@@ -65,9 +65,9 @@ export default async function HomePage() {
             <Image
               src="/logo-white.png"
               alt="Search Fund Hub"
-              width={700}
-              height={250}
-              className="h-52 md:h-64 w-auto"
+              width={400}
+              height={120}
+              className="h-16 md:h-20 w-auto"
               priority
             />
           </div>
