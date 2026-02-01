@@ -22,20 +22,21 @@ model User {
 }
 
 model Employer {
-  id            String    @id @default(cuid())
-  userId        String    @unique
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  companyName   String
-  industry      String?
-  website       String?
-  linkedinUrl   String?
-  description   String?
-  status        String    @default("pending")
-  approvedBy    String?
-  approvedAt    DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  jobs          Job[]
+  id                String    @id @default(cuid())
+  userId            String    @unique
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyName       String
+  industry          String?
+  website           String?
+  linkedinUrl       String?
+  description       String?
+  teamProfile       String?
+  status            String    @default("pending")
+  approvedBy        String?
+  approvedAt        DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  jobs              Job[]
 }
 
 model Job {
@@ -46,11 +47,17 @@ model Job {
   description           String
   requirements          String?
   languageRequirements  Json?
-  location              String
+  location              Json?         // Array of location tags
+  remoteAllowed         Boolean       @default(false)
+  hybridAllowed         Boolean       @default(false)
   industry              String?
   functionArea          String?
   companySize           String?
-  salaryRange           String?
+  isFulltime            Boolean       @default(true)
+  isParttime            Boolean       @default(false)
+  parttimeHoursRange    String?
+  startingDateAsap      Boolean       @default(true)
+  startingDate          DateTime?
   status                String        @default("draft")
   approvedBy            String?
   approvedAt            DateTime?
@@ -61,16 +68,24 @@ model Job {
 }
 
 model Application {
-  id            String    @id @default(cuid())
-  jobId         String
-  job           Job       @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  candidateName String
-  candidateEmail String
-  linkedinUrl   String?
-  resumeUrl     String?
-  coverLetter   String?
-  stage         String    @default("new")  // new, screening, interview, offer, hired, rejected
-  notes         String?
-  appliedAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id              String    @id @default(cuid())
+  jobId           String
+  job             Job       @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  candidateName   String
+  candidateEmail  String
+  linkedinUrl     String?
+  resumeUrl       String?
+  coverLetter     String?
+  stage           String    @default("new")  // screening, interview, offer, rejected
+  stageChangedAt  DateTime  @default(now())  // Track when stage was last changed
+  notes           String?
+  appliedAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model LocationTag {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  usageCount Int     @default(1)
+  createdAt DateTime @default(now())
 }

@@ -35,7 +35,10 @@ export async function updateApplicationStage(applicationId: string, newStage: st
 
   const updated = await prisma.application.update({
     where: { id: applicationId },
-    data: { stage: newStage }
+    data: {
+      stage: newStage,
+      stageChangedAt: new Date()
+    }
   })
 
   // DO NOT call revalidatePath here - it causes the page to re-fetch
@@ -49,6 +52,7 @@ export async function addApplication(data: {
   candidateName: string
   candidateEmail: string
   linkedinUrl?: string
+  resumeUrl?: string
   jobId: string
   notes?: string
 }) {
@@ -86,8 +90,10 @@ export async function addApplication(data: {
       candidateName: data.candidateName,
       candidateEmail: data.candidateEmail,
       linkedinUrl: data.linkedinUrl || null,
+      resumeUrl: data.resumeUrl || null,
       notes: data.notes || null,
-      stage: 'new'
+      stage: 'screening',
+      stageChangedAt: new Date()
     }
   })
 
@@ -95,7 +101,8 @@ export async function addApplication(data: {
     success: true,
     application: {
       ...application,
-      appliedAt: application.appliedAt.toISOString()
+      appliedAt: application.appliedAt.toISOString(),
+      stageChangedAt: application.stageChangedAt.toISOString()
     }
   }
 }

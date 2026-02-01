@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition, useEffect } from 'react'
+import { useState, useTransition, useEffect, useRef } from 'react'
 import { updateApplicationStage, addApplication, deleteApplication } from './actions'
 
 interface Application {
@@ -11,6 +11,7 @@ interface Application {
   resumeUrl: string | null
   coverLetter: string | null
   stage: string
+  stageChangedAt: Date
   notes: string | null
   appliedAt: Date
   jobTitle: string
@@ -22,37 +23,55 @@ interface Job {
   title: string
 }
 
+// Updated stages - 4 main columns for desktop kanban
 const STAGES = [
-  { id: 'new', label: 'New', color: 'bg-slate-500', textColor: 'text-slate-400', activeColor: 'bg-slate-600', borderColor: 'border-slate-500' },
-  { id: 'screening', label: 'Screening', color: 'bg-blue-500', textColor: 'text-blue-400', activeColor: 'bg-blue-600', borderColor: 'border-blue-500' },
-  { id: 'interview', label: 'Interview', color: 'bg-yellow-500', textColor: 'text-yellow-400', activeColor: 'bg-yellow-600', borderColor: 'border-yellow-500' },
-  { id: 'offer', label: 'Offer', color: 'bg-purple-500', textColor: 'text-purple-400', activeColor: 'bg-purple-600', borderColor: 'border-purple-500' },
-  { id: 'hired', label: 'Hired', color: 'bg-green-500', textColor: 'text-green-400', activeColor: 'bg-green-600', borderColor: 'border-green-500' },
-  { id: 'rejected', label: 'Rejected', color: 'bg-red-500', textColor: 'text-red-400', activeColor: 'bg-red-600', borderColor: 'border-red-500' },
+  { id: 'screening', label: 'Screen', color: 'bg-blue-500', textColor: 'text-blue-400', borderColor: 'border-blue-500' },
+  { id: 'interview', label: 'Interview', color: 'bg-yellow-500', textColor: 'text-yellow-400', borderColor: 'border-yellow-500' },
+  { id: 'offer', label: 'Offer', color: 'bg-purple-500', textColor: 'text-purple-400', borderColor: 'border-purple-500' },
+  { id: 'rejected', label: 'Reject', color: 'bg-red-500', textColor: 'text-red-400', borderColor: 'border-red-500' },
 ]
 
-export default function KanbanBoard({ applications: serverApplications, jobs }: { applications: Application[], jobs: Job[] }) {
-  // Use local state as the source of truth - initialized from server props
-  // This prevents the "snap back" issue that occurs with useOptimistic
-  // when the transition ends and reverts to unchanged server props
-  const [applications, setApplications] = useState<Application[]>(serverApplications)
+function getTimeInStatus(stageChangedAt: Date): string {
+  const now = new Date()
+  const changed = new Date(stageChangedAt)
+  const diffMs = now.getTime() - changed.getTime()
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
 
-  // Sync with server data when it changes (e.g., on navigation)
+  if (diffDays > 0) {
+    return `${diffDays}d`
+  } else if (diffHours > 0) {
+    return `${diffHours}h`
+  } else {
+    return 'Just now'
+  }
+}
+
+export default function KanbanBoard({ applications: serverApplications, jobs }: { applications: Application[], jobs: Job[] }) {
+  const [applications, setApplications] = useState<Application[]>(serverApplications)
+  const [isMobile, setIsMobile] = useState(false)
+
   useEffect(() => {
     setApplications(serverApplications)
   }, [serverApplications])
 
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024)
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
   const [isPending, startTransition] = useTransition()
-  const [selectedStage, setSelectedStage] = useState('new')
+  const [selectedStage, setSelectedStage] = useState('screening')
   const [draggedApp, setDraggedApp] = useState<string | null>(null)
   const [dragOverStage, setDragOverStage] = useState<string | null>(null)
   const [showAddModal, setShowAddModal] = useState(false)
   const [selectedApp, setSelectedApp] = useState<Application | null>(null)
   const [selectedJobFilter, setSelectedJobFilter] = useState<string>('all')
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null)
-  const [recentlyMovedApp, setRecentlyMovedApp] = useState<string | null>(null)
-  const [stageChangeSuccess, setStageChangeSuccess] = useState<{ appId: string; newStage: string } | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
   const handleDragStart = (e: React.DragEvent, appId: string) => {
     setDraggedApp(appId)
@@ -86,37 +105,25 @@ export default function KanbanBoard({ applications: serverApplications, jobs }: 
     const oldStage = app.stage
     setDraggedApp(null)
 
-    // Immediately update local state (optimistic update)
+    // Optimistic update
     setApplications(prev => prev.map(a =>
-      a.id === appId ? { ...a, stage: newStage } : a
+      a.id === appId ? { ...a, stage: newStage, stageChangedAt: new Date() } : a
     ))
 
-    // Update UI state
-    setSelectedStage(newStage)
-    setRecentlyMovedApp(appId)
-    setStageChangeSuccess({ appId, newStage })
+    setSuccessMessage(`Moved to ${STAGES.find(s => s.id === newStage)?.label}`)
+    setTimeout(() => setSuccessMessage(null), 2000)
 
-    setTimeout(() => {
-      setRecentlyMovedApp(null)
-      setStageChangeSuccess(null)
-    }, 2000)
-
-    // Persist to server
     try {
       const result = await updateApplicationStage(appId, newStage)
       if (!result.success) {
         throw new Error('Failed to update stage')
       }
     } catch (err) {
-      // Revert on error
       console.error('Failed to update application stage:', err)
       setApplications(prev => prev.map(a =>
         a.id === appId ? { ...a, stage: oldStage } : a
       ))
       setError('Failed to move candidate. Please try again.')
-      setStageChangeSuccess(null)
-
-      // Clear error after 3 seconds
       setTimeout(() => setError(null), 3000)
     }
   }
@@ -129,23 +136,17 @@ export default function KanbanBoard({ applications: serverApplications, jobs }: 
     })
   }
 
-  const filteredApplications = selectedJobFilter === 'all'
-    ? applications
-    : applications.filter(app => app.jobId === selectedJobFilter)
-
   const handleDeleteCandidate = async (applicationId: string) => {
     setShowDeleteConfirm(null)
     setSelectedApp(null)
     setError(null)
 
-    // Optimistically remove from local state
     const deletedApp = applications.find(a => a.id === applicationId)
     setApplications(prev => prev.filter(a => a.id !== applicationId))
 
     try {
       await deleteApplication(applicationId)
     } catch (err) {
-      // Revert on error
       console.error('Failed to delete application:', err)
       if (deletedApp) {
         setApplications(prev => [...prev, deletedApp])
@@ -155,9 +156,6 @@ export default function KanbanBoard({ applications: serverApplications, jobs }: 
     }
   }
 
-  const currentStageApps = getApplicationsByStage(selectedStage)
-  const currentStage = STAGES.find(s => s.id === selectedStage)
-
   const handleViewResume = (resumeUrl: string | null, candidateName: string) => {
     if (!resumeUrl) return
 
@@ -166,7 +164,7 @@ export default function KanbanBoard({ applications: serverApplications, jobs }: 
       if (win) {
         win.document.write(`
           <html>
-            <head><title>Resume - ${candidateName}</title></head>
+            <head><title>CV - ${candidateName}</title></head>
             <body style="margin:0;height:100vh">
               <embed src="${resumeUrl}" width="100%" height="100%" type="application/pdf" />
             </body>
@@ -178,192 +176,374 @@ export default function KanbanBoard({ applications: serverApplications, jobs }: 
     }
   }
 
-  return (
-    <div className="flex flex-col lg:flex-row gap-6">
-      {/* Left Side - Stage Navigation */}
-      <div className="lg:w-64 flex-shrink-0">
-        <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-4">
-          {/* Job Filter */}
-          {jobs.length > 1 && (
-            <div className="mb-4 pb-4 border-b border-slate-700">
-              <label className="block text-sm font-semibold text-slate-300 uppercase tracking-wide mb-2">Filter by Job</label>
-              <select
-                value={selectedJobFilter}
-                onChange={(e) => setSelectedJobFilter(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="all">All Jobs ({applications.length})</option>
-                {jobs.map(job => {
-                  const count = applications.filter(a => a.jobId === job.id).length
-                  return (
-                    <option key={job.id} value={job.id}>
-                      {job.title} ({count})
-                    </option>
-                  )
-                })}
-              </select>
-            </div>
-          )}
+  const handleStageChange = async (appId: string, newStage: string) => {
+    const app = applications.find(a => a.id === appId)
+    if (!app || app.stage === newStage) return
 
+    const oldStage = app.stage
+    setError(null)
+
+    // Update selectedApp to reflect new stage
+    setSelectedApp(prev => prev ? { ...prev, stage: newStage, stageChangedAt: new Date() } : null)
+
+    // Optimistic update
+    setApplications(prev => prev.map(a =>
+      a.id === appId ? { ...a, stage: newStage, stageChangedAt: new Date() } : a
+    ))
+
+    setSuccessMessage(`Moved to ${STAGES.find(s => s.id === newStage)?.label}`)
+    setTimeout(() => setSuccessMessage(null), 2000)
+
+    try {
+      const result = await updateApplicationStage(appId, newStage)
+      if (!result.success) {
+        throw new Error('Failed to update stage')
+      }
+    } catch (err) {
+      console.error('Failed to update application stage:', err)
+      setApplications(prev => prev.map(a =>
+        a.id === appId ? { ...a, stage: oldStage } : a
+      ))
+      setSelectedApp(prev => prev ? { ...prev, stage: oldStage } : null)
+      setError('Failed to move candidate. Please try again.')
+      setTimeout(() => setError(null), 3000)
+    }
+  }
+
+  // Mobile: vertical stage selector view
+  if (isMobile) {
+    const currentStageApps = getApplicationsByStage(selectedStage)
+    const currentStage = STAGES.find(s => s.id === selectedStage)
+
+    return (
+      <div className="flex flex-col gap-6">
+        {/* Job Filter */}
+        {jobs.length > 1 && (
+          <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-4">
+            <label className="block text-sm font-semibold text-slate-300 uppercase tracking-wide mb-2">Filter by Job</label>
+            <select
+              value={selectedJobFilter}
+              onChange={(e) => setSelectedJobFilter(e.target.value)}
+              className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="all">All Jobs ({applications.length})</option>
+              {jobs.map(job => {
+                const count = applications.filter(a => a.jobId === job.id).length
+                return (
+                  <option key={job.id} value={job.id}>
+                    {job.title} ({count})
+                  </option>
+                )
+              })}
+            </select>
+          </div>
+        )}
+
+        {/* Stage Navigation */}
+        <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-4">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wide">Stages</h3>
-            <span className="text-xs text-slate-500">{filteredApplications.length} total</span>
+            <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wide">Pipeline</h3>
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="flex items-center gap-1 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              Add
+            </button>
           </div>
 
           <nav className="space-y-2">
             {STAGES.map(stage => {
               const count = getApplicationsByStage(stage.id).length
               const isActive = selectedStage === stage.id
-              const isDragOver = dragOverStage === stage.id
-              const justReceived = stageChangeSuccess?.newStage === stage.id
 
               return (
                 <button
                   key={stage.id}
                   onClick={() => setSelectedStage(stage.id)}
-                  onDragOver={(e) => handleDragOver(e, stage.id)}
-                  onDragLeave={handleDragLeave}
-                  onDrop={(e) => handleDrop(e, stage.id)}
-                  className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-300 ${
-                    isActive
-                      ? `${stage.activeColor} text-white`
-                      : isDragOver
-                        ? `bg-slate-700 border-2 ${stage.borderColor} text-white`
-                        : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
-                  } ${justReceived && !isActive ? 'ring-2 ring-green-500/50 animate-pulse' : ''}`}
+                  className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all ${
+                    isActive ? `${stage.color} text-white` : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
+                  }`}
                 >
                   <div className="flex items-center gap-3">
                     <div className={`w-3 h-3 rounded-full ${stage.color}`} />
                     <span className="font-medium">{stage.label}</span>
                   </div>
-                  <span className={`text-sm font-semibold px-2 py-0.5 rounded-full transition-all duration-300 ${
+                  <span className={`text-sm font-semibold px-2 py-0.5 rounded-full ${
                     isActive ? 'bg-white/20 text-white' : 'bg-slate-700 text-slate-400'
-                  } ${justReceived ? 'bg-green-500 text-white scale-110' : ''}`}>
+                  }`}>
                     {count}
                   </span>
                 </button>
               )
             })}
           </nav>
-
-          <div className="mt-6 pt-4 border-t border-slate-700">
-            <button
-              onClick={() => setShowAddModal(true)}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              Add Candidate
-            </button>
-          </div>
-
-          {draggedApp && (
-            <div className="mt-4 p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg text-center">
-              <p className="text-sm text-blue-400">
-                Drop on a stage to move
-              </p>
-            </div>
-          )}
         </div>
-      </div>
 
-      {/* Right Side - Cards */}
-      <div className="flex-1">
-        <div className="bg-slate-800/30 border border-slate-700 rounded-xl p-6">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <div className={`w-4 h-4 rounded-full ${currentStage?.color}`} />
-              <h2 className="text-xl font-semibold text-white">{currentStage?.label}</h2>
-              <span className="text-slate-500">({currentStageApps.length} candidates)</span>
-            </div>
+        {/* Cards */}
+        <div className="bg-slate-800/30 border border-slate-700 rounded-xl p-4">
+          <div className="flex items-center gap-3 mb-4">
+            <div className={`w-4 h-4 rounded-full ${currentStage?.color}`} />
+            <h2 className="text-lg font-semibold text-white">{currentStage?.label}</h2>
+            <span className="text-slate-500">({currentStageApps.length})</span>
           </div>
 
-          {/* Cards Grid */}
           {currentStageApps.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            <div className="space-y-3">
               {currentStageApps.map(app => (
-                <div
+                <CandidateCard
                   key={app.id}
-                  draggable
-                  onDragStart={(e) => handleDragStart(e, app.id)}
+                  app={app}
+                  onDragStart={handleDragStart}
                   onClick={() => setSelectedApp(app)}
-                  className={`bg-slate-800 border rounded-xl p-5 cursor-grab active:cursor-grabbing hover:border-slate-600 hover:bg-slate-750 transition-all duration-300 ${
-                    draggedApp === app.id ? 'opacity-50 scale-95' : ''
-                  } ${
-                    recentlyMovedApp === app.id
-                      ? 'animate-pulse border-green-500 ring-2 ring-green-500/50 scale-[1.02]'
-                      : 'border-slate-700'
-                  }`}
-                >
-                  {/* Candidate Header */}
-                  <div className="flex items-start justify-between gap-3 mb-3">
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-white truncate">{app.candidateName}</h3>
-                      <p className="text-sm text-slate-400 truncate">{app.candidateEmail}</p>
-                    </div>
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                      {app.resumeUrl && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            handleViewResume(app.resumeUrl, app.candidateName)
-                          }}
-                          className="p-2 bg-green-500/20 text-green-400 rounded-lg hover:bg-green-500/30 transition-colors"
-                          title="View Resume"
-                        >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                          </svg>
-                        </button>
-                      )}
-                      {app.linkedinUrl && (
-                        <a
-                          href={app.linkedinUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={(e) => e.stopPropagation()}
-                          className="p-2 bg-[#0A66C2]/20 text-[#0A66C2] rounded-lg hover:bg-[#0A66C2]/30 transition-colors"
-                          title="View LinkedIn"
-                        >
-                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                          </svg>
-                        </a>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Job Info */}
-                  <div className="flex items-center justify-between pt-3 border-t border-slate-700">
-                    <span className="text-xs px-2.5 py-1 bg-slate-700 text-slate-300 rounded-md truncate max-w-[60%]">
-                      {app.jobTitle}
-                    </span>
-                    <span className="text-xs text-slate-500">
-                      {new Date(app.appliedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                    </span>
-                  </div>
-                </div>
+                  onViewResume={handleViewResume}
+                />
               ))}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center py-16 text-center">
-              <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mb-4">
-                <svg className="w-8 h-8 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-medium text-slate-400 mb-1">No candidates in {currentStage?.label}</h3>
-              <p className="text-sm text-slate-500">
-                Drag candidates here or add a new one
-              </p>
-            </div>
+            <EmptyState stage={currentStage?.label || ''} />
           )}
         </div>
+
+        {/* Modals and Notifications */}
+        <Notifications error={error} success={successMessage} isPending={isPending} />
+        {showAddModal && (
+          <AddCandidateModal
+            jobs={jobs}
+            onClose={() => setShowAddModal(false)}
+            onAdd={(newApp) => {
+              setShowAddModal(false)
+              setApplications(prev => [newApp, ...prev])
+            }}
+          />
+        )}
+        {selectedApp && (
+          <CandidateDetailModal
+            application={selectedApp}
+            onClose={() => setSelectedApp(null)}
+            onStageChange={(stage) => handleStageChange(selectedApp.id, stage)}
+            onViewResume={handleViewResume}
+            onDelete={() => setShowDeleteConfirm(selectedApp.id)}
+          />
+        )}
+        {showDeleteConfirm && (
+          <DeleteConfirmModal
+            onCancel={() => setShowDeleteConfirm(null)}
+            onConfirm={() => handleDeleteCandidate(showDeleteConfirm)}
+            isPending={isPending}
+          />
+        )}
+      </div>
+    )
+  }
+
+  // Desktop: Real Kanban Board with 4 columns
+  return (
+    <div className="flex flex-col gap-6">
+      {/* Header with Job Filter and Add Button */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <h2 className="text-xl font-bold text-white">Pipeline</h2>
+          {jobs.length > 1 && (
+            <select
+              value={selectedJobFilter}
+              onChange={(e) => setSelectedJobFilter(e.target.value)}
+              className="px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="all">All Jobs ({applications.length})</option>
+              {jobs.map(job => {
+                const count = applications.filter(a => a.jobId === job.id).length
+                return (
+                  <option key={job.id} value={job.id}>
+                    {job.title} ({count})
+                  </option>
+                )
+              })}
+            </select>
+          )}
+        </div>
+        <button
+          onClick={() => setShowAddModal(true)}
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg transition-colors"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+          Add Candidate
+        </button>
       </div>
 
-      {/* Loading indicator */}
+      {/* Kanban Columns */}
+      <div className="grid grid-cols-4 gap-4">
+        {STAGES.map(stage => {
+          const stageApps = getApplicationsByStage(stage.id)
+          const isDragOver = dragOverStage === stage.id
+
+          return (
+            <div
+              key={stage.id}
+              onDragOver={(e) => handleDragOver(e, stage.id)}
+              onDragLeave={handleDragLeave}
+              onDrop={(e) => handleDrop(e, stage.id)}
+              className={`bg-slate-800/30 border rounded-xl p-4 min-h-[500px] transition-all ${
+                isDragOver ? `border-2 ${stage.borderColor} bg-slate-800/50` : 'border-slate-700'
+              }`}
+            >
+              {/* Column Header */}
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <div className={`w-3 h-3 rounded-full ${stage.color}`} />
+                  <h3 className="font-semibold text-white">{stage.label}</h3>
+                </div>
+                <span className="text-sm font-medium text-slate-400 bg-slate-700/50 px-2 py-0.5 rounded-full">
+                  {stageApps.length}
+                </span>
+              </div>
+
+              {/* Cards */}
+              <div className="space-y-3">
+                {stageApps.map(app => (
+                  <CandidateCard
+                    key={app.id}
+                    app={app}
+                    onDragStart={handleDragStart}
+                    onClick={() => setSelectedApp(app)}
+                    onViewResume={handleViewResume}
+                    isDragging={draggedApp === app.id}
+                  />
+                ))}
+                {stageApps.length === 0 && (
+                  <div className="text-center py-8 text-slate-500 text-sm">
+                    No candidates
+                  </div>
+                )}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Modals and Notifications */}
+      <Notifications error={error} success={successMessage} isPending={isPending} />
+      {showAddModal && (
+        <AddCandidateModal
+          jobs={jobs}
+          onClose={() => setShowAddModal(false)}
+          onAdd={(newApp) => {
+            setShowAddModal(false)
+            setApplications(prev => [newApp, ...prev])
+          }}
+        />
+      )}
+      {selectedApp && (
+        <CandidateDetailModal
+          application={selectedApp}
+          onClose={() => setSelectedApp(null)}
+          onStageChange={(stage) => handleStageChange(selectedApp.id, stage)}
+          onViewResume={handleViewResume}
+          onDelete={() => setShowDeleteConfirm(selectedApp.id)}
+        />
+      )}
+      {showDeleteConfirm && (
+        <DeleteConfirmModal
+          onCancel={() => setShowDeleteConfirm(null)}
+          onConfirm={() => handleDeleteCandidate(showDeleteConfirm)}
+          isPending={isPending}
+        />
+      )}
+    </div>
+  )
+}
+
+function CandidateCard({
+  app,
+  onDragStart,
+  onClick,
+  onViewResume,
+  isDragging = false
+}: {
+  app: Application
+  onDragStart: (e: React.DragEvent, id: string) => void
+  onClick: () => void
+  onViewResume: (url: string | null, name: string) => void
+  isDragging?: boolean
+}) {
+  return (
+    <div
+      draggable
+      onDragStart={(e) => onDragStart(e, app.id)}
+      onClick={onClick}
+      className={`bg-slate-800 border border-slate-700 rounded-xl p-4 cursor-grab active:cursor-grabbing hover:border-slate-600 transition-all ${
+        isDragging ? 'opacity-50 scale-95' : ''
+      }`}
+    >
+      {/* Name and Time */}
+      <div className="flex items-start justify-between gap-2 mb-2">
+        <h4 className="font-semibold text-white truncate">{app.candidateName}</h4>
+        <span className="text-xs text-slate-500 whitespace-nowrap" title="Time in current status">
+          {getTimeInStatus(app.stageChangedAt)}
+        </span>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="flex items-center gap-2">
+        {app.resumeUrl && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              onViewResume(app.resumeUrl, app.candidateName)
+            }}
+            className="p-1.5 bg-green-500/20 text-green-400 rounded-lg hover:bg-green-500/30 transition-colors"
+            title="View CV"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </button>
+        )}
+        {app.linkedinUrl && (
+          <a
+            href={app.linkedinUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="p-1.5 bg-[#0A66C2]/20 text-[#0A66C2] rounded-lg hover:bg-[#0A66C2]/30 transition-colors"
+            title="View LinkedIn"
+          >
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+            </svg>
+          </a>
+        )}
+      </div>
+
+      {/* Job Title */}
+      <div className="mt-2 pt-2 border-t border-slate-700">
+        <span className="text-xs text-slate-400 truncate block">{app.jobTitle}</span>
+      </div>
+    </div>
+  )
+}
+
+function EmptyState({ stage }: { stage: string }) {
+  return (
+    <div className="flex flex-col items-center justify-center py-12 text-center">
+      <div className="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center mb-3">
+        <svg className="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+      </div>
+      <h3 className="text-sm font-medium text-slate-400 mb-1">No candidates in {stage}</h3>
+      <p className="text-xs text-slate-500">Drag candidates here or add a new one</p>
+    </div>
+  )
+}
+
+function Notifications({ error, success, isPending }: { error: string | null; success: string | null; isPending: boolean }) {
+  return (
+    <>
       {isPending && (
         <div className="fixed bottom-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 z-50">
           <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
@@ -373,20 +553,14 @@ export default function KanbanBoard({ applications: serverApplications, jobs }: 
           Saving...
         </div>
       )}
-
-      {/* Stage Change Success Notification */}
-      {stageChangeSuccess && !isPending && (
-        <div className="fixed bottom-4 right-4 bg-green-600 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 z-50 animate-in slide-in-from-bottom-4 fade-in duration-300">
+      {success && (
+        <div className="fixed bottom-4 right-4 bg-green-600 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 z-50">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
-          <span>
-            Moved to <span className="font-semibold">{STAGES.find(s => s.id === stageChangeSuccess.newStage)?.label}</span>
-          </span>
+          <span>{success}</span>
         </div>
       )}
-
-      {/* Error notification */}
       {error && (
         <div className="fixed bottom-4 right-4 bg-red-600 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 z-50">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -395,111 +569,7 @@ export default function KanbanBoard({ applications: serverApplications, jobs }: 
           <span>{error}</span>
         </div>
       )}
-
-      {/* Add Candidate Modal */}
-      {showAddModal && (
-        <AddCandidateModal
-          jobs={jobs}
-          onClose={() => setShowAddModal(false)}
-          onAdd={(newApp) => {
-            setShowAddModal(false)
-            // Add to local state immediately
-            setApplications(prev => [newApp, ...prev])
-          }}
-        />
-      )}
-
-      {/* Candidate Detail Modal */}
-      {selectedApp && (
-        <CandidateDetailModal
-          application={selectedApp}
-          onClose={() => setSelectedApp(null)}
-          onStageChange={async (newStage) => {
-            const appId = selectedApp.id
-            const oldStage = selectedApp.stage
-            setError(null)
-
-            // Update selectedApp to reflect new stage
-            setSelectedApp(prev => prev ? { ...prev, stage: newStage } : null)
-
-            // Update local state immediately (optimistic)
-            setApplications(prev => prev.map(a =>
-              a.id === appId ? { ...a, stage: newStage } : a
-            ))
-
-            // Show animation
-            setRecentlyMovedApp(appId)
-            setStageChangeSuccess({ appId, newStage })
-
-            // Auto-switch to new stage view
-            setSelectedStage(newStage)
-
-            // Clear animation after delay
-            setTimeout(() => {
-              setRecentlyMovedApp(null)
-              setStageChangeSuccess(null)
-            }, 2000)
-
-            // Persist to server
-            try {
-              const result = await updateApplicationStage(appId, newStage)
-              if (!result.success) {
-                throw new Error('Failed to update stage')
-              }
-            } catch (err) {
-              // Revert on error
-              console.error('Failed to update application stage:', err)
-              setApplications(prev => prev.map(a =>
-                a.id === appId ? { ...a, stage: oldStage } : a
-              ))
-              setSelectedApp(prev => prev ? { ...prev, stage: oldStage } : null)
-              setError('Failed to move candidate. Please try again.')
-              setStageChangeSuccess(null)
-              setTimeout(() => setError(null), 3000)
-            }
-          }}
-          onViewResume={handleViewResume}
-          onDelete={() => setShowDeleteConfirm(selectedApp.id)}
-        />
-      )}
-
-      {/* Delete Confirmation Modal */}
-      {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60] p-4">
-          <div className="bg-slate-800 border border-slate-700 rounded-xl shadow-xl max-w-md w-full p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-red-500/20 rounded-full flex items-center justify-center">
-                <svg className="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-white">Delete Candidate</h3>
-                <p className="text-slate-400 text-sm">This action cannot be undone</p>
-              </div>
-            </div>
-            <p className="text-slate-300 mb-6">
-              Are you sure you want to delete this candidate? All their application data will be permanently removed.
-            </p>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowDeleteConfirm(null)}
-                className="flex-1 px-4 py-2.5 bg-slate-700 hover:bg-slate-600 text-white font-medium rounded-lg transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => handleDeleteCandidate(showDeleteConfirm)}
-                disabled={isPending}
-                className="flex-1 px-4 py-2.5 bg-red-600 hover:bg-red-500 text-white font-medium rounded-lg transition-colors disabled:opacity-50"
-              >
-                {isPending ? 'Deleting...' : 'Delete'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+    </>
   )
 }
 
@@ -513,6 +583,9 @@ function AddCandidateModal({
   onAdd: (app: Application) => void
 }) {
   const [isSaving, setIsSaving] = useState(false)
+  const [cvFile, setCvFile] = useState<File | null>(null)
+  const [cvDataUrl, setCvDataUrl] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [formData, setFormData] = useState({
     candidateName: '',
     candidateEmail: '',
@@ -521,20 +594,36 @@ function AddCandidateModal({
     notes: ''
   })
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setCvFile(file)
+      const reader = new FileReader()
+      reader.onload = () => {
+        setCvDataUrl(reader.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!formData.candidateName || !formData.candidateEmail || !formData.jobId) return
 
     setIsSaving(true)
     try {
-      const result = await addApplication(formData)
+      const result = await addApplication({
+        ...formData,
+        resumeUrl: cvDataUrl || undefined
+      })
       if (result.success && result.application) {
         const job = jobs.find(j => j.id === formData.jobId)
         onAdd({
           ...result.application,
           jobTitle: job?.title || '',
           jobId: formData.jobId,
-          appliedAt: new Date(result.application.appliedAt)
+          appliedAt: new Date(result.application.appliedAt),
+          stageChangedAt: new Date(result.application.stageChangedAt || result.application.appliedAt)
         })
       }
     } catch (error) {
@@ -590,6 +679,38 @@ function AddCandidateModal({
               className="w-full px-4 py-2.5 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="https://linkedin.com/in/johndoe"
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-1.5">CV / Resume</label>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              accept=".pdf,.doc,.docx"
+              className="hidden"
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="w-full px-4 py-2.5 bg-slate-700 border border-slate-600 border-dashed rounded-lg text-slate-400 hover:text-white hover:border-slate-500 transition-colors text-left"
+            >
+              {cvFile ? (
+                <span className="flex items-center gap-2">
+                  <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  {cvFile.name}
+                </span>
+              ) : (
+                <span className="flex items-center gap-2">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                  </svg>
+                  Upload CV (PDF, DOC, DOCX)
+                </span>
+              )}
+            </button>
           </div>
 
           <div>
@@ -660,6 +781,9 @@ function CandidateDetailModal({
           <div>
             <h2 className="text-2xl font-bold text-white">{application.candidateName}</h2>
             <p className="text-slate-400">{application.candidateEmail}</p>
+            <p className="text-xs text-slate-500 mt-1">
+              In current stage: {getTimeInStatus(application.stageChangedAt)}
+            </p>
           </div>
           <button onClick={onClose} className="text-slate-400 hover:text-white p-1">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -679,7 +803,7 @@ function CandidateDetailModal({
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                View Resume / CV
+                View CV
               </button>
             )}
             {application.linkedinUrl && (
@@ -700,7 +824,7 @@ function CandidateDetailModal({
           {/* Stage Selector */}
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-2">Pipeline Stage</label>
-            <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {STAGES.map(stage => (
                 <button
                   key={stage.id}
@@ -771,6 +895,52 @@ function CandidateDetailModal({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
             </svg>
             Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function DeleteConfirmModal({
+  onCancel,
+  onConfirm,
+  isPending
+}: {
+  onCancel: () => void
+  onConfirm: () => void
+  isPending: boolean
+}) {
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60] p-4">
+      <div className="bg-slate-800 border border-slate-700 rounded-xl shadow-xl max-w-md w-full p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-12 h-12 bg-red-500/20 rounded-full flex items-center justify-center">
+            <svg className="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-white">Delete Candidate</h3>
+            <p className="text-slate-400 text-sm">This action cannot be undone</p>
+          </div>
+        </div>
+        <p className="text-slate-300 mb-6">
+          Are you sure you want to delete this candidate? All their application data will be permanently removed.
+        </p>
+        <div className="flex gap-3">
+          <button
+            onClick={onCancel}
+            className="flex-1 px-4 py-2.5 bg-slate-700 hover:bg-slate-600 text-white font-medium rounded-lg transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            disabled={isPending}
+            className="flex-1 px-4 py-2.5 bg-red-600 hover:bg-red-500 text-white font-medium rounded-lg transition-colors disabled:opacity-50"
+          >
+            {isPending ? 'Deleting...' : 'Delete'}
           </button>
         </div>
       </div>

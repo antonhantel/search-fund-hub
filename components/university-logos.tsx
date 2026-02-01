@@ -3,13 +3,13 @@
 import { useState } from 'react'
 
 const universityClubs = [
-  { name: "WHU ETA Club", abbrev: "WHU", logo: "/WHU ETA Club.png" },
-  { name: "ETA Sankt Gallen", abbrev: "HSG", logo: "/ETA St Gallen.png" },
-  { name: "TU Investment Club", abbrev: "TUM", logo: "/TU Investment Club.png" },
-  { name: "Green Finance Consulting", abbrev: "GFC", logo: "/Green Finance Consulting.png" },
-  { name: "Integra e.V.", abbrev: "INT", logo: "/Integra e.V..png" },
-  { name: "Aachen Investment Club", abbrev: "AIC", logo: "/Aachen Investment Club.png" },
-  { name: "HHL Private Equity Club", abbrev: "HHL", logo: "/HHL Private Equity Club.png" },
+  { name: "WHU ETA Club", abbrev: "WHU", logo: "/WHU.png" },
+  { name: "ETA Sankt Gallen", abbrev: "HSG", logo: "/HSG.png" },
+  { name: "TU Investment Club", abbrev: "TUM", logo: "/TUIC.png" },
+  { name: "Green Finance Consulting", abbrev: "GFC", logo: "/Green.png" },
+  { name: "Integra e.V.", abbrev: "INT", logo: "/Integra.png" },
+  { name: "Aachen Investment Club", abbrev: "AIC", logo: "/Aachen.png" },
+  { name: "HHL Private Equity Club", abbrev: "HHL", logo: "/HHL.png" },
   { name: "Further partnerships in the pipeline", abbrev: "+", logo: null },
 ]
 

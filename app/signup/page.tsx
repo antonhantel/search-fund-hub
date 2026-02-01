@@ -5,6 +5,25 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { PasswordStrength } from "@/components/password-strength"
 
+// Industry categories for Investors, Searchers & Operators
+const INDUSTRY_OPTIONS = [
+  { value: 'manufacturing', label: 'Manufacturing / Industrial' },
+  { value: 'technology', label: 'Technology / Software' },
+  { value: 'healthcare', label: 'Healthcare / Life Sciences' },
+  { value: 'business-services', label: 'Business Services' },
+  { value: 'financial-services', label: 'Financial Services' },
+  { value: 'consumer', label: 'Consumer Products / Retail' },
+  { value: 'logistics', label: 'Logistics / Supply Chain' },
+  { value: 'construction', label: 'Construction / Real Estate' },
+  { value: 'energy', label: 'Energy / Utilities' },
+  { value: 'food-beverage', label: 'Food & Beverage' },
+  { value: 'education', label: 'Education / Training' },
+  { value: 'media', label: 'Media / Entertainment' },
+  { value: 'search-fund', label: 'Search Fund / ETA' },
+  { value: 'private-equity', label: 'Private Equity / Investment' },
+  { value: 'other', label: 'Other' },
+]
+
 export default function SignupPage() {
   const [formData, setFormData] = useState({
     email: '',
@@ -12,6 +31,9 @@ export default function SignupPage() {
     confirmPassword: '',
     companyName: '',
     linkedinUrl: '',
+    industry: '',
+    description: '',
+    teamProfile: '',
   })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -43,6 +65,9 @@ export default function SignupPage() {
           password: formData.password,
           companyName: formData.companyName,
           linkedinUrl: formData.linkedinUrl,
+          industry: formData.industry,
+          description: formData.description,
+          teamProfile: formData.teamProfile,
         })
       })
 
@@ -71,7 +96,7 @@ export default function SignupPage() {
         }} />
       </div>
 
-      <div className="relative max-w-md w-full">
+      <div className="relative max-w-lg w-full">
         {/* Logo/Brand */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-block">
@@ -103,7 +128,7 @@ export default function SignupPage() {
                 placeholder="Acme Search Fund"
               />
             </div>
-            
+
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-2">
                 Email address *
@@ -121,7 +146,7 @@ export default function SignupPage() {
 
             <div>
               <label htmlFor="linkedinUrl" className="block text-sm font-medium text-slate-300 mb-2">
-                LinkedIn Profile URL
+                LinkedIn Profile URL *
               </label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
@@ -132,6 +157,7 @@ export default function SignupPage() {
                 <input
                   id="linkedinUrl"
                   type="url"
+                  required
                   value={formData.linkedinUrl}
                   onChange={(e) => setFormData({ ...formData, linkedinUrl: e.target.value })}
                   className="w-full pl-11 pr-4 py-3 bg-slate-800/50 border border-slate-600 text-white placeholder-slate-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
@@ -139,6 +165,55 @@ export default function SignupPage() {
                 />
               </div>
               <p className="mt-1 text-xs text-slate-500">Helps us verify your identity and speeds up approval</p>
+            </div>
+
+            <div>
+              <label htmlFor="industry" className="block text-sm font-medium text-slate-300 mb-2">
+                Industry *
+              </label>
+              <select
+                id="industry"
+                required
+                value={formData.industry}
+                onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
+                className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              >
+                <option value="">Select your industry...</option>
+                {INDUSTRY_OPTIONS.map(opt => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label htmlFor="description" className="block text-sm font-medium text-slate-300 mb-2">
+                Company Description *
+              </label>
+              <textarea
+                id="description"
+                required
+                rows={3}
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 text-white placeholder-slate-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                placeholder="Describe your company, its mission, and what makes it unique..."
+              />
+            </div>
+
+            <div>
+              <label htmlFor="teamProfile" className="block text-sm font-medium text-slate-300 mb-2">
+                Team Profile *
+              </label>
+              <textarea
+                id="teamProfile"
+                required
+                rows={3}
+                value={formData.teamProfile}
+                onChange={(e) => setFormData({ ...formData, teamProfile: e.target.value })}
+                className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 text-white placeholder-slate-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                placeholder="Introduce your team members by name and background. E.g., 'John (ex-McKinsey), Sarah (10+ years in manufacturing)...'"
+              />
+              <p className="mt-1 text-xs text-slate-500">Name-dropping your team members and their backgrounds helps candidates understand who they&apos;ll work with</p>
             </div>
 
             <div>
@@ -212,17 +287,17 @@ export default function SignupPage() {
         <div className="mt-6 p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl">
           <h3 className="text-blue-300 font-medium text-sm mb-2">What happens next?</h3>
           <ul className="text-xs text-slate-400 space-y-1">
-            <li>✓ Your account will be reviewed by our team</li>
-            <li>✓ Approval usually takes less than 24 hours</li>
-            <li>✓ You'll receive an email once approved</li>
-            <li>✓ Then you can start posting jobs!</li>
+            <li>Your account will be reviewed by our team</li>
+            <li>Approval usually takes less than 24 hours</li>
+            <li>You&apos;ll receive an email once approved</li>
+            <li>Then you can start posting jobs!</li>
           </ul>
         </div>
 
         {/* Back to home */}
         <div className="mt-6 text-center">
           <Link href="/" className="text-slate-400 hover:text-white text-sm transition-colors">
-            ← Back to Home
+            Back to Home
           </Link>
         </div>
       </div>
