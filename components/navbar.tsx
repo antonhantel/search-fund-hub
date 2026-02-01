@@ -2,15 +2,13 @@
 
 import Link from "next/link"
 import { useSession, signOut } from "next-auth/react"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { usePathname } from "next/navigation"
 
 export function Navbar() {
   const { data: session } = useSession()
   const [isOpen, setIsOpen] = useState(false)
-  const [isVisible, setIsVisible] = useState(false)
   const pathname = usePathname()
-  const isHomePage = pathname === '/'
 
   // Check if we should hide navbar (admin/employer pages have their own headers)
   const shouldHideNavbar = pathname.startsWith('/admin') || pathname.startsWith('/employer')
@@ -18,35 +16,13 @@ export function Navbar() {
   // Check if we're on a dark page (landing, login, signup, for-employers, jobs, team)
   const isDarkPage = pathname === '/' || pathname === '/login' || pathname.startsWith('/signup') || pathname === '/for-employers' || pathname.startsWith('/jobs') || pathname === '/team'
 
-  // Scroll handler for homepage - show navbar after scrolling past hero logo
-  useEffect(() => {
-    if (!isHomePage || shouldHideNavbar) {
-      setIsVisible(true)
-      return
-    }
-
-    const handleScroll = () => {
-      // Show navbar after scrolling 250px (past the hero logo)
-      const scrollThreshold = 250
-      setIsVisible(window.scrollY > scrollThreshold)
-    }
-
-    // Initial check
-    handleScroll()
-
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [isHomePage, shouldHideNavbar])
-
   // Don't show navbar on admin or employer pages (they have their own headers)
   if (shouldHideNavbar) {
     return null
   }
 
   return (
-    <nav className={`fixed top-0 w-full z-50 transition-transform duration-300 ${
-      isHomePage && !isVisible ? '-translate-y-full' : 'translate-y-0'
-    } ${isDarkPage ? 'bg-slate-900/95 backdrop-blur-md border-b border-slate-700' : 'bg-white shadow-md'}`}>
+    <nav className={`fixed top-0 w-full z-50 ${isDarkPage ? 'bg-slate-900/95 backdrop-blur-md border-b border-slate-700' : 'bg-white shadow-md'}`}>
       <div className="max-w-7xl mx-auto px-4 py-2">
         <div className="flex items-center justify-between">
           <Link
