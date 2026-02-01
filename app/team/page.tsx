@@ -1,6 +1,7 @@
 import Link from "next/link"
 
 const teamMembers = [
+  // Board & Leadership
   {
     name: "Carlo Schmid",
     role: "Co-Founder",
@@ -22,20 +23,7 @@ const teamMembers = [
     linkedIn: "https://www.linkedin.com/in/john-schanbacher/",
     image: "/JSchanbacher.jpeg",
   },
-  {
-    name: "Clemens Hacker",
-    role: "Jobboard Lead",
-    description: "Finance background (Esade MiF) with experience at BCG and in VC (Redalpine). Combines analytical consulting experience with a strong focus on Search Funds and business succession.",
-    linkedIn: "https://www.linkedin.com/in/clemenshacker/",
-    image: "/CHacker.jpeg",
-  },
-  {
-    name: "Anton Hantel",
-    role: "Product Lead",
-    description: "Anton runs the employer platform powering job postings, application intake, and candidate screening for the community. He is currently pursuing an MBA at MIT Sloan with a focus on Entrepreneurship & Innovation. Previously, he worked as a Strategy Consultant at Boston Consulting Group, advising consumer and retail firms on large-scale transformations.",
-    linkedIn: "https://www.linkedin.com/in/anton-hantel/",
-    image: "/AHantel.jpg",
-  },
+  // City Captains
   {
     name: "Alexander Rast",
     role: "Munich City Captain",
@@ -57,6 +45,22 @@ const teamMembers = [
     linkedIn: "https://www.linkedin.com/in/tobiasroehrl/",
     image: "/TRoehrl.jpeg",
   },
+  // Job Board Team
+  {
+    name: "Clemens Hacker",
+    role: "Job Board Lead",
+    description: "Finance background (Esade MiF) with experience at BCG and in VC (Redalpine). Combines analytical consulting experience with a strong focus on Search Funds and business succession.",
+    linkedIn: "https://www.linkedin.com/in/clemenshacker/",
+    image: "/CHacker.jpeg",
+  },
+  {
+    name: "Anton Hantel",
+    role: "Product Lead",
+    description: "Anton runs the employer platform powering job postings, application intake, and candidate screening for the community. He is currently pursuing an MBA at MIT Sloan with a focus on Entrepreneurship & Innovation. Previously, he worked as a Strategy Consultant at Boston Consulting Group, advising consumer and retail firms on large-scale transformations.",
+    linkedIn: "https://www.linkedin.com/in/anton-hantel/",
+    image: "/AHantel.jpg",
+  },
+  // Open Position
   {
     name: "TBD",
     role: "Frankfurt City Captain",

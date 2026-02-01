@@ -1,5 +1,4 @@
 import Link from "next/link"
-import Image from "next/image"
 import { prisma } from "@/lib/prisma"
 import { UniversityLogos } from "@/components/university-logos"
 
@@ -59,19 +58,7 @@ export default async function HomePage() {
           }} />
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          {/* Centered White Logo */}
-          <div className="flex justify-center mb-8">
-            <Image
-              src="/logo-white.png"
-              alt="Search Fund Hub"
-              width={400}
-              height={120}
-              className="h-16 md:h-20 w-auto"
-              priority
-            />
-          </div>
-
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-16">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight tracking-tight max-w-4xl mx-auto">
             Welcome to the
             <br />
