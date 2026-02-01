@@ -4,12 +4,12 @@ import bcrypt from "bcryptjs"
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password, companyName, linkedinUrl } = await request.json()
+    const { email, password, companyName, linkedinUrl, industry, description, teamProfile } = await request.json()
 
     // Validate input
-    if (!email || !password || !companyName) {
+    if (!email || !password || !companyName || !linkedinUrl || !description || !teamProfile) {
       return NextResponse.json(
-        { error: "Email, password, and company name are required" },
+        { error: "All required fields must be filled" },
         { status: 400 }
       )
     }
@@ -50,7 +50,10 @@ export async function POST(request: NextRequest) {
         data: {
           userId: user.id,
           companyName,
-          linkedinUrl: linkedinUrl || null,
+          linkedinUrl,
+          industry: industry || null,
+          description,
+          teamProfile,
           status: "pending" // Requires admin approval
         }
       })

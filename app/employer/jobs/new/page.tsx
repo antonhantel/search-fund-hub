@@ -12,14 +12,19 @@ export default async function NewJobPage() {
     redirect('/login')
   }
 
-  // Get employerId from session or lookup
+  // Get employerId and employer data from session or lookup
   let employerId = session.user?.employerId
+  let employer = null
 
   if (!employerId && session.user?.email) {
-    const employer = await prisma.employer.findFirst({
+    employer = await prisma.employer.findFirst({
       where: { user: { email: session.user.email } }
     })
     if (employer) employerId = employer.id
+  } else if (employerId) {
+    employer = await prisma.employer.findUnique({
+      where: { id: employerId }
+    })
   }
 
   if (!employerId) {
@@ -31,13 +36,19 @@ export default async function NewJobPage() {
     )
   }
 
+  const employerData = employer ? {
+    industry: employer.industry || undefined,
+    description: employer.description || undefined,
+    teamProfile: employer.teamProfile || undefined,
+  } : undefined
+
   return (
     <div>
       <div className="mb-8">
         <h2 className="text-3xl font-bold text-white">Post New Job</h2>
         <p className="text-slate-400 mt-2">Create a new job posting for your search fund</p>
       </div>
-      <JobForm employerId={employerId} />
+      <JobForm employerId={employerId} employerData={employerData} />
     </div>
   )
 }

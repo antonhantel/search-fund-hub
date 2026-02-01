@@ -13,6 +13,7 @@ interface EmployerData {
   website?: string | null
   linkedinUrl?: string | null
   description?: string | null
+  teamProfile?: string | null
   user: {
     email: string
   }
@@ -32,6 +33,12 @@ export default function EmployerProfilePage() {
     newPassword: '',
     confirmPassword: ''
   })
+  const [showEmailModal, setShowEmailModal] = useState(false)
+  const [emailForm, setEmailForm] = useState({
+    newEmail: '',
+    password: ''
+  })
+  const [isChangingEmail, setIsChangingEmail] = useState(false)
 
   useEffect(() => {
     const fetchEmployer = async () => {
@@ -81,7 +88,8 @@ export default function EmployerProfilePage() {
           industry: formData.get('industry'),
           website: formData.get('website'),
           linkedinUrl: formData.get('linkedinUrl'),
-          description: formData.get('description')
+          description: formData.get('description'),
+          teamProfile: formData.get('teamProfile')
         })
       })
 
@@ -134,6 +142,39 @@ export default function EmployerProfilePage() {
       setError(err instanceof Error ? err.message : 'Failed to update password')
     } finally {
       setIsChangingPassword(false)
+    }
+  }
+
+  async function handleEmailSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    setError(null)
+    setSuccess(null)
+    setIsChangingEmail(true)
+
+    try {
+      const response = await fetch('/api/user/email/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          newEmail: emailForm.newEmail,
+          password: emailForm.password
+        })
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Failed to update email')
+      }
+
+      setSuccess('Email updated successfully. Please log in again with your new email.')
+      setShowEmailModal(false)
+      setEmailForm({ newEmail: '', password: '' })
+      // Update the displayed email
+      setEmployer(prev => prev ? { ...prev, user: { ...prev.user, email: emailForm.newEmail } } : null)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update email')
+    } finally {
+      setIsChangingEmail(false)
     }
   }
 
@@ -259,16 +300,33 @@ export default function EmployerProfilePage() {
 
           <div>
             <label htmlFor="description" className="block text-sm font-medium text-slate-300 mb-1">
-              Company Description
+              Company Description *
             </label>
             <textarea
               name="description"
               id="description"
               rows={4}
+              required
               defaultValue={employer.description || ''}
               className="w-full px-4 py-2.5 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Tell candidates about your search fund..."
             />
+          </div>
+
+          <div>
+            <label htmlFor="teamProfile" className="block text-sm font-medium text-slate-300 mb-1">
+              Team Profile *
+            </label>
+            <textarea
+              name="teamProfile"
+              id="teamProfile"
+              rows={4}
+              required
+              defaultValue={employer.teamProfile || ''}
+              className="w-full px-4 py-2.5 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Introduce your team members by name and background. E.g., 'John (ex-McKinsey), Sarah (10+ years in manufacturing)...'"
+            />
+            <p className="mt-1 text-xs text-slate-500">Name-dropping your team members and their backgrounds helps candidates understand who they&apos;ll work with</p>
           </div>
 
           <button
@@ -284,7 +342,7 @@ export default function EmployerProfilePage() {
       {/* Email Section */}
       <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 md:p-8 mb-6">
         <h2 className="text-xl font-bold text-white mb-6">Email Address</h2>
-        
+
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm text-slate-400 mb-1">Current Email</p>
@@ -292,14 +350,82 @@ export default function EmployerProfilePage() {
           </div>
           <button
             type="button"
-            disabled
-            className="px-4 py-2 border border-slate-600 text-slate-500 rounded-lg cursor-not-allowed opacity-50"
-            title="Email change functionality coming soon"
+            onClick={() => setShowEmailModal(true)}
+            className="px-4 py-2 border border-slate-600 text-slate-300 hover:text-white hover:border-blue-500 rounded-lg transition-colors"
           >
             Change Email
           </button>
         </div>
       </div>
+
+      {/* Email Change Modal */}
+      {showEmailModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-slate-800 border border-slate-700 rounded-xl shadow-xl max-w-md w-full p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-bold text-white">Change Email Address</h3>
+              <button
+                onClick={() => setShowEmailModal(false)}
+                className="text-slate-400 hover:text-white"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <form onSubmit={handleEmailSubmit} className="space-y-4">
+              <div>
+                <label htmlFor="newEmail" className="block text-sm font-medium text-slate-300 mb-1.5">
+                  New Email Address
+                </label>
+                <input
+                  type="email"
+                  id="newEmail"
+                  required
+                  value={emailForm.newEmail}
+                  onChange={(e) => setEmailForm({ ...emailForm, newEmail: e.target.value })}
+                  className="w-full px-4 py-2.5 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="newemail@example.com"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="emailPassword" className="block text-sm font-medium text-slate-300 mb-1.5">
+                  Current Password
+                </label>
+                <input
+                  type="password"
+                  id="emailPassword"
+                  required
+                  value={emailForm.password}
+                  onChange={(e) => setEmailForm({ ...emailForm, password: e.target.value })}
+                  className="w-full px-4 py-2.5 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Enter your current password"
+                />
+                <p className="mt-1 text-xs text-slate-500">Required to confirm the change</p>
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowEmailModal(false)}
+                  className="flex-1 px-4 py-2.5 bg-slate-700 hover:bg-slate-600 text-white font-medium rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isChangingEmail}
+                  className="flex-1 px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg transition-colors disabled:opacity-50"
+                >
+                  {isChangingEmail ? 'Updating...' : 'Update Email'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Password Section */}
       <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 md:p-8">
